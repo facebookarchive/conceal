@@ -1,0 +1,19 @@
+
+# relevant to BUCK
+buck-out
+/.buckconfig.local
+gen
+
+# Editor generated files
+*.iml
+*.swp
+/.idea
+
+/local.properties
+
+#gradle files
+/.gradle
+/build
+
+#jekyll files
+/_site/

@@ -1,0 +1,25 @@
+android_binary(
+  name = 'crypto',
+  manifest = 'AndroidManifest.xml',
+  target = 'Google Inc.:Google APIs:16',
+  keystore = '//keystores:debug',
+  deps = [
+    ':crypto-lib',
+  ],
+)
+
+android_library(
+  name = 'crypto-lib',
+  srcs = glob(['src/**/*.java']),
+  deps = [
+    '//:crypto',
+    '//third-party/guava:guava',
+    '//third-party/spongycastle:sc-light-jdk15on',
+    '//third-party/spongycastle:scprov-jdk15on',
+  ],
+)
+
+project_config(
+  src_target = ':crypto',
+  src_roots = [ 'src' ]
+)

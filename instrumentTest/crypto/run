@@ -1,0 +1,4 @@
+#!/bin/bash
+
+buck install instrumentTest/crypto:crypto &&
+adb shell am instrument -w com.facebook.crypto.tests/com.facebook.crypto.FbInstrumentationTestRunner

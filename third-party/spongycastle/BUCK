@@ -1,0 +1,20 @@
+# please don't use this library. This is only here for 
+# benchmarks. Use java/com/facebook/crypto:crypto instead. 
+
+prebuilt_jar(
+  name = 'sc-light-jdk15on',
+  binary_jar = 'sc-light-jdk15on-1.47.0.2.jar',
+  visibility = [ 
+      '//benchmarks:',
+      '//instrumentTest/crypto:crypto-lib',
+ ],
+)
+
+prebuilt_jar(
+  name = 'scprov-jdk15on',
+  binary_jar = 'scprov-jdk15on-1.47.0.2.jar',
+  visibility = [ 
+      '//benchmarks:',
+      '//instrumentTest/crypto:crypto-lib',
+  ],
+)

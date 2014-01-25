@@ -1,0 +1,17 @@
+ndk_library(
+  name = 'crypto',
+  flags = [
+    'NDK_APPLICATION_MK=${PWD}/native/Application.mk',
+    'NDK_MODULE_PATH=${PWD}/native/third-party/',
+  ],
+  visibility = [
+    '//:crypto',
+  ],
+  deps = [
+    '//native/third-party/cryptox:cryptox',
+  ],
+)
+
+project_config(
+  src_target = ':crypto',
+)

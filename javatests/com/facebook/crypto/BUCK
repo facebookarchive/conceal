@@ -1,0 +1,27 @@
+robolectric_test(
+  name = 'crypto',
+  srcs = glob(['**/*Test.java']),
+  deps = [
+    ':crypto-test-helper',
+    '//:crypto',
+    '//third-party/junit:junit',
+    '//third-party/guava:guava',
+    '//third-party/robolectric2:robolectric2',
+  ],
+  source_under_test = [
+    '//:crypto',
+  ],
+)
+
+android_library(
+  name = 'crypto-test-helper',
+  srcs = glob(['**/*.java'], excludes = glob(['**/*Test.java'])),
+  deps = [
+    '//third-party/junit:junit',
+    '//third-party/robolectric2:robolectric2',
+  ],
+)
+
+project_config(
+  test_target = ':crypto',
+)

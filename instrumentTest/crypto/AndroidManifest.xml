@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.facebook.crypto.tests">
+    <application
+        android:debuggable="true">
+        <uses-library
+            android:name="android.test.runner" />
+    </application>
+    <instrumentation
+        android:name="com.facebook.crypto.FbInstrumentationTestRunner"
+        android:targetPackage="com.facebook.crypto.tests"
+        android:label="Integration tests for the crypto library."/>
+</manifest>

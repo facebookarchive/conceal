@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This manifest file exists for 2 reasons:
+     1. To make gradle builds work
+     2. So that ndk-build will execute without complaining
+-->
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.facebook.crypto"
+    android:versionCode="1"
+    android:versionName="1.0">
+
+  <uses-sdk
+      android:minSdkVersion="9"
+      android:targetSdkVersion="17"/>
+
+</manifest>

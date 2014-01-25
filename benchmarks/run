@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# We install a dummy application which contains the necessary
+# libraries need by the native code. This is necessary because
+# vogar does not support native lib loading. Thus we work around
+# this limitation by pointing the benchmark lib loading path
+# to the dummy app's lib dir.
+
+buck install //benchmarks/app:app
+
+OS=`uname`
+if [[ $OS == "Darwin" ]]; then
+  JAVA_HOME=`/usr/libexec/java_home -v 1.6`
+else
+  echo "Your OS is not supported $OS"
+  exit 1
+fi
+
+VOGAR_JAR="third-party/vogar/vogar.jar"
+
+java -jar $VOGAR_JAR \
+--benchmark \
+--sourcepath java \
+--java-home $JAVA_HOME \
+--mode device \
+--classpath third-party/spongycastle/scprov-jdk15on-1.47.0.2.jar \
+--classpath third-party/spongycastle/sc-light-jdk15on-1.47.0.2.jar \
+$*

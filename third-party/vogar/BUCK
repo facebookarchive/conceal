@@ -1,0 +1,7 @@
+prebuilt_jar(
+  name = 'vogar',
+  binary_jar = 'vogar.jar',
+  visibility = [
+    '//benchmarks:',
+  ],
+)

@@ -1,0 +1,448 @@
+From 69d0e232b5e29be5b7d182671b22ed5d9bb82746 Mon Sep 17 00:00:00 2001
+[PATCH] Make the openssl builds a bit smaller [Part 1]
+
+Summary:
+Remove some features of openssl that we don't need
+to make the builds smaller.
+
+THe build after these modifications is
+armeabi : 552K
+armeabi-v7 : 532K
+x86 : 976K
+
+---
+ Crypto-config.mk   | 205 --------------------------
+ build-config-32.mk |  43 ++++++
+ 2 files changed, 43 insertions(+), 205 deletions(-)
+
+diff --git a/Crypto-config.mk b/Crypto-config.mk
+index e27ab9a..36b4b69 100644
+--- a/Crypto-config.mk
++++ b/Crypto-config.mk
+@@ -62,7 +62,6 @@ common_src_files := \
+   crypto/asn1/a_utf8.c \
+   crypto/asn1/a_verify.c \
+   crypto/asn1/ameth_lib.c \
+-  crypto/asn1/asn1_err.c \
+   crypto/asn1/asn1_gen.c \
+   crypto/asn1/asn1_lib.c \
+   crypto/asn1/asn1_par.c \
+@@ -115,19 +114,12 @@ common_src_files := \
+   crypto/asn1/x_val.c \
+   crypto/asn1/x_x509.c \
+   crypto/asn1/x_x509a.c \
+-  crypto/bf/bf_cfb64.c \
+-  crypto/bf/bf_ecb.c \
+-  crypto/bf/bf_enc.c \
+-  crypto/bf/bf_ofb64.c \
+-  crypto/bf/bf_skey.c \
+   crypto/bio/b_dump.c \
+   crypto/bio/b_print.c \
+-  crypto/bio/b_sock.c \
+   crypto/bio/bf_buff.c \
+   crypto/bio/bf_nbio.c \
+   crypto/bio/bf_null.c \
+   crypto/bio/bio_cb.c \
+-  crypto/bio/bio_err.c \
+   crypto/bio/bio_lib.c \
+   crypto/bio/bss_acpt.c \
+   crypto/bio/bss_bio.c \
+@@ -138,14 +130,12 @@ common_src_files := \
+   crypto/bio/bss_log.c \
+   crypto/bio/bss_mem.c \
+   crypto/bio/bss_null.c \
+-  crypto/bio/bss_sock.c \
+   crypto/bn/bn_add.c \
+   crypto/bn/bn_asm.c \
+   crypto/bn/bn_blind.c \
+   crypto/bn/bn_const.c \
+   crypto/bn/bn_ctx.c \
+   crypto/bn/bn_div.c \
+-  crypto/bn/bn_err.c \
+   crypto/bn/bn_exp.c \
+   crypto/bn/bn_exp2.c \
+   crypto/bn/bn_gcd.c \
+@@ -165,145 +155,25 @@ common_src_files := \
+   crypto/bn/bn_sqr.c \
+   crypto/bn/bn_sqrt.c \
+   crypto/bn/bn_word.c \
+-  crypto/buffer/buf_err.c \
+   crypto/buffer/buf_str.c \
+   crypto/buffer/buffer.c \
+   crypto/cmac/cm_ameth.c \
+   crypto/cmac/cm_pmeth.c \
+   crypto/cmac/cmac.c \
+-  crypto/cms/cms_asn1.c \
+-  crypto/cms/cms_att.c \
+-  crypto/cms/cms_cd.c \
+-  crypto/cms/cms_dd.c \
+-  crypto/cms/cms_enc.c \
+-  crypto/cms/cms_env.c \
+-  crypto/cms/cms_err.c \
+-  crypto/cms/cms_ess.c \
+-  crypto/cms/cms_io.c \
+-  crypto/cms/cms_lib.c \
+-  crypto/cms/cms_pwri.c \
+-  crypto/cms/cms_sd.c \
+-  crypto/cms/cms_smime.c \
+-  crypto/comp/c_rle.c \
+-  crypto/comp/c_zlib.c \
+-  crypto/comp/comp_err.c \
+-  crypto/comp/comp_lib.c \
+   crypto/conf/conf_api.c \
+   crypto/conf/conf_def.c \
+-  crypto/conf/conf_err.c \
+   crypto/conf/conf_lib.c \
+   crypto/conf/conf_mall.c \
+   crypto/conf/conf_mod.c \
+   crypto/conf/conf_sap.c \
+-  crypto/cpt_err.c \
+   crypto/cryptlib.c \
+   crypto/cversion.c \
+-  crypto/des/cbc_cksm.c \
+-  crypto/des/cbc_enc.c \
+-  crypto/des/cfb64ede.c \
+-  crypto/des/cfb64enc.c \
+-  crypto/des/cfb_enc.c \
+-  crypto/des/des_enc.c \
+-  crypto/des/des_old.c \
+-  crypto/des/des_old2.c \
+-  crypto/des/ecb3_enc.c \
+-  crypto/des/ecb_enc.c \
+-  crypto/des/ede_cbcm_enc.c \
+-  crypto/des/enc_read.c \
+-  crypto/des/enc_writ.c \
+-  crypto/des/fcrypt.c \
+-  crypto/des/fcrypt_b.c \
+-  crypto/des/ofb64ede.c \
+-  crypto/des/ofb64enc.c \
+-  crypto/des/ofb_enc.c \
+-  crypto/des/pcbc_enc.c \
+-  crypto/des/qud_cksm.c \
+-  crypto/des/rand_key.c \
+-  crypto/des/read2pwd.c \
+-  crypto/des/rpc_enc.c \
+-  crypto/des/set_key.c \
+-  crypto/des/str2key.c \
+-  crypto/des/xcbc_enc.c \
+-  crypto/dh/dh_ameth.c \
+-  crypto/dh/dh_asn1.c \
+-  crypto/dh/dh_check.c \
+-  crypto/dh/dh_depr.c \
+-  crypto/dh/dh_err.c \
+-  crypto/dh/dh_gen.c \
+-  crypto/dh/dh_key.c \
+-  crypto/dh/dh_lib.c \
+-  crypto/dh/dh_pmeth.c \
+-  crypto/dsa/dsa_ameth.c \
+-  crypto/dsa/dsa_asn1.c \
+-  crypto/dsa/dsa_depr.c \
+-  crypto/dsa/dsa_err.c \
+-  crypto/dsa/dsa_gen.c \
+-  crypto/dsa/dsa_key.c \
+-  crypto/dsa/dsa_lib.c \
+-  crypto/dsa/dsa_ossl.c \
+-  crypto/dsa/dsa_pmeth.c \
+-  crypto/dsa/dsa_prn.c \
+-  crypto/dsa/dsa_sign.c \
+-  crypto/dsa/dsa_vrf.c \
+   crypto/dso/dso_dl.c \
+   crypto/dso/dso_dlfcn.c \
+-  crypto/dso/dso_err.c \
+   crypto/dso/dso_lib.c \
+   crypto/dso/dso_null.c \
+   crypto/dso/dso_openssl.c \
+   crypto/ebcdic.c \
+-  crypto/ec/ec2_mult.c \
+-  crypto/ec/ec2_oct.c \
+-  crypto/ec/ec2_smpl.c \
+-  crypto/ec/ec_ameth.c \
+-  crypto/ec/ec_asn1.c \
+-  crypto/ec/ec_check.c \
+-  crypto/ec/ec_curve.c \
+-  crypto/ec/ec_cvt.c \
+-  crypto/ec/ec_err.c \
+-  crypto/ec/ec_key.c \
+-  crypto/ec/ec_lib.c \
+-  crypto/ec/ec_mult.c \
+-  crypto/ec/ec_oct.c \
+-  crypto/ec/ec_pmeth.c \
+-  crypto/ec/ec_print.c \
+-  crypto/ec/eck_prn.c \
+-  crypto/ec/ecp_mont.c \
+-  crypto/ec/ecp_nist.c \
+-  crypto/ec/ecp_oct.c \
+-  crypto/ec/ecp_smpl.c \
+-  crypto/ecdh/ech_err.c \
+-  crypto/ecdh/ech_key.c \
+-  crypto/ecdh/ech_lib.c \
+-  crypto/ecdh/ech_ossl.c \
+-  crypto/ecdsa/ecs_asn1.c \
+-  crypto/ecdsa/ecs_err.c \
+-  crypto/ecdsa/ecs_lib.c \
+-  crypto/ecdsa/ecs_ossl.c \
+-  crypto/ecdsa/ecs_sign.c \
+-  crypto/ecdsa/ecs_vrf.c \
+-  crypto/engine/eng_all.c \
+-  crypto/engine/eng_cnf.c \
+-  crypto/engine/eng_ctrl.c \
+-  crypto/engine/eng_dyn.c \
+-  crypto/engine/eng_err.c \
+-  crypto/engine/eng_fat.c \
+-  crypto/engine/eng_init.c \
+-  crypto/engine/eng_lib.c \
+-  crypto/engine/eng_list.c \
+-  crypto/engine/eng_pkey.c \
+-  crypto/engine/eng_table.c \
+-  crypto/engine/tb_asnmth.c \
+-  crypto/engine/tb_cipher.c \
+-  crypto/engine/tb_dh.c \
+-  crypto/engine/tb_digest.c \
+-  crypto/engine/tb_dsa.c \
+-  crypto/engine/tb_ecdh.c \
+-  crypto/engine/tb_ecdsa.c \
+-  crypto/engine/tb_pkmeth.c \
+-  crypto/engine/tb_rand.c \
+-  crypto/engine/tb_rsa.c \
+-  crypto/engine/tb_store.c \
+   crypto/err/err.c \
+   crypto/err/err_all.c \
+   crypto/err/err_prn.c \
+@@ -318,32 +188,22 @@ common_src_files := \
+   crypto/evp/e_aes.c \
+   crypto/evp/e_aes_cbc_hmac_sha1.c \
+   crypto/evp/e_bf.c \
+-  crypto/evp/e_des.c \
+-  crypto/evp/e_des3.c \
+   crypto/evp/e_null.c \
+   crypto/evp/e_old.c \
+-  crypto/evp/e_rc2.c \
+-  crypto/evp/e_rc4.c \
+-  crypto/evp/e_rc4_hmac_md5.c \
+-  crypto/evp/e_rc5.c \
+   crypto/evp/e_xcbc_d.c \
+   crypto/evp/encode.c \
+   crypto/evp/evp_acnf.c \
+   crypto/evp/evp_cnf.c \
+   crypto/evp/evp_enc.c \
+-  crypto/evp/evp_err.c \
+   crypto/evp/evp_key.c \
+   crypto/evp/evp_lib.c \
+   crypto/evp/evp_pbe.c \
+   crypto/evp/evp_pkey.c \
+   crypto/evp/m_dss.c \
+   crypto/evp/m_dss1.c \
+-  crypto/evp/m_ecdsa.c \
+-  crypto/evp/m_md4.c \
+   crypto/evp/m_md5.c \
+   crypto/evp/m_mdc2.c \
+   crypto/evp/m_null.c \
+-  crypto/evp/m_ripemd.c \
+   crypto/evp/m_sha1.c \
+   crypto/evp/m_sigver.c \
+   crypto/evp/m_wp.c \
+@@ -364,11 +224,8 @@ common_src_files := \
+   crypto/hmac/hm_ameth.c \
+   crypto/hmac/hm_pmeth.c \
+   crypto/hmac/hmac.c \
+-  crypto/krb5/krb5_asn.c \
+   crypto/lhash/lh_stats.c \
+   crypto/lhash/lhash.c \
+-  crypto/md4/md4_dgst.c \
+-  crypto/md4/md4_one.c \
+   crypto/md5/md5_dgst.c \
+   crypto/md5/md5_one.c \
+   crypto/mem.c \
+@@ -387,20 +244,9 @@ common_src_files := \
+   crypto/o_time.c \
+   crypto/objects/o_names.c \
+   crypto/objects/obj_dat.c \
+-  crypto/objects/obj_err.c \
+   crypto/objects/obj_lib.c \
+   crypto/objects/obj_xref.c \
+-  crypto/ocsp/ocsp_asn.c \
+-  crypto/ocsp/ocsp_cl.c \
+-  crypto/ocsp/ocsp_err.c \
+-  crypto/ocsp/ocsp_ext.c \
+-  crypto/ocsp/ocsp_ht.c \
+-  crypto/ocsp/ocsp_lib.c \
+-  crypto/ocsp/ocsp_prn.c \
+-  crypto/ocsp/ocsp_srv.c \
+-  crypto/ocsp/ocsp_vfy.c \
+   crypto/pem/pem_all.c \
+-  crypto/pem/pem_err.c \
+   crypto/pem/pem_info.c \
+   crypto/pem/pem_lib.c \
+   crypto/pem/pem_oth.c \
+@@ -436,52 +282,16 @@ common_src_files := \
+   crypto/pqueue/pqueue.c \
+   crypto/rand/md_rand.c \
+   crypto/rand/rand_egd.c \
+-  crypto/rand/rand_err.c \
+   crypto/rand/rand_lib.c \
+   crypto/rand/rand_unix.c \
+   crypto/rand/rand_win.c \
+   crypto/rand/randfile.c \
+-  crypto/rc2/rc2_cbc.c \
+-  crypto/rc2/rc2_ecb.c \
+-  crypto/rc2/rc2_skey.c \
+-  crypto/rc2/rc2cfb64.c \
+-  crypto/rc2/rc2ofb64.c \
+-  crypto/rc4/rc4_enc.c \
+-  crypto/rc4/rc4_skey.c \
+-  crypto/rc4/rc4_utl.c \
+-  crypto/ripemd/rmd_dgst.c \
+-  crypto/ripemd/rmd_one.c \
+-  crypto/rsa/rsa_ameth.c \
+-  crypto/rsa/rsa_asn1.c \
+-  crypto/rsa/rsa_chk.c \
+-  crypto/rsa/rsa_crpt.c \
+-  crypto/rsa/rsa_eay.c \
+-  crypto/rsa/rsa_err.c \
+-  crypto/rsa/rsa_gen.c \
+-  crypto/rsa/rsa_lib.c \
+-  crypto/rsa/rsa_none.c \
+-  crypto/rsa/rsa_null.c \
+-  crypto/rsa/rsa_oaep.c \
+-  crypto/rsa/rsa_pk1.c \
+-  crypto/rsa/rsa_pmeth.c \
+-  crypto/rsa/rsa_prn.c \
+-  crypto/rsa/rsa_pss.c \
+-  crypto/rsa/rsa_saos.c \
+-  crypto/rsa/rsa_sign.c \
+-  crypto/rsa/rsa_ssl.c \
+-  crypto/rsa/rsa_x931.c \
+   crypto/sha/sha1_one.c \
+   crypto/sha/sha1dgst.c \
+-  crypto/sha/sha256.c \
+-  crypto/sha/sha512.c \
+   crypto/sha/sha_dgst.c \
+-  crypto/srp/srp_lib.c \
+-  crypto/srp/srp_vfy.c \
+   crypto/stack/stack.c \
+-  crypto/ts/ts_err.c \
+   crypto/txt_db/txt_db.c \
+   crypto/ui/ui_compat.c \
+-  crypto/ui/ui_err.c \
+   crypto/ui/ui_lib.c \
+   crypto/ui/ui_openssl.c \
+   crypto/ui/ui_util.c \
+@@ -492,7 +302,6 @@ common_src_files := \
+   crypto/x509/x509_cmp.c \
+   crypto/x509/x509_d2.c \
+   crypto/x509/x509_def.c \
+-  crypto/x509/x509_err.c \
+   crypto/x509/x509_ext.c \
+   crypto/x509/x509_lu.c \
+   crypto/x509/x509_obj.c \
+@@ -569,8 +378,6 @@ arm_src_files := \
+   crypto/bn/asm/armv4-mont.S \
+   crypto/modes/asm/ghash-armv4.S \
+   crypto/sha/asm/sha1-armv4-large.S \
+-  crypto/sha/asm/sha256-armv4.S \
+-  crypto/sha/asm/sha512-armv4.S \
+ 
+ arm_exclude_files := \
+   crypto/aes/aes_core.c \
+@@ -601,18 +408,13 @@ x86_src_files := \
+   crypto/aes/asm/aes-586.S \
+   crypto/aes/asm/aesni-x86.S \
+   crypto/aes/asm/vpaes-x86.S \
+-  crypto/bf/asm/bf-586.S \
+   crypto/bn/asm/bn-586.S \
+   crypto/bn/asm/co-586.S \
+   crypto/bn/asm/x86-gf2m.S \
+   crypto/bn/asm/x86-mont.S \
+-  crypto/des/asm/crypt586.S \
+-  crypto/des/asm/des-586.S \
+   crypto/md5/asm/md5-586.S \
+   crypto/modes/asm/ghash-x86.S \
+   crypto/sha/asm/sha1-586.S \
+-  crypto/sha/asm/sha256-586.S \
+-  crypto/sha/asm/sha512-586.S \
+   crypto/x86cpuid.S \
+ 
+ x86_exclude_files := \
+@@ -651,11 +453,7 @@ x86_64_src_files := \
+   crypto/bn/asm/x86_64-mont5.S \
+   crypto/md5/asm/md5-x86_64.S \
+   crypto/modes/asm/ghash-x86_64.S \
+-  crypto/rc4/asm/rc4-md5-x86_64.S \
+-  crypto/rc4/asm/rc4-x86_64.S \
+   crypto/sha/asm/sha1-x86_64.S \
+-  crypto/sha/asm/sha256-x86_64.S \
+-  crypto/sha/asm/sha512-x86_64.S \
+   crypto/x86_64cpuid.S \
+ 
+ x86_64_exclude_files := \
+@@ -663,8 +461,6 @@ x86_64_exclude_files := \
+   crypto/aes/aes_core.c \
+   crypto/bn/bn_asm.c \
+   crypto/mem_clr.c \
+-  crypto/rc4/rc4_enc.c \
+-  crypto/rc4/rc4_skey.c \
+ 
+ mips_c_flags := \
+   -DAES_ASM \
+@@ -677,7 +473,6 @@ mips_src_files := \
+   crypto/bn/asm/bn-mips.S \
+   crypto/bn/asm/mips-mont.S \
+   crypto/sha/asm/sha1-mips.S \
+-  crypto/sha/asm/sha256-mips.S \
+ 
+ mips_exclude_files := \
+   crypto/aes/aes_core.c \
+diff --git a/build-config-32.mk b/build-config-32.mk
+index 611c455..bcd8236 100644
+--- a/build-config-32.mk
++++ b/build-config-32.mk
+@@ -31,3 +31,46 @@ openssl_cflags := \
+   -DOPENSSL_NO_STATIC_ENGINE \
+   -DOPENSSL_NO_STORE \
+   -DOPENSSL_NO_WHIRLPOOL \
++  -DOPENSSL_NO_DES \
++  -DOPENSSL_NO_DESCBCM \
++  -DOPENSSL_NO_DSA \
++  -DOPENSSL_NO_ECDSA \
++  -DOPENSSL_NO_DH \
++  -DOPENSSL_NO_EC \
++  -DOPENSSL_NO_ECDH \
++  -DOPENSSL_NO_EC2M \
++  -DOPENSSL_NO_RSA \
++  -DOPENSSL_NO_BF \
++  -DOPENSSL_NO_COMP \
++  -DOPENSSL_NO_OCSP \
++  -DOPENSSL_NO_KRB5 \
++  -DOPENSSL_NO_SHA256 \
++  -DOPENSSL_NO_SHA512 \
++  -DOPENSSL_NO_RIPEMD \
++  -DOPENSSL_NO_SRP \
++  -DOPENSSL_NO_HW \
++  -DOPENSSL_NO_HW_4758_CCA \
++  -DOPENSSL_NO_HW_AEP \
++  -DOPENSSL_NO_HW_ATALLA \
++  -DOPENSSL_NO_HW_CSWIFT \
++  -DOPENSSL_NO_HW_NCIPHER \
++  -DOPENSSL_NO_HW_NURON \
++  -DOPENSSL_NO_HW_SUREWARE \
++  -DOPENSSL_NO_HW_UBSEC \
++  -DOPENSSL_NO_HW_PADLOCK \
++  -DOPENSSL_NO_ENGINE \
++  -DOPENSSL_NO_CHAIN_VERIFY \
++  -DOPENSSL_NO_SSL2 \
++  -DOPENSSL_NO_SSL_INTERN \
++  -DOPENSSL_NO_TLSEXT \
++  -DOPENSSL_NO_NEXTPROTONEG \
++  -DOPENSSL_NO_PSK \
++  -DOPENSSL_NO_MD4 \
++  -DOPENSSL_NO_RC4 \
++  -DOPENSSL_NO_RC2 \
++  -DOPENSSL_NO_CMS \
++  -DOPENSSL_NO_ERR \
++  -DOPENSSL_NO_CAST \
++  -DOPENSSL_NO_DEPRECATED \
++  -DOPENSSL_NO_X509 \
++  -DOPENSSL_NO_SOCK \
+-- 
+1.7.12.4 (Apple Git-37)
+

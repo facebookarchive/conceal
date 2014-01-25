@@ -1,0 +1,15 @@
+java_library(
+  name = 'robolectric2',
+  export_deps = True,
+  deps = [
+    ':robolectric2-jar',
+  ],
+  visibility = [
+    'PUBLIC',
+  ],
+)
+
+prebuilt_jar(
+  name = 'robolectric2-jar',
+  binary_jar = 'robolectric-2.2-jar-with-dependencies.jar',
+)

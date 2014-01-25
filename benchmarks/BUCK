@@ -1,0 +1,15 @@
+android_library(
+  name = 'benchmarks',
+  srcs = glob(['**/*.java'], excludes = glob(['app/**/*.java'])),
+  deps = [
+    '//:crypto',
+    '//third-party/guava:guava',
+    '//third-party/spongycastle:sc-light-jdk15on',
+    '//third-party/spongycastle:scprov-jdk15on',
+    '//third-party/vogar:vogar',
+  ],
+)
+
+project_config(
+  src_target = ':benchmarks',
+)
