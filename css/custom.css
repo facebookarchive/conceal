@@ -1,0 +1,64 @@
+#benchmarkContainer .column1 {
+  float:left;
+  position:relative;
+  margin:0;
+  width:39%;
+  left:-40px;
+  text-align:center;
+  overflow: hidden;
+}
+
+#benchmarkContainer .column2 {
+  position:relative;
+  float:left;
+  margin:0;
+  width:39%;
+  left:-40px;
+  text-align:center;
+  overflow: hidden;
+}
+
+#benchmarkContainer .column3 {
+  position:relative;
+  float:left;
+  margin:0;
+  width:22%;
+  left:-40px;
+  text-align:center;
+  overflow: hidden;
+}
+
+.clear {
+  clear:left;
+}
+
+.code {
+  padding:0;
+}
+
+#benchmarkContainer {
+  margin-top:20px;
+  margin-bottom:20px;
+  position:relative;
+  display:block;
+}
+
+.graphText {
+  margin-left:30px;
+}
+
+#summary {
+  text-align:center;
+}
+
+#users .logo {
+  float:left;
+  max-width:100px;
+  max-height:50px;
+  margin-right:10px;
+}
+
+#users .description {
+  float: left;
+  width: 80%;
+}

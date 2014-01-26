@@ -1,0 +1,24 @@
+{% highlight java %}
+// Get the file to which ciphertext has been written.
+FileInputStream fileStream = new FileInputStream(file);
+
+// Creates an input stream which decrypts the data as
+// it is read from it.
+InputStream inputStream = crypto.getCipherInputStream(
+  fileStream,
+  entity);
+
+// Read into a byte array.
+int read;
+byte[] buffer = new byte[1024];
+
+// You must read the entire stream to completion.
+// The verification is done at the end of the stream.
+// Thus not reading till the end of the stream will cause
+// a security bug. 
+while ((read = inputStream.read(buffer)) != -1) {
+  inputStream.read(buffer);
+}
+
+inputStream.close();
+{% endhighlight %}

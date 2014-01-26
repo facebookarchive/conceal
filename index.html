@@ -1,1 +1,133 @@
-Hello world.
+---
+title: Home
+---
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Conceal</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{ site.baseurl}}/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{ site.baseurl}}/css/jumbotron-narrow.css" rel="stylesheet">
+    
+    <!-- For syntax highlighting -->
+    <link href="{{ site.baseurl}}/css/syntax.css" rel="stylesheet">
+    
+    <link href="{{ site.baseurl}}/css/custom.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+    <script src="{{ site.baseurl}}/js/Chart.js"></script>
+    <script src="{{ site.baseurl}}/js/benchmark_charts.js"></script>
+  </head>
+
+  <body>
+
+    <div class="container">
+      <div class="header">
+        <ul class="nav nav-pills pull-right">
+          <li class="active"><a href="{{ site.baseurl }}">Home</a></li>
+          <li><a href="{{ site.baseurl }}/faq">FAQ</a></li>
+          <li><a href="{{ site.baseurl }}/documentation">Documentation</a></li>
+          <li><a href="https://github.com/facebook/conceal">Github</a></li>
+        </ul>
+        <h3 class="text-muted">Conceal</h3>
+      </div>
+
+      <div class="jumbotron">
+        <h1>Conceal</h1>
+        <h4>Fast cryptographic operations for Android</h4>
+        <p class="lead">
+          Conceal provides a set of easy to use APIs for performing <a href="#speed">fast</a> encryption and authentication of data. 
+          Apps can use Conceal to encrypt data and large files stored in public locations, for example SD cards. 
+        </p>
+        <p>
+        <a class="btn btn-lg btn-success" target="_blank" href="https://github.com/facebook/conceal" role="button">Github</a></p>
+      </div>
+      <h3><a id="about">About</a></h3>
+      Conceal provides a set of Java APIs to perform cryptography on Android. It was designed to be able to encrypt large files on disk 
+      in a fast and memory efficient manner. The major target for this project is 
+      <a target="_blank" href="http://developer.android.com/about/dashboards/index.html">typical Android devices</a> 
+      which run old Android versions, have low memory and slower processors. 
+      </p>
+      Unlike other libraries, which provide a <a target="_blank" href="http://en.wikipedia.org/wiki/Sm%C3%B6rg%C3%A5sbord">Smorgasbord</a>
+      of encryption algorithms and options, Conceal prefers to abstract this choice and use sane defaults. Thus Conceal is not 
+      a general purpose crypto library, however it aims to provide useful functionality.
+      <h3><a id="speed">Speed</a></h3>
+      <div id="benchmarkContainer">
+        <div class="column1"> 
+          <canvas id="readBenchmark" class="graph"></canvas>
+          <p class="graphText label label-primary">Reading Encrypted Data</p>
+        </div>
+        <div class="column2">
+          <canvas id="writeBenchmark" class="graph"></canvas>
+          <p class="graphText label label-primary">Write Encrypted Data</p>
+        </div> 
+        <div class="column3">
+          <canvas id="macBenchmark" class="graph"></canvas>
+          <p class="graphText label label-primary">Mac Data</p>
+        </div>
+        <div class="clear"></div> 
+      </div>
+      <p id="summary">The figures show benchmarks run on the <a target="_blank" href="http://en.wikipedia.org/wiki/Samsung_Galaxy_Y">Galaxy Y</a> phone.</p>
+      </p></p>
+      Conceal doesn't implement any crypto, but instead, it uses specific cryptographics algorithms from
+      <a target="_blank" href="http://www.openssl.org"/>OpenSSL</a>.
+      Conceal attempts to manage memory efficiently between the native and Java heap.
+      Conceal also uses fast modes like <a href="http://en.wikipedia.org/wiki/Galois/Counter_Mode">AES-GCM</a> and HMAC-SHA1 by default. 
+      </p>
+      OpenSSL is a very large library, and would increase the size of apps. Conceal ships with only a select number of encryption algorithms from 
+      OpenSSL which make it much smaller (85KB). More details in the FAQ. 
+ 
+      <h3><a id="using">Using Conceal</a></h3>
+      <code class="code">
+      {% include code_example.html %}
+      </code>
+      <h3><a id="download">Download</a></h3>
+      <p>Conceal can be built using Buck.</p></p>
+      <p>
+        <a href="downloads/crypto.jar">Download Conceal Java Library</a>
+        <br>
+        <a href="downloads/libs.zip">Download Conceal Native Libraries</a>
+        <br>
+        <a target="_blank" href="https://github.com/facebook/conceal">View on Github</a>
+      </p>
+      
+      <h3><a id="whouses">Who uses Conceal?</a></h3>
+      <div id="users">
+        <div>  
+          <img class="logo" src="images/facebook.png"></img>
+          <div class="description">
+            Facebook currently uses Conceal to store image files on SD cards. 
+            Conceal helps Facebook protect user's private data
+            by encrypting data stored on SD cards while allowing users to move 
+            some of the data storage needs of the 
+            app to the expandable SD card. 
+          </div>
+          <div class="clear"></div>
+        </div>
+      </div>      
+      <h3><a id="license">License</a></h3>
+      {% include license.html %}
+      {% include openssl_license.html %}
+      <div class="footer">
+      </div>
+    </div>
+    <script>
+      drawReadBenchmarks("readBenchmark");
+      drawWriteBenchmarks("writeBenchmark");
+      drawMacBenchmarks("macBenchmark"); 
+    </script> 
+  </body>
+</html>
+
+
