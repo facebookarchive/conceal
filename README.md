@@ -36,7 +36,7 @@ You can also specify all the options caliper provides.
 > cryptographic algorithms to OpenSSL. The default Cipher stream however still 
 > does not perform well. When replaced with our Cipher stream 
 > (see BetterCipherInputStream), the default implementation is competitive against 
-> Conceal. On older phones, Conceal is faster than the system provided libaries.
+> Conceal. On older phones, Conceal is faster than the system provided libraries.
 
 ####Running unit tests####
 ```bash
