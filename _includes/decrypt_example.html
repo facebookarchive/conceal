@@ -17,7 +17,7 @@ byte[] buffer = new byte[1024];
 // Thus not reading till the end of the stream will cause
 // a security bug. 
 while ((read = inputStream.read(buffer)) != -1) {
-  inputStream.read(buffer);
+  out.write(buffer, 0, read);
 }
 
 inputStream.close();

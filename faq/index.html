@@ -65,8 +65,9 @@ title: FAQ
         <li>
           <p>How can I reproduce these benchmark results?</p>
           <p>
-            The benchmarks we've shown compare Android system provided libraries,
-            Bouncycastle and Conceal run on a Galaxy Y.
+            The benchmarks we've shown compare the Android system 
+            provided libraries (AES-CTR-HMAC-SHA1, since it doesn't provide GCM), 
+            Bouncycastle (AES-GCM) and Conceal (AES-GCM) run on a Galaxy Y.
             Our benchmarks are written using the
             <a href="https://code.google.com/p/caliper/">Caliper</a> framework
             and can be reproduced on real devices with the help of
