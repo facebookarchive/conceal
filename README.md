@@ -110,7 +110,7 @@ inputStream.close();
 ####Integrity####
 ```java
 OutputStream outputStream = crypto.getMacOutputStream(fileStream, entity);
-outputStream.write(planTextBytes);
+outputStream.write(plainTextBytes);
 outputStream.close();
 
 InputStream inputStream = crypto.getMacInputStream(fileStream, entity);
