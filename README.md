@@ -99,9 +99,11 @@ byte[] buffer = new byte[1024];
 // You must read the entire stream to completion.
 // The verification is done at the end of the stream.
 // Thus not reading till the end of the stream will cause
-// a security bug. 
+// a security bug. For safety, you should not
+// use any of the data until it's been fully read or throw
+// away the data if an exception occurs.
 while ((read = inputStream.read(buffer)) != -1) {
-  inputStream.read(buffer);
+  out.write(buffer, 0, read);
 }
 
 inputStream.close();
@@ -116,8 +118,14 @@ outputStream.close();
 InputStream inputStream = crypto.getMacInputStream(fileStream, entity);
 
 // Will throw an exception if mac verification fails.
+// You must read the entire stream to completion.
+// The verification is done at the end of the stream.
+// Thus not reading till the end of the stream will cause
+// a security bug. For safety, you should not
+// use any of the data until it's been fully read or throw
+// away the data if an exception occurs.
 while((read = inputStream.read(buffer)) != -1) {
-  inputStream.read(buffer);
+  out.write(buffer, 0, read);
 }
 inputStream.close();
 ```
