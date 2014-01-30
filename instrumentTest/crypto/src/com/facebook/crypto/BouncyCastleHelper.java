@@ -27,7 +27,7 @@ import org.spongycastle.crypto.params.KeyParameter;
 @TargetApi(Build.VERSION_CODES.GINGERBREAD)
 public class BouncyCastleHelper {
 
-  public static Result bouncyCastleEncrypt(byte[] data, byte[] key, byte[] iv, Entity entity)
+  public static Result bouncyCastleEncrypt(byte[] data, byte[] key, byte[] iv, byte[] aadData)
       throws UnsupportedEncodingException, InvalidCipherTextException {
     GCMBlockCipher gcm = new GCMBlockCipher(new AESEngine());
     byte[] gcmOut = new byte[CryptoTestUtils.NUM_DATA_BYTES + NativeGCMCipher.TAG_LENGTH];
@@ -38,7 +38,7 @@ public class BouncyCastleHelper {
           keyParameter,
           NativeGCMCipher.TAG_LENGTH * 8,
           iv,
-          entity.getBytes());
+          aadData);
 
     // Init encryption.
     gcm.init(true, params);

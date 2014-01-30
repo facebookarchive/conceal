@@ -114,7 +114,12 @@ public class NativeGCMCipherInputStreamTest extends InstrumentationTestCase {
   public void testDecryptionFailsOnIncorrectData() throws Exception {
     byte[] fakeData = new byte[CryptoTestUtils.NUM_DATA_BYTES];
     Arrays.fill(fakeData, (byte) CryptoTestUtils.KEY_BYTES);
-    ByteArrayInputStream fakeCipherInputStream = new ByteArrayInputStream(fakeData);
+    byte[] realTag = CryptoSerializerHelper.tag(mCipheredData);
+    byte[] tamperedCipherData = CryptoSerializerHelper.createCipheredData(mIV,
+        fakeData,
+        realTag);
+
+    ByteArrayInputStream fakeCipherInputStream = new ByteArrayInputStream(tamperedCipherData);
     InputStream inputStream = null;
     try {
       inputStream = mCrypto.getCipherInputStream(
@@ -194,18 +199,19 @@ public class NativeGCMCipherInputStreamTest extends InstrumentationTestCase {
   }
 
   public void testCompatibleWithBouncyCastle() throws Exception {
+    Entity entity = new Entity(CryptoTestUtils.ENTITY_NAME);
+    byte[] aadData = CryptoSerializerHelper.computeBytesToAuthenticate(entity.getBytes(),
+        VersionCodes.CIPHER_SERALIZATION_VERSION,
+        VersionCodes.CIPHER_ID);
     BouncyCastleHelper.Result result = BouncyCastleHelper.bouncyCastleEncrypt(mData,
         mKey,
         mIV,
-        new Entity(CryptoTestUtils.ENTITY_NAME));
+        aadData);
 
-    ByteArrayOutputStream cipherText = new ByteArrayOutputStream();
-    cipherText.write(mIV);
-    cipherText.write(result.cipherText);
-    cipherText.write(result.tag);
+    byte[] cipheredData = CryptoSerializerHelper.createCipheredData(mIV, result.cipherText, result.tag);
 
     InputStream inputStream = mCrypto.getCipherInputStream(
-        new ByteArrayInputStream(cipherText.toByteArray()),
+        new ByteArrayInputStream(cipheredData),
         new Entity(CryptoTestUtils.ENTITY_NAME));
     byte[] decryptedData = ByteStreams.toByteArray(inputStream);
     inputStream.close();
