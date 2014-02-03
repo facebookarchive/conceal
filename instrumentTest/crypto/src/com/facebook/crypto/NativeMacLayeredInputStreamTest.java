@@ -63,7 +63,7 @@ public class NativeMacLayeredInputStreamTest extends InstrumentationTestCase {
 
   public void testMacNotValidIfDataTampered() throws Exception {
     byte[] tamperedData = mDataWithMac.clone();
-    tamperedData[1] += 1;
+    tamperedData[4] += 1;
     InputStream macStream = mCrypto.getMacInputStream(
         new ByteArrayInputStream(tamperedData),
         mEntity);
@@ -119,13 +119,17 @@ public class NativeMacLayeredInputStreamTest extends InstrumentationTestCase {
   public void testCompatibleWithJavaMac() throws Exception {
     Mac mac = Mac.getInstance("HmacSHA1");
     mac.init(new SecretKeySpec(mKeyChain.getMacKey(), "HmacSHA1"));
-    mac.update(mEntity.getBytes());
+    byte[] entityBytes = mEntity.getBytes();
+    byte[] aadBytes = CryptoSerializerHelper.computeBytesToAuthenticate(entityBytes,
+        VersionCodes.MAC_SERIALIZATION_VERSION,
+        VersionCodes.MAC_ID);
+
+    mac.update(aadBytes);
     byte[] macBytes = mac.doFinal(mData);
-    ByteArrayOutputStream dataWithMac = new ByteArrayOutputStream();
-    dataWithMac.write(mData);
-    dataWithMac.write(macBytes);
+
+    byte[] dataWithMac = CryptoSerializerHelper.createMacData(mData, macBytes);
     InputStream macStream = mCrypto.getMacInputStream(
-        new ByteArrayInputStream(dataWithMac.toByteArray()),
+        new ByteArrayInputStream(dataWithMac),
         mEntity);
     ByteStreams.toByteArray(macStream);
   }

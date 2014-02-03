@@ -52,13 +52,18 @@ public class NativeGCMCipherOutputStreamTest extends InstrumentationTestCase {
     outputStream.close();
     byte[] opensslEncrypted = mCipherOutputStream.toByteArray();
 
+    Entity entity = new Entity(CryptoTestUtils.ENTITY_NAME);
+    byte[] aadData = CryptoSerializerHelper.computeBytesToAuthenticate(
+        entity.getBytes(),
+        VersionCodes.CIPHER_SERALIZATION_VERSION,
+        VersionCodes.CIPHER_ID);
     BouncyCastleHelper.Result result = BouncyCastleHelper.bouncyCastleEncrypt(mData,
         mKey,
         mIV,
-        new Entity(CryptoTestUtils.ENTITY_NAME));
+        aadData);
 
-    byte[] opensslTag = tag(opensslEncrypted);
-    byte[] opensslCipherText = cipherText(opensslEncrypted);
+    byte[] opensslTag = CryptoSerializerHelper.tag(opensslEncrypted);
+    byte[] opensslCipherText = CryptoSerializerHelper.cipherText(opensslEncrypted);
 
     assertTrue(
         CryptoTestUtils.ENCRYPTED_DATA_DOES_NOT_MATCH,
@@ -73,7 +78,7 @@ public class NativeGCMCipherOutputStreamTest extends InstrumentationTestCase {
         new Entity(CryptoTestUtils.ENTITY_NAME));
     outputStream.write(mData);
     outputStream.close();
-    byte[] encryptedData = cipherText(mCipherOutputStream.toByteArray());
+    byte[] encryptedData = CryptoSerializerHelper.cipherText(mCipherOutputStream.toByteArray());
 
     assertTrue(CryptoTestUtils.ENCRYPTED_DATA_NULL, encryptedData != null);
     assertTrue(CryptoTestUtils.ENCRYPTED_DATA_OF_DIFFERENT_LENGTH,
@@ -88,7 +93,7 @@ public class NativeGCMCipherOutputStreamTest extends InstrumentationTestCase {
     outputStream.write(mData, 0, mData.length / 2);
     outputStream.write(mData, mData.length / 2, mData.length / 2 + mData.length % 2);
     outputStream.close();
-    byte[] encryptedData = cipherText(mCipherOutputStream.toByteArray());
+    byte[] encryptedData = CryptoSerializerHelper.cipherText(mCipherOutputStream.toByteArray());
 
     assertTrue(CryptoTestUtils.ENCRYPTED_DATA_NULL, encryptedData != null);
     assertTrue(CryptoTestUtils.ENCRYPTED_DATA_OF_DIFFERENT_LENGTH,
@@ -104,23 +109,11 @@ public class NativeGCMCipherOutputStreamTest extends InstrumentationTestCase {
         new Entity(CryptoTestUtils.ENTITY_NAME));
     outputStream.write(dataToEncrypt.getBytes("UTF-8"));
     outputStream.close();
-    byte[] encryptedData = cipherText(mCipherOutputStream.toByteArray());
+    byte[] encryptedData = CryptoSerializerHelper.cipherText(mCipherOutputStream.toByteArray());
 
     String encryptedString = Base64.encodeToString(encryptedData, Base64.DEFAULT).trim();
     assertEquals(CryptoTestUtils.ENCRYPTED_DATA_IS_DIFFERENT,
         expectedEncryptedString,
         encryptedString);
-  }
-
-  public byte[] cipherText(byte[] cipheredData) {
-    return Arrays.copyOfRange(cipheredData,
-        NativeGCMCipher.IV_LENGTH,
-        cipheredData.length - NativeGCMCipher.TAG_LENGTH);
-  }
-
-  public byte[] tag(byte[] cipheredData) {
-    return Arrays.copyOfRange(cipheredData,
-        cipheredData.length - NativeGCMCipher.TAG_LENGTH,
-        cipheredData.length);
   }
 }

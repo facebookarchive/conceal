@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import com.facebook.crypto.cipher.NativeGCMCipherException;
 import com.facebook.crypto.exception.KeyChainException;
 import com.facebook.crypto.mac.NativeMac;
 import com.facebook.crypto.streams.NativeMacLayeredInputStream;
@@ -23,6 +24,7 @@ import com.facebook.crypto.exception.CryptoInitializationException;
 import com.facebook.crypto.keychain.KeyChain;
 import com.facebook.crypto.streams.NativeGCMCipherInputStream;
 import com.facebook.crypto.streams.NativeGCMCipherOutputStream;
+import com.facebook.crypto.util.Assertions;
 import com.facebook.crypto.util.NativeCryptoLibrary;
 
 public class Crypto {
@@ -59,14 +61,17 @@ public class Crypto {
    */
   public OutputStream getCipherOutputStream(OutputStream cipherStream, Entity entity)
       throws IOException, CryptoInitializationException, KeyChainException {
-    byte[] iv = mKeyChain.getNewIV();
+    cipherStream.write(VersionCodes.CIPHER_SERALIZATION_VERSION);
+    cipherStream.write(VersionCodes.CIPHER_ID);
 
+    byte[] iv = mKeyChain.getNewIV();
     NativeGCMCipher gcmCipher = new NativeGCMCipher(mNativeCryptoLibrary);
     gcmCipher.encryptInit(mKeyChain.getCipherKey(), iv);
     cipherStream.write(iv);
 
     byte[] entityBytes = entity.getBytes();
-    gcmCipher.updateAad(entityBytes, entityBytes.length);
+    computeCipherAad(gcmCipher, VersionCodes.CIPHER_SERALIZATION_VERSION, VersionCodes.CIPHER_ID, entityBytes);
+
     return new NativeGCMCipherOutputStream(cipherStream, gcmCipher);
   }
 
@@ -83,8 +88,15 @@ public class Crypto {
    */
   public InputStream getCipherInputStream(InputStream cipherStream, Entity entity)
       throws IOException, CryptoInitializationException, KeyChainException {
-    byte[] iv = new byte[NativeGCMCipher.IV_LENGTH];
+    byte cryptoVersion = (byte) cipherStream.read();
+    Assertions.checkArgumentForIO(cryptoVersion == VersionCodes.CIPHER_SERALIZATION_VERSION,
+        "Unexpected crypto version " + cryptoVersion);
 
+    byte cipherID = (byte) cipherStream.read();
+    Assertions.checkArgumentForIO(cipherID == VersionCodes.CIPHER_ID,
+        "Unexpected cipher ID " + cipherID);
+
+    byte[] iv = new byte[NativeGCMCipher.IV_LENGTH];
     int read = cipherStream.read(iv);
     if (read != iv.length) {
       throw new IOException("Not enough bytes for iv: " + read);
@@ -94,8 +106,20 @@ public class Crypto {
     gcmCipher.decryptInit(mKeyChain.getCipherKey(), iv);
 
     byte[] entityBytes = entity.getBytes();
-    gcmCipher.updateAad(entityBytes, entityBytes.length);
+    computeCipherAad(gcmCipher, cryptoVersion, cipherID, entityBytes);
     return new NativeGCMCipherInputStream(cipherStream, gcmCipher);
+  }
+
+  /**
+   * Computes the Aad data for the cipher.
+   */
+  private void computeCipherAad(NativeGCMCipher gcmCipher, byte cryptoVersion, byte cipherID, byte[] entityBytes)
+      throws NativeGCMCipherException {
+    byte[] cryptoVersionBytes = { cryptoVersion };
+    byte[] cipherIDBytes = { cipherID };
+    gcmCipher.updateAad(cryptoVersionBytes, 1);
+    gcmCipher.updateAad(cipherIDBytes, 1);
+    gcmCipher.updateAad(entityBytes, entityBytes.length);
   }
 
   /**
@@ -110,11 +134,14 @@ public class Crypto {
    */
   public OutputStream getMacOutputStream(OutputStream stream, Entity entity)
       throws IOException, KeyChainException, CryptoInitializationException {
+    stream.write(VersionCodes.MAC_SERIALIZATION_VERSION);
+    stream.write(VersionCodes.MAC_ID);
+
     NativeMac nativeMac = new NativeMac(mNativeCryptoLibrary);
     byte[] macKey = mKeyChain.getMacKey();
     nativeMac.init(macKey, macKey.length);
     byte[] entityBytes = entity.getBytes();
-    nativeMac.update(entityBytes, 0, entityBytes.length);
+    computeMacAad(nativeMac, VersionCodes.CIPHER_SERALIZATION_VERSION, VersionCodes.CIPHER_ID, entityBytes);
     return new NativeMacLayeredOutputStream(nativeMac, stream);
   }
 
@@ -131,11 +158,31 @@ public class Crypto {
    */
   public InputStream getMacInputStream(InputStream stream, Entity entity)
       throws IOException, KeyChainException, CryptoInitializationException {
+    byte macVersion = (byte) stream.read();
+    Assertions.checkArgumentForIO(macVersion == VersionCodes.MAC_SERIALIZATION_VERSION,
+        "Unexpected mac version " + macVersion);
+
+    byte macID = (byte) stream.read();
+    Assertions.checkArgumentForIO(macID == VersionCodes.MAC_ID,
+        "Unexpected mac ID " + macID);
+
     NativeMac nativeMac = new NativeMac(mNativeCryptoLibrary);
     byte[] macKey = mKeyChain.getMacKey();
     nativeMac.init(macKey, macKey.length);
+
     byte[] entityBytes = entity.getBytes();
-    nativeMac.update(entityBytes, 0, entityBytes.length);
+    computeMacAad(nativeMac, macVersion, VersionCodes.MAC_ID, entityBytes);
     return new NativeMacLayeredInputStream(nativeMac, stream);
+  }
+
+  /**
+   * Computes the authenticated data for the mac.
+   */
+  private void computeMacAad(NativeMac mac, byte macVersion, byte macID, byte[] entityBytes) throws IOException {
+    byte[] cryptoVersionBytes = { macVersion };
+    byte[] macIDBytes = { macID };
+    mac.update(cryptoVersionBytes, 0, 1);
+    mac.update(macIDBytes, 0, 1);
+    mac.update(entityBytes, 0, entityBytes.length);
   }
 }
