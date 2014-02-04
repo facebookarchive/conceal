@@ -10,6 +10,7 @@
 
 package com.facebook.crypto;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -78,6 +79,56 @@ public class Crypto {
     byte cipherID = (byte) cipherStream.read();
 
     return mCipherHelper.getCipherInputStream(cipherStream, entity, cryptoVersion, cipherID);
+  }
+
+  /**
+   * A convenience method to encrypt data if the data to be processed is small and can
+   * be held in memory.
+   * @param plainTextBytes Bytes of the plain text.
+   * @param entity Entity to process.
+   * @return cipherText.
+   * @throws KeyChainException
+   * @throws CryptoInitializationException
+   * @throws IOException
+   */
+  public byte[] encrypt(byte[] plainTextBytes, Entity entity)
+    throws KeyChainException, CryptoInitializationException, IOException {
+    int cipheredBytesLength = plainTextBytes.length + mCipherHelper.getCipherMetaDataLength();
+    LeakyByteArrayOutputStream outputStream = new LeakyByteArrayOutputStream(cipheredBytesLength);
+    OutputStream cipherStream = mCipherHelper.getCipherOutputStream(outputStream, entity);
+    cipherStream.write(plainTextBytes);
+    cipherStream.close();
+    return outputStream.getBytes();
+  }
+
+  /**
+   * A convenience method to decrypt data if the data to be processed is small and can
+   * be held in memory.
+   * @param cipherTextBytes Bytes of the cipher text.
+   * @param entity Entity to process.
+   * @return cipherText.
+   * @throws KeyChainException
+   * @throws CryptoInitializationException
+   * @throws IOException
+   */
+  public byte[] decrypt(byte[] cipherTextBytes, Entity entity)
+    throws KeyChainException, CryptoInitializationException, IOException {
+    byte cryptoVersion = cipherTextBytes[0];
+    byte cipherID = cipherTextBytes[1];
+
+    int cipherTextLength = cipherTextBytes.length;
+    ByteArrayInputStream cipheredStream = new ByteArrayInputStream(cipherTextBytes, 2, cipherTextLength);
+    InputStream plainTextStream = mCipherHelper.getCipherInputStream(cipheredStream, entity, cryptoVersion, cipherID);
+
+    int plainTextLength = cipherTextLength - mCipherHelper.getCipherMetaDataLength();
+    LeakyByteArrayOutputStream output = new LeakyByteArrayOutputStream(plainTextLength);
+    byte[] buffer = new byte[1024];
+    int read;
+    while ((read = plainTextStream.read(buffer)) != -1) {
+      output.write(buffer, 0, read);
+    }
+    plainTextStream.close();
+    return output.getBytes();
   }
 
   /**
