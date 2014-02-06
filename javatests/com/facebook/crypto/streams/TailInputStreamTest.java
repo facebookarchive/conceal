@@ -73,7 +73,6 @@ public class TailInputStreamTest {
     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
     int read;
     while ((read = mTailInputStream.read()) != -1) {
-      Assert.assertTrue(read > 0);
       outputStream.write(read);
     }
     byte[] tail = mTailInputStream.getTail();

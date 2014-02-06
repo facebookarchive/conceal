@@ -70,6 +70,16 @@ import java.io.OutputStream;
   }
 
   /**
+   * Gets the length of the meta data for the version of the API being decrypted.
+   * This should preserve the following invariant:
+   * </p>
+   * Ciphertext data size = Plaintext data + Cipher meta data.
+   */
+  public int getCipherMetaDataLength() {
+    return 2 + NativeGCMCipher.IV_LENGTH + NativeGCMCipher.TAG_LENGTH;
+  }
+
+  /**
    * Computes the Aad data for the cipher.
    */
   public void computeCipherAad(NativeGCMCipher gcmCipher, byte cryptoVersion, byte cipherID, byte[] entityBytes)
