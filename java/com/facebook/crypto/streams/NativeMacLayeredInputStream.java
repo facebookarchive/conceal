@@ -10,6 +10,7 @@
 
 package com.facebook.crypto.streams;
 
+import android.util.Log;
 import com.facebook.crypto.mac.NativeMac;
 
 import java.io.IOException;
@@ -65,11 +66,17 @@ public class NativeMacLayeredInputStream extends InputStream {
 
   @Override
   public int read() throws IOException {
-    int read = mInputDelegate.read();
-    if (read > 0) {
-      mMac.update((byte) read);
+    byte[] buffer = new byte[1];
+    int read = read(buffer, 0, 1);
+    while (read == 0) {
+      read = read(buffer, 0, 1);
     }
-    return read;
+
+    if (read == -1) {
+      return -1;
+    } else {
+      return buffer[0] & 0xFF;
+    }
   }
 
   @Override

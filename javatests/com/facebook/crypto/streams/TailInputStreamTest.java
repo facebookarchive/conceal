@@ -68,6 +68,19 @@ public class TailInputStreamTest {
     TailBufferHelper.verifyDataAndTailMatch(mInputData, readData, tail, TAIL_LENGTH);
   }
 
+  @Test
+  public void testReadOneByteAtATime() throws IOException {
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    int read;
+    while ((read = mTailInputStream.read()) != -1) {
+      Assert.assertTrue(read > 0);
+      outputStream.write(read);
+    }
+    byte[] tail = mTailInputStream.getTail();
+    byte[] readData = outputStream.toByteArray();
+    TailBufferHelper.verifyDataAndTailMatch(mInputData, readData, tail, TAIL_LENGTH);
+  }
+
   @Test(expected = IOException.class)
   public void throwsWhenTailNotSufficient() throws IOException {
     byte[] data = new byte[TAIL_LENGTH - 1];
