@@ -72,6 +72,8 @@ public class Crypto {
    *
    * @return A ciphered input stream to read from.
    * @throws IOException
+   * @throws CryptoInitializationException Thrown if the crypto libraries could not be initialized.
+   * @throws KeyChainException Thrown if there is trouble managing keys.
    */
   public InputStream getCipherInputStream(InputStream cipherStream, Entity entity)
       throws IOException, CryptoInitializationException, KeyChainException {
@@ -90,6 +92,8 @@ public class Crypto {
    * @throws KeyChainException
    * @throws CryptoInitializationException
    * @throws IOException
+   * @throws CryptoInitializationException Thrown if the crypto libraries could not be initialized.
+   * @throws KeyChainException Thrown if there is trouble managing keys.
    */
   public byte[] encrypt(byte[] plainTextBytes, Entity entity)
     throws KeyChainException, CryptoInitializationException, IOException {
@@ -107,9 +111,9 @@ public class Crypto {
    * @param cipherTextBytes Bytes of the cipher text.
    * @param entity Entity to process.
    * @return cipherText.
-   * @throws KeyChainException
-   * @throws CryptoInitializationException
    * @throws IOException
+   * @throws CryptoInitializationException Thrown if the crypto libraries could not be initialized.
+   * @throws KeyChainException Thrown if there is trouble managing keys.
    */
   public byte[] decrypt(byte[] cipherTextBytes, Entity entity)
     throws KeyChainException, CryptoInitializationException, IOException {
@@ -140,6 +144,8 @@ public class Crypto {
    *
    * @return A ciphered input stream to read from.
    * @throws IOException
+   * @throws CryptoInitializationException Thrown if the crypto libraries could not be initialized.
+   * @throws KeyChainException Thrown if there is trouble managing keys.
    */
   public OutputStream getMacOutputStream(OutputStream stream, Entity entity)
       throws IOException, KeyChainException, CryptoInitializationException {
@@ -164,6 +170,8 @@ public class Crypto {
    *
    * @return A ciphered input stream to read from.
    * @throws IOException
+   * @throws CryptoInitializationException Thrown if the crypto libraries could not be initialized.
+   * @throws KeyChainException Thrown if there is trouble managing keys.
    */
   public InputStream getMacInputStream(InputStream stream, Entity entity)
       throws IOException, KeyChainException, CryptoInitializationException {
