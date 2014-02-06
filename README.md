@@ -109,6 +109,15 @@ while ((read = inputStream.read(buffer)) != -1) {
 inputStream.close();
 ```
 
+If you don't have a lot of data to encrypt, you could
+use the convenience functions:
+
+```java
+byte[] cipherText = crypto.encrypt(plainText);
+
+byte[] plainText = crypto.decrypt(cipherText);
+```
+
 ####Integrity####
 ```java
 OutputStream outputStream = crypto.getMacOutputStream(fileStream, entity);
