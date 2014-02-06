@@ -18,6 +18,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.Random;
 
 import android.test.InstrumentationTestCase;
@@ -54,11 +55,26 @@ public class NativeMacLayeredInputStreamTest extends InstrumentationTestCase {
     mDataWithMac = bout.toByteArray();
   }
 
+  public void testMacValidIfDataNotTamperedReadOneByteAtATime() throws Exception {
+    InputStream macStream = mCrypto.getMacInputStream(
+      new ByteArrayInputStream(mDataWithMac),
+      mEntity);
+    ByteArrayOutputStream output = new ByteArrayOutputStream();
+    int read;
+    while ((read = macStream.read()) != -1) {
+      output.write(read);
+    }
+    macStream.close();
+    assertTrue(Arrays.equals(mData, output.toByteArray()));
+  }
+
   public void testMacValidIfDataNotTampered() throws Exception {
     InputStream macStream = mCrypto.getMacInputStream(
         new ByteArrayInputStream(mDataWithMac),
         mEntity);
-    ByteStreams.toByteArray(macStream);
+    byte[] output = ByteStreams.toByteArray(macStream);
+    macStream.close();
+    assertTrue(Arrays.equals(mData, output));
   }
 
   public void testMacNotValidIfDataTampered() throws Exception {
