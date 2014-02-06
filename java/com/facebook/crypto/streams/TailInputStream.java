@@ -36,7 +36,7 @@ public class TailInputStream extends FilterInputStream {
     byte[] buffer = new byte[1];
     int read = read(buffer, 0, 1);
 
-    while (read != -1 && read == 0) {
+    while (read == 0) {
       read = read(buffer, 0, 1);
     }
     if (read == -1) {
