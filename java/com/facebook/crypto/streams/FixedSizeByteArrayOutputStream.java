@@ -5,15 +5,17 @@ import java.io.IOException;
 
 /**
  * A byte array stream which tries to avoid the double copy of
- * bytes when calling {@link java.io.ByteArrayOutputStream#toByteArray()}
+ * bytes when calling {@link java.io.ByteArrayOutputStream#toByteArray()}.
+ * It enforces a particular size of bytes are written to it and throws
+ * an exception if not.
  */
-public class LeakyByteArrayOutputStream extends ByteArrayOutputStream {
+public class FixedSizeByteArrayOutputStream extends ByteArrayOutputStream {
 
   /**
    * @param size Size for the underlying byte array. You should pass in
    *             the exact size of the array you need.
    */
-  public LeakyByteArrayOutputStream(int size) {
+  public FixedSizeByteArrayOutputStream(int size) {
     super(size);
   }
 

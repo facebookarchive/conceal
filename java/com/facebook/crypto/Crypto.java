@@ -94,7 +94,7 @@ public class Crypto {
   public byte[] encrypt(byte[] plainTextBytes, Entity entity)
     throws KeyChainException, CryptoInitializationException, IOException {
     int cipheredBytesLength = plainTextBytes.length + mCipherHelper.getCipherMetaDataLength();
-    LeakyByteArrayOutputStream outputStream = new LeakyByteArrayOutputStream(cipheredBytesLength);
+    FixedSizeByteArrayOutputStream outputStream = new FixedSizeByteArrayOutputStream(cipheredBytesLength);
     OutputStream cipherStream = mCipherHelper.getCipherOutputStream(outputStream, entity);
     cipherStream.write(plainTextBytes);
     cipherStream.close();
@@ -121,7 +121,7 @@ public class Crypto {
     InputStream plainTextStream = mCipherHelper.getCipherInputStream(cipheredStream, entity, cryptoVersion, cipherID);
 
     int plainTextLength = cipherTextLength - mCipherHelper.getCipherMetaDataLength();
-    LeakyByteArrayOutputStream output = new LeakyByteArrayOutputStream(plainTextLength);
+    FixedSizeByteArrayOutputStream output = new FixedSizeByteArrayOutputStream(plainTextLength);
     byte[] buffer = new byte[1024];
     int read;
     while ((read = plainTextStream.read(buffer)) != -1) {
