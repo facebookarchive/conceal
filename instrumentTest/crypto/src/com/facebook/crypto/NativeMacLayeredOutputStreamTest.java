@@ -14,6 +14,8 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FilterOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Random;
@@ -72,5 +74,99 @@ public class NativeMacLayeredOutputStreamTest extends InstrumentationTestCase {
     byte[] nativeMac = CryptoSerializerHelper.getMacTag(dataWithMac, javaMac.length);
     assertTrue(Arrays.equals(mData, originalData));
     assertTrue(Arrays.equals(javaMac, nativeMac));
+  }
+
+  public void testAllBytesMacedIfPartialWrite() throws Exception {
+    Mac mac = Mac.getInstance("HmacSHA1");
+    mac.init(new SecretKeySpec(mKey, "HmacSHA1"));
+
+    final int additionalDataSize = 200;
+    final int numBytesToNotWrite = 100;
+    byte[] additionalData = new byte[additionalDataSize];
+
+    byte[] aadData = CryptoSerializerHelper.computeBytesToAuthenticate(mEntity.getBytes(),
+      VersionCodes.MAC_SERIALIZATION_VERSION,
+      VersionCodes.MAC_ID);
+
+    mac.update(aadData);
+    mac.update(mData);
+    byte[] javaMac = mac.doFinal(additionalData);
+
+    ByteArrayOutputStream bout = new ByteArrayOutputStream();
+    FailingOutputStream failingStream = new FailingOutputStream(bout);
+    OutputStream macStream = mCrypto.getMacOutputStream(
+      failingStream,
+      mEntity);
+    macStream.write(mData);
+
+    failingStream.fail(numBytesToNotWrite);
+    try {
+      macStream.write(additionalData, 0, additionalDataSize);
+      fail("Exception expected");
+    } catch (IOException e) {
+      // do nothing, this is expected.
+    }
+
+    failingStream.failOff();
+    macStream.close();
+    byte[] dataWithMac = bout.toByteArray();
+
+    int macOffset = dataWithMac.length - javaMac.length;
+    Preconditions.checkState(macOffset > 0);
+
+    byte[] originalData = CryptoSerializerHelper.getOriginalDataFromMacData(dataWithMac, javaMac.length);
+    byte[] nativeMac = CryptoSerializerHelper.getMacTag(dataWithMac, javaMac.length);
+
+    assertTrue(Arrays.equals(mData, Arrays.copyOf(originalData, mData.length)));
+    assertTrue(Arrays.equals(
+      Arrays.copyOf(additionalData, additionalDataSize - numBytesToNotWrite),
+      Arrays.copyOfRange(originalData, mData.length, originalData.length)));
+    assertEquals(mData.length + additionalDataSize - numBytesToNotWrite, originalData.length);
+    assertTrue(Arrays.equals(javaMac, nativeMac));
+  }
+
+  /**
+   * An output stream that fails when you ask it to.
+   */
+  private class FailingOutputStream extends FilterOutputStream {
+
+    private boolean mFail;
+    private int mFailLeavingBytes;
+
+    public FailingOutputStream(OutputStream out) {
+      super(out);
+    }
+
+    /**
+     * Fail, leaving num bytes not written.
+     */
+    public void fail(int num) {
+      mFail = true;
+      mFailLeavingBytes = num;
+    }
+
+    /**
+     * Turn off the fail.
+     */
+    public void failOff() {
+      mFail = false;
+      mFailLeavingBytes = 0;
+    }
+
+    @Override
+    public void write(byte[] data, int offset, int length) throws IOException {
+      out.write(data, offset, length - mFailLeavingBytes);
+      if (mFail) {
+        throw new IOException();
+      }
+    }
+
+    @Override
+    public void write(int oneByte) throws IOException {
+      out.write(oneByte);
+      if (mFail) {
+        throw new IOException();
+      }
+    }
   }
 }
