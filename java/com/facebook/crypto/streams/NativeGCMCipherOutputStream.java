@@ -90,6 +90,8 @@ public class NativeGCMCipherOutputStream extends OutputStream {
 
   @Override
   public void write(int oneByte) throws IOException {
-    throw new UnsupportedOperationException();
+    byte[] data = new byte[1];
+    data[0] = (byte) oneByte;
+    write(data, 0, 1);
   }
 }
