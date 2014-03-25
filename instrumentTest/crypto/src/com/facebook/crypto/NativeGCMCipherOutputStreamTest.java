@@ -116,4 +116,24 @@ public class NativeGCMCipherOutputStreamTest extends InstrumentationTestCase {
         expectedEncryptedString,
         encryptedString);
   }
+
+  public void testEncryptedDataIsExpectedWhenWrittenOneByteAtATime() throws Exception {
+    String dataToEncrypt = "data to encrypt";
+    String expectedEncryptedString = "69VhniqXP+xA0CcKJFx5";
+    OutputStream outputStream = mCrypto.getCipherOutputStream(
+      mCipherOutputStream,
+      new Entity(CryptoTestUtils.ENTITY_NAME));
+
+    byte[] inputData = dataToEncrypt.getBytes("UTF-8");
+    for (byte inputByte : inputData) {
+      outputStream.write(inputByte);
+    }
+    outputStream.close();
+    byte[] encryptedData = CryptoSerializerHelper.cipherText(mCipherOutputStream.toByteArray());
+
+    String encryptedString = Base64.encodeToString(encryptedData, Base64.DEFAULT).trim();
+    assertEquals(CryptoTestUtils.ENCRYPTED_DATA_IS_DIFFERENT,
+      expectedEncryptedString,
+      encryptedString);
+  }
 }
