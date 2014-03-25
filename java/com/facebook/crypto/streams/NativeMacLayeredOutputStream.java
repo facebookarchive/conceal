@@ -57,13 +57,13 @@ public class NativeMacLayeredOutputStream extends OutputStream {
 
   @Override
   public void write(byte[] buffer, int offset, int count) throws IOException {
-    mOutputDelegate.write(buffer, offset, count);
     mMac.update(buffer, offset, count);
+    mOutputDelegate.write(buffer, offset, count);
   }
 
   @Override
   public void write(int oneByte) throws IOException {
-    mOutputDelegate.write(oneByte);
     mMac.update((byte) oneByte);
+    mOutputDelegate.write(oneByte);
   }
 }
