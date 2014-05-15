@@ -18,8 +18,9 @@ useful functionality.
 buck build :crypto
 ```
 
-We have very limited support for gradle at the moment that only
-build the java part of Conceal.
+###Using maven###
+Avaiable on maven central under com.facebook.conceal:conceal
+as an AAR package.
 
 ####Running Benchmarks####
 ```bash
