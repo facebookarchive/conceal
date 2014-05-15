@@ -18,7 +18,7 @@ useful functionality.
 buck build :crypto
 ```
 
-###Using maven###
+###Using Maven###
 Avaiable on maven central under **com.facebook.conceal:conceal** as an AAR package.
 
 ####Running Benchmarks####
