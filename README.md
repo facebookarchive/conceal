@@ -15,7 +15,7 @@ useful functionality.
 
 ####Setup options####
 
-* **Build from source**
+* **Build using buck**
 ```bash
 buck build :crypto
 ```
