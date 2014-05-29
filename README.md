@@ -13,13 +13,16 @@ useful functionality.
 
 ##Quick start##
 
-####Building Conceal####
+####Setup options####
+
+* **Build from source**
 ```bash
 buck build :crypto
 ```
 
-###Using Maven###
-Avaiable on maven central under **com.facebook.conceal:conceal:1.0.0@aar** as an AAR package.
+* **Use prebuilt binaries**: http://facebook.github.io/conceal/documentation/.
+
+* **Use Maven Central**: Available on maven central under **com.facebook.conceal:conceal:1.0.0@aar** as an AAR package.
 
 ####Running Benchmarks####
 ```bash
