@@ -64,9 +64,9 @@ public class SecureRandomFix {
         } catch (Throwable t) {
             // Practically, this should not crash.
             // However we can't do much in this case if it does.
-            // This is a trade-off between security and usability which is intentional to prevent
-            // the client from crashing.
-            throw new KeyChainException("Random number generated");
+            // We would rather abort than using an insecure random number
+            // generator.
+            throw new KeyChainException("Random number generated", t);
         }
 
         mFixApplied = true;

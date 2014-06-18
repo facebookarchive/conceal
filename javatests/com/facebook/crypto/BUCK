@@ -5,6 +5,7 @@ robolectric_test(
     ':crypto-test-helper',
     '//:crypto',
     '//third-party/junit:junit',
+    '//third-party/junit:hamcrest',
     '//third-party/guava:guava',
     '//third-party/robolectric2:robolectric2',
   ],
@@ -18,6 +19,7 @@ android_library(
   srcs = glob(['**/*.java'], excludes = glob(['**/*Test.java'])),
   deps = [
     '//third-party/junit:junit',
+    '//third-party/junit:hamcrest',
     '//third-party/robolectric2:robolectric2',
   ],
 )
