@@ -105,7 +105,9 @@ public class NativeGCMCipher {
     Assertions.checkState(mCurrentState == STATE.DECRYPT_INITIALIZED, CIPHER_NOT_INIT);
     mCurrentState = STATE.DECRYPT_FINALIZED;
     if (nativeDecryptFinal(expectedTag, tagLen) == nativeFailure()) {
-      throw new NativeGCMCipherException("decryptFinal");
+      throw new NativeGCMCipherException(
+        "The message could not be decrypted successfully." +
+        "It has either been tampered with or the wrong resource is being decrypted.");
     }
   }
 

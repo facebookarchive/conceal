@@ -1,19 +1,15 @@
-java_library(
+prebuilt_jar(
   name = 'junit',
-  export_deps = True,
-  deps = [
-    ':junit-jar',
-    ':hamcrest-jar',
-  ],
-  visibility = [ 'PUBLIC' ],
-)
-
-prebuilt_jar(
-  name = 'junit-jar',
   binary_jar = 'junit-4.11.jar',
+  visibility = [
+    '//javatests/com/facebook/crypto:',
+  ],
 )
 
 prebuilt_jar(
-  name = 'hamcrest-jar',
+  name = 'hamcrest',
   binary_jar = 'hamcrest-core-1.3.jar',
+  visibility = [
+    '//javatests/com/facebook/crypto:',
+  ],
 )

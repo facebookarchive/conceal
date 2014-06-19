@@ -2,6 +2,7 @@
 # relevant to BUCK
 buck-out
 /.buckconfig.local
+.buckd
 gen
 
 # Editor generated files
