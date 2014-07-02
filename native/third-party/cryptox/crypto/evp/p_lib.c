@@ -63,9 +63,7 @@
 #include <openssl/objects.h>
 #include <openssl/evp.h>
 #include <openssl/asn1_mac.h>
-#ifndef OPENSSL_NO_X509
 #include <openssl/x509.h>
-#endif
 #ifndef OPENSSL_NO_RSA
 #include <openssl/rsa.h>
 #endif
@@ -204,7 +202,7 @@ EVP_PKEY *EVP_PKEY_new(void)
 
 EVP_PKEY *EVP_PKEY_dup(EVP_PKEY *pkey)
 	{
-	CRYPTO_add(&pkey->references, 1, CRYPTO_LOCK_EVP_PKEY);
+	CRYPTO_add(&pkey->references,1,CRYPTO_LOCK_EVP_PKEY);
 	return pkey;
 	}
 
@@ -411,10 +409,8 @@ void EVP_PKEY_free(EVP_PKEY *x)
 		}
 #endif
 	EVP_PKEY_free_it(x);
-#ifndef OPENSSL_NO_X509
 	if (x->attributes)
 		sk_X509_ATTRIBUTE_pop_free(x->attributes, X509_ATTRIBUTE_free);
-#endif
 	OPENSSL_free(x);
 	}
 

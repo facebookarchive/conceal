@@ -94,9 +94,11 @@ arm_c_flags := \
 
 arm_src_files := \
   crypto/aes/asm/aes-armv4.S \
+  crypto/aes/asm/aesv8-armx.S \
   crypto/bn/asm/armv4-gf2m.S \
   crypto/bn/asm/armv4-mont.S \
   crypto/modes/asm/ghash-armv4.S \
+  crypto/modes/asm/ghashv8-armx.S \
   crypto/sha/asm/sha1-armv4-large.S \
 
 arm_exclude_files := \

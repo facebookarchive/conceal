@@ -61,7 +61,6 @@
 #include <openssl/evp.h>
 #include <openssl/objects.h>
 
-#ifndef OPENSSL_NO_BN
 int EVP_CIPHER_param_to_asn1(EVP_CIPHER_CTX *c, ASN1_TYPE *type)
 	{
 	int ret;
@@ -178,7 +177,6 @@ int EVP_CIPHER_type(const EVP_CIPHER *ctx)
 		return nid;
 	}
 }
-#endif
 
 int EVP_CIPHER_block_size(const EVP_CIPHER *e)
 	{

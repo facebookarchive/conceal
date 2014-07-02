@@ -63,9 +63,7 @@
 #include <openssl/lhash.h>
 #include <openssl/asn1.h>
 #include <openssl/objects.h>
-#ifndef OPENSSL_NO_BN
 #include <openssl/bn.h>
-#endif
 
 /* obj_dat.h is generated from objects.h by obj_dat.pl */
 #ifndef OPENSSL_NO_OBJECT
@@ -197,20 +195,16 @@ static void cleanup1_doall(ADDED_OBJ *a)
 static void cleanup2_doall(ADDED_OBJ *a)
 	{ a->obj->nid++; }
 
-#ifndef OPENSSL_NO_BN
 static void cleanup3_doall(ADDED_OBJ *a)
 	{
 	if (--a->obj->nid == 0)
 		ASN1_OBJECT_free(a->obj);
 	OPENSSL_free(a);
 	}
-#endif
 
 static IMPLEMENT_LHASH_DOALL_FN(cleanup1, ADDED_OBJ)
 static IMPLEMENT_LHASH_DOALL_FN(cleanup2, ADDED_OBJ)
-#ifndef OPENSSL_NO_BN
 static IMPLEMENT_LHASH_DOALL_FN(cleanup3, ADDED_OBJ)
-#endif
 
 /* The purpose of obj_cleanup_defer is to avoid EVP_cleanup() attempting
  * to use freed up OIDs. If neccessary the actual freeing up of OIDs is
@@ -225,7 +219,6 @@ void check_defer(int nid)
 			obj_cleanup_defer = 1;
 	}
 
-#ifndef OPENSSL_NO_BN
 void OBJ_cleanup(void)
 	{
 	if (obj_cleanup_defer)
@@ -292,7 +285,6 @@ err:
 	if (o != NULL) OPENSSL_free(o);
 	return(NID_undef);
 	}
-#endif
 
 ASN1_OBJECT *OBJ_nid2obj(int n)
 	{
@@ -432,7 +424,6 @@ int OBJ_obj2nid(const ASN1_OBJECT *a)
  * it can be used with any objects, not just registered ones.
  */
 
-#ifndef OPENSSL_NO_BN
 ASN1_OBJECT *OBJ_txt2obj(const char *s, int no_name)
 	{
 	int nid = NID_undef;
@@ -643,7 +634,6 @@ int OBJ_txt2nid(const char *s)
 	ASN1_OBJECT_free(obj);
 	return nid;
 }
-#endif
 
 int OBJ_ln2nid(const char *s)
 	{
@@ -742,7 +732,6 @@ const void *OBJ_bsearch_ex_(const void *key, const void *base_, int num,
 	return(p);
 	}
 
-#ifndef OPENSSL_NO_BN
 int OBJ_create_objects(BIO *in)
 	{
 	MS_STATIC char buf[512];
@@ -818,5 +807,4 @@ err:
 	OPENSSL_free(buf);
 	return(ok);
 	}
-#endif
 

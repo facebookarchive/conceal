@@ -89,12 +89,8 @@ static const EVP_PKEY_METHOD *standard_methods[] =
 #ifndef OPENSSL_NO_EC
 	&ec_pkey_meth,
 #endif
-#ifndef OPENSSL_NO_BN
 	&hmac_pkey_meth,
-#endif
-#ifndef OPENSSL_NO_CMAC
 	&cmac_pkey_meth
-#endif
 	};
 
 DECLARE_OBJ_BSEARCH_CMP_FN(const EVP_PKEY_METHOD *, const EVP_PKEY_METHOD *,
@@ -418,7 +414,6 @@ int EVP_PKEY_CTX_ctrl(EVP_PKEY_CTX *ctx, int keytype, int optype,
 
 	}
 
-#ifndef OPENSSL_NO_BN
 int EVP_PKEY_CTX_ctrl_str(EVP_PKEY_CTX *ctx,
 					const char *name, const char *value)
 	{
@@ -441,7 +436,6 @@ int EVP_PKEY_CTX_ctrl_str(EVP_PKEY_CTX *ctx,
 		}
 	return ctx->pmeth->ctrl_str(ctx, name, value);
 	}
-#endif
 
 int EVP_PKEY_CTX_get_operation(EVP_PKEY_CTX *ctx)
 	{
