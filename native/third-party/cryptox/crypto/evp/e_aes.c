@@ -84,6 +84,7 @@ typedef struct
 	ctr128_f ctr;
 	} EVP_AES_GCM_CTX;
 
+#ifndef OPENSSL_NO_XTS
 typedef struct
 	{
 	union { double align; AES_KEY ks; } ks1, ks2;	/* AES key schedules to use */
@@ -93,7 +94,9 @@ typedef struct
 			const AES_KEY *key1, const AES_KEY *key2,
 			const unsigned char iv[16]);
 	} EVP_AES_XTS_CTX;
+#endif
 
+#ifndef OPENSSL_NO_CCM
 typedef struct
 	{
 	union { double align; AES_KEY ks; } ks;	/* AES key schedule to use */
@@ -105,6 +108,7 @@ typedef struct
 	CCM128_CONTEXT ccm;
 	ccm128_f str;
 	} EVP_AES_CCM_CTX;
+#endif
 
 #define MAXBITCHUNK	((size_t)1<<(sizeof(size_t)*8-4))
 
@@ -132,12 +136,14 @@ void bsaes_cbc_encrypt(const unsigned char *in, unsigned char *out,
 void bsaes_ctr32_encrypt_blocks(const unsigned char *in, unsigned char *out,
 			size_t len, const AES_KEY *key,
 			const unsigned char ivec[16]);
+#ifndef OPENSSL_NO_XTS
 void bsaes_xts_encrypt(const unsigned char *inp, unsigned char *out,
 			size_t len, const AES_KEY *key1,
 			const AES_KEY *key2, const unsigned char iv[16]);
 void bsaes_xts_decrypt(const unsigned char *inp, unsigned char *out,
 			size_t len, const AES_KEY *key1,
 			const AES_KEY *key2, const unsigned char iv[16]);
+#endif
 #endif
 #ifdef AES_CTR_ASM
 void AES_ctr32_encrypt(const unsigned char *in, unsigned char *out,
@@ -200,6 +206,7 @@ void aesni_ctr32_encrypt_blocks(const unsigned char *in,
 			const void *key,
 			const unsigned char *ivec);
 
+#ifndef OPENSSL_NO_XTS
 void aesni_xts_encrypt(const unsigned char *in,
 			unsigned char *out,
 			size_t length,
@@ -211,7 +218,9 @@ void aesni_xts_decrypt(const unsigned char *in,
 			size_t length,
 			const AES_KEY *key1, const AES_KEY *key2,
 			const unsigned char iv[16]);
+#endif
 
+#ifndef OPENSSL_NO_CCM
 void aesni_ccm64_encrypt_blocks (const unsigned char *in,
 			unsigned char *out,
 			size_t blocks,
@@ -225,6 +234,7 @@ void aesni_ccm64_decrypt_blocks (const unsigned char *in,
 			const void *key,
 			const unsigned char ivec[16],
 			unsigned char cmac[16]);
+#endif
 
 static int aesni_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
 		   const unsigned char *iv, int enc)
@@ -270,6 +280,7 @@ static int aesni_cbc_cipher(EVP_CIPHER_CTX *ctx,unsigned char *out,
 	return 1;
 }
 
+#ifndef OPENSSL_NO_ECB
 static int aesni_ecb_cipher(EVP_CIPHER_CTX *ctx,unsigned char *out,
 	const unsigned char *in, size_t len)
 {
@@ -281,6 +292,7 @@ static int aesni_ecb_cipher(EVP_CIPHER_CTX *ctx,unsigned char *out,
 
 	return 1;
 }
+#endif
 
 #define aesni_ofb_cipher aes_ofb_cipher
 static int aesni_ofb_cipher(EVP_CIPHER_CTX *ctx,unsigned char *out,
@@ -343,6 +355,7 @@ static int aesni_gcm_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
 static int aesni_gcm_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
 		const unsigned char *in, size_t len);
 
+#ifndef OPENSSL_NO_XTS
 static int aesni_xts_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
                         const unsigned char *iv, int enc)
 	{
@@ -385,7 +398,9 @@ static int aesni_xts_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
 #define aesni_xts_cipher aes_xts_cipher
 static int aesni_xts_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
 		const unsigned char *in, size_t len);
+#endif
 
+#ifndef OPENSSL_NO_CCM
 static int aesni_ccm_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
                         const unsigned char *iv, int enc)
 	{
@@ -412,6 +427,7 @@ static int aesni_ccm_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
 #define aesni_ccm_cipher aes_ccm_cipher
 static int aesni_ccm_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
 		const unsigned char *in, size_t len);
+#endif
 
 #define BLOCK_CIPHER_generic(nid,keylen,blocksize,ivlen,nmode,mode,MODE,flags) \
 static const EVP_CIPHER aesni_##keylen##_##mode = { \
@@ -524,6 +540,14 @@ void HWAES_ctr32_encrypt_blocks(const unsigned char *in, unsigned char *out,
 	BLOCK_CIPHER_generic(nid,keylen,1,16,cfb1,cfb1,CFB,flags)	\
 	BLOCK_CIPHER_generic(nid,keylen,1,16,cfb8,cfb8,CFB,flags)	\
 	BLOCK_CIPHER_generic(nid,keylen,1,16,ctr,ctr,CTR,flags)
+
+#define CBC_pack(nid, keylen, flags) BLOCK_CIPHER_generic(nid,keylen,16,16,cbc,cbc,CBC,flags|EVP_CIPH_FLAG_DEFAULT_ASN1)
+#define ECB_pack(nid, keylen, flags) BLOCK_CIPHER_generic(nid,keylen,16,0,ecb,ecb,ECB,flags|EVP_CIPH_FLAG_DEFAULT_ASN1)
+#define OFB_pack(nid, keylen, flags) BLOCK_CIPHER_generic(nid,keylen,1,16,ofb128,ofb,OFB,flags|EVP_CIPH_FLAG_DEFAULT_ASN1)
+#define CFB_pack(nid, keylen, flags) BLOCK_CIPHER_generic(nid,keylen,1,16,cfb128,cfb,CFB,flags|EVP_CIPH_FLAG_DEFAULT_ASN1)
+#define CFB1_pack(nid, keylen, flags) BLOCK_CIPHER_generic(nid,keylen,1,16,cfb1,cfb1,CFB,flags)
+#define CFB8_pack(nid, keylen, flags) BLOCK_CIPHER_generic(nid,keylen,1,16,cfb8,cfb8,CFB,flags)
+#define CTR_pack(nid, keylen, flags) BLOCK_CIPHER_generic(nid,keylen,1,16,ctr,ctr,CTR,flags)
 
 static int aes_init_key(EVP_CIPHER_CTX *ctx, const unsigned char *key,
 		   const unsigned char *iv, int enc)
@@ -651,6 +675,7 @@ static int aes_cbc_cipher(EVP_CIPHER_CTX *ctx,unsigned char *out,
 	return 1;
 }
 
+#ifndef OPENSSL_NO_ECB
 static int aes_ecb_cipher(EVP_CIPHER_CTX *ctx,unsigned char *out,
 	const unsigned char *in, size_t len)
 {
@@ -665,7 +690,9 @@ static int aes_ecb_cipher(EVP_CIPHER_CTX *ctx,unsigned char *out,
 
 	return 1;
 }
+#endif
 
+#ifndef OPENSSL_NO_OFB
 static int aes_ofb_cipher(EVP_CIPHER_CTX *ctx,unsigned char *out,
 	const unsigned char *in,size_t len)
 {
@@ -675,7 +702,9 @@ static int aes_ofb_cipher(EVP_CIPHER_CTX *ctx,unsigned char *out,
 			ctx->iv,&ctx->num,dat->block);
 	return 1;
 }
+#endif
 
+#ifndef OPENSSL_NO_CFB
 static int aes_cfb_cipher(EVP_CIPHER_CTX *ctx,unsigned char *out,
 	const unsigned char *in,size_t len)
 {
@@ -685,6 +714,7 @@ static int aes_cfb_cipher(EVP_CIPHER_CTX *ctx,unsigned char *out,
 			ctx->iv,&ctx->num,ctx->encrypt,dat->block);
 	return 1;
 }
+#endif
 
 static int aes_cfb8_cipher(EVP_CIPHER_CTX *ctx,unsigned char *out,
 	const unsigned char *in,size_t len)
@@ -735,9 +765,37 @@ static int aes_ctr_cipher (EVP_CIPHER_CTX *ctx, unsigned char *out,
 	return 1;
 }
 
-BLOCK_CIPHER_generic_pack(NID_aes,128,EVP_CIPH_FLAG_FIPS)
-BLOCK_CIPHER_generic_pack(NID_aes,192,EVP_CIPH_FLAG_FIPS)
-BLOCK_CIPHER_generic_pack(NID_aes,256,EVP_CIPH_FLAG_FIPS)
+CBC_pack(NID_aes, 128, EVP_CIPH_FLAG_FIPS)
+CBC_pack(NID_aes, 192, EVP_CIPH_FLAG_FIPS)
+CBC_pack(NID_aes, 256, EVP_CIPH_FLAG_FIPS)
+
+#ifndef OPENSSL_NO_ECB
+ECB_pack(NID_aes, 128, EVP_CIPH_FLAG_FIPS)
+ECB_pack(NID_aes, 192, EVP_CIPH_FLAG_FIPS)
+ECB_pack(NID_aes, 256, EVP_CIPH_FLAG_FIPS)
+#endif
+
+#ifndef OPENSSL_NO_OFB
+OFB_pack(NID_aes, 128, EVP_CIPH_FLAG_FIPS)
+OFB_pack(NID_aes, 192, EVP_CIPH_FLAG_FIPS)
+OFB_pack(NID_aes, 256, EVP_CIPH_FLAG_FIPS)
+#endif
+
+#ifndef OPENSSL_NO_CFB
+CFB_pack(NID_aes, 128, EVP_CIPH_FLAG_FIPS)
+CFB_pack(NID_aes, 192, EVP_CIPH_FLAG_FIPS)
+CFB_pack(NID_aes, 256, EVP_CIPH_FLAG_FIPS)
+CFB1_pack(NID_aes, 128, EVP_CIPH_FLAG_FIPS)
+CFB1_pack(NID_aes, 192, EVP_CIPH_FLAG_FIPS)
+CFB1_pack(NID_aes, 256, EVP_CIPH_FLAG_FIPS)
+CFB8_pack(NID_aes, 128, EVP_CIPH_FLAG_FIPS)
+CFB8_pack(NID_aes, 192, EVP_CIPH_FLAG_FIPS)
+CFB8_pack(NID_aes, 256, EVP_CIPH_FLAG_FIPS)
+#endif
+
+CTR_pack(NID_aes, 128, EVP_CIPH_FLAG_FIPS)
+CTR_pack(NID_aes, 192, EVP_CIPH_FLAG_FIPS)
+CTR_pack(NID_aes, 256, EVP_CIPH_FLAG_FIPS) 
 
 static int aes_gcm_cleanup(EVP_CIPHER_CTX *c)
 	{
@@ -1121,6 +1179,7 @@ BLOCK_CIPHER_custom(NID_aes,192,1,12,gcm,GCM,
 BLOCK_CIPHER_custom(NID_aes,256,1,12,gcm,GCM,
 		EVP_CIPH_FLAG_FIPS|EVP_CIPH_FLAG_AEAD_CIPHER|CUSTOM_FLAGS)
 
+#ifndef OPENSSL_NO_XTS
 static int aes_xts_ctrl(EVP_CIPHER_CTX *c, int type, int arg, void *ptr)
 	{
 	EVP_AES_XTS_CTX *xctx = c->cipher_data;
@@ -1260,7 +1319,9 @@ static int aes_xts_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
 
 BLOCK_CIPHER_custom(NID_aes,128,1,16,xts,XTS,EVP_CIPH_FLAG_FIPS|XTS_FLAGS)
 BLOCK_CIPHER_custom(NID_aes,256,1,16,xts,XTS,EVP_CIPH_FLAG_FIPS|XTS_FLAGS)
+#endif
 
+#ifndef OPENSSL_NO_CCM
 static int aes_ccm_ctrl(EVP_CIPHER_CTX *c, int type, int arg, void *ptr)
 	{
 	EVP_AES_CCM_CTX *cctx = c->cipher_data;
@@ -1432,5 +1493,6 @@ BLOCK_CIPHER_custom(NID_aes,128,1,12,ccm,CCM,EVP_CIPH_FLAG_FIPS|CUSTOM_FLAGS)
 BLOCK_CIPHER_custom(NID_aes,192,1,12,ccm,CCM,EVP_CIPH_FLAG_FIPS|CUSTOM_FLAGS)
 BLOCK_CIPHER_custom(NID_aes,256,1,12,ccm,CCM,EVP_CIPH_FLAG_FIPS|CUSTOM_FLAGS)
 
+#endif
 #endif
 #endif
