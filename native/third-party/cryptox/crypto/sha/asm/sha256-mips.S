@@ -1957,7 +1957,7 @@ sha256_block_data_order:
 	sw	$30,6*4($4)
 	sw	$31,7*4($4)
 
-	bnel	$5,$23,.Loop
+	bne	$5,$23,.Loop
 	sub $6,192	# rewind $6
 
 	lw	$31,128-1*4($29)

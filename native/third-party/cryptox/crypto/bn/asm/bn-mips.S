@@ -23,10 +23,10 @@ bn_mul_add_words_internal:
 	.set	reorder
 	li	$3,-4
 	and	$8,$6,$3
-	lw	$12,0($5)
 	beqz	$8,.L_bn_mul_add_words_tail
 
 .L_bn_mul_add_words_loop:
+	lw	$12,0($5)
 	multu	$12,$7
 	lw	$13,0($4)
 	lw	$14,4($5)
@@ -83,10 +83,9 @@ bn_mul_add_words_internal:
 	addu	$2,$10
 	sltu	$1,$11,$1
 	sw	$11,-4($4)
-	addu	$2,$1
 	.set	noreorder
-	bgtzl	$8,.L_bn_mul_add_words_loop
-	lw	$12,0($5)
+	bgtz	$8,.L_bn_mul_add_words_loop
+	addu	$2,$1
 
 	beqz	$6,.L_bn_mul_add_words_return
 	nop
@@ -159,10 +158,10 @@ bn_mul_words_internal:
 	.set	reorder
 	li	$3,-4
 	and	$8,$6,$3
-	lw	$12,0($5)
 	beqz	$8,.L_bn_mul_words_tail
 
 .L_bn_mul_words_loop:
+	lw	$12,0($5)
 	multu	$12,$7
 	lw	$14,4($5)
 	lw	$8,2*4($5)
@@ -200,10 +199,9 @@ bn_mul_words_internal:
 	addu	$2,$1
 	sltu	$11,$2,$1
 	sw	$2,-4($4)
-	addu	$2,$11,$10
 	.set	noreorder
-	bgtzl	$8,.L_bn_mul_words_loop
-	lw	$12,0($5)
+	bgtz	$8,.L_bn_mul_words_loop
+	addu	$2,$11,$10
 
 	beqz	$6,.L_bn_mul_words_return
 	nop
@@ -264,10 +262,10 @@ bn_sqr_words_internal:
 	.set	reorder
 	li	$3,-4
 	and	$8,$6,$3
-	lw	$12,0($5)
 	beqz	$8,.L_bn_sqr_words_tail
 
 .L_bn_sqr_words_loop:
+	lw	$12,0($5)
 	multu	$12,$12
 	lw	$14,4($5)
 	lw	$8,2*4($5)
@@ -298,11 +296,10 @@ bn_sqr_words_internal:
 	mflo	$11
 	mfhi	$10
 	sw	$11,-2*4($4)
-	sw	$10,-4($4)
 
 	.set	noreorder
-	bgtzl	$8,.L_bn_sqr_words_loop
-	lw	$12,0($5)
+	bgtz	$8,.L_bn_sqr_words_loop
+	sw	$10,-4($4)
 
 	beqz	$6,.L_bn_sqr_words_return
 	nop
@@ -358,10 +355,10 @@ bn_add_words_internal:
 	.set	reorder
 	li	$3,-4
 	and	$1,$7,$3
-	lw	$12,0($5)
 	beqz	$1,.L_bn_add_words_tail
 
 .L_bn_add_words_loop:
+	lw	$12,0($5)
 	lw	$8,0($6)
 	subu	$7,4
 	lw	$13,4($5)
@@ -400,11 +397,10 @@ bn_add_words_internal:
 	addu	$15,$11,$2
 	sltu	$2,$15,$11
 	sw	$15,-4($4)
-	addu	$2,$25
 	
 	.set	noreorder
-	bgtzl	$1,.L_bn_add_words_loop
-	lw	$12,0($5)
+	bgtz	$1,.L_bn_add_words_loop
+	addu	$2,$25
 
 	beqz	$7,.L_bn_add_words_return
 	nop
@@ -466,10 +462,10 @@ bn_sub_words_internal:
 	.set	reorder
 	li	$3,-4
 	and	$1,$7,$3
-	lw	$12,0($5)
 	beqz	$1,.L_bn_sub_words_tail
 
 .L_bn_sub_words_loop:
+	lw	$12,0($5)
 	lw	$8,0($6)
 	subu	$7,4
 	lw	$13,4($5)
@@ -509,11 +505,10 @@ bn_sub_words_internal:
 	subu	$15,$11,$2
 	sgtu	$2,$15,$11
 	sw	$15,-4($4)
-	addu	$2,$25
 
 	.set	noreorder
-	bgtzl	$1,.L_bn_sub_words_loop
-	lw	$12,0($5)
+	bgtz	$1,.L_bn_sub_words_loop
+	addu	$2,$25
 
 	beqz	$7,.L_bn_sub_words_return
 	nop
@@ -603,8 +598,9 @@ bn_div_3_words_internal:
 	sltu	$8,$5,$6
 	or	$24,$8
 	.set	noreorder
-	beqzl	$1,.L_bn_div_3_words_inner_loop
+	beqz	$1,.L_bn_div_3_words_inner_loop
 	subu	$2,1
+	addu	$2,1
 	.set	reorder
 .L_bn_div_3_words_inner_loop_done:
 	.set	noreorder
@@ -641,7 +637,8 @@ bn_div_words_internal:
 	and	$14,$4
 	srl	$1,$5,$13
 	.set	noreorder
-	bnezl	$14,.+8
+	beqz	$14,.+12
+	nop
 	break	6		# signal overflow
 	.set	reorder
 	sll	$4,$25
@@ -651,7 +648,8 @@ bn_div_words_internal:
 	srl	$3,$6,4*4	# bits
 	sgeu	$1,$4,$6
 	.set	noreorder
-	bnezl	$1,.+8
+	beqz	$1,.+12
+	nop
 	subu	$4,$6
 	.set	reorder
 

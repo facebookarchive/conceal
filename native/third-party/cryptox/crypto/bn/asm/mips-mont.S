@@ -13,7 +13,7 @@ bn_mul_mont:
 	bnez	$1,1f
 	li	$2,0
 	slt	$1,$9,17	# on in-order CPU
-	bnezl	$1,bn_mul_mont_internal
+	bnez	$1,bn_mul_mont_internal
 	nop
 1:	jr	$31
 	li	$4,0
