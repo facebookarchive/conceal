@@ -10,16 +10,11 @@
 
 package com.facebook.crypto.streams;
 
-import android.util.Log;
 import com.facebook.crypto.mac.NativeMac;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import android.annotation.TargetApi;
-import android.os.Build;
-
-@TargetApi(Build.VERSION_CODES.GINGERBREAD)
 public class NativeMacLayeredInputStream extends InputStream {
 
   private final NativeMac mMac;

@@ -5,7 +5,7 @@ ndk_library(
     'NDK_MODULE_PATH=${PWD}/native/third-party/',
   ],
   visibility = [
-    '//:crypto',
+    '//:libconceal',
   ],
   deps = [
     '//native/third-party/cryptox:cryptox',

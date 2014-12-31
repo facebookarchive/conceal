@@ -4,6 +4,6 @@ android_binary(
   target = 'Google Inc.:Google APIs:16',
   keystore = '//keystores:debug',
   deps = [
-    '//:crypto',
+    '//:conceal_android',
   ],
 )

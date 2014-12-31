@@ -8,7 +8,7 @@
  *
  */
 
-package com.facebook.crypto.keychain;
+package com.facebook.android.crypto.keychain;
 
 import java.util.Arrays;
 

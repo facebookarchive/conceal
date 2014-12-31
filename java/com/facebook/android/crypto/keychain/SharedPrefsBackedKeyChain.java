@@ -8,7 +8,7 @@
  *
  */
 
-package com.facebook.crypto.keychain;
+package com.facebook.android.crypto.keychain;
 
 import java.security.SecureRandom;
 import java.util.Arrays;
@@ -17,6 +17,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Base64;
 
+import com.facebook.crypto.keychain.KeyChain;
 import com.facebook.crypto.cipher.NativeGCMCipher;
 import com.facebook.crypto.exception.KeyChainException;
 import com.facebook.crypto.mac.NativeMac;

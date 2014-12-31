@@ -12,9 +12,6 @@ package com.facebook.crypto.streams;
 
 import java.util.Arrays;
 
-import android.annotation.TargetApi;
-import android.os.Build;
-
 import org.junit.Assert;
 
 public class TailBufferHelper {
@@ -26,7 +23,6 @@ public class TailBufferHelper {
    * @param tail Tail obtained after processing via the tail buffer.
    * @param tailLength Expected length of the tail buffer.
    */
-  @TargetApi(Build.VERSION_CODES.GINGERBREAD)
   public static void verifyDataAndTailMatch(byte[] originalData,
       byte[] readData,
       byte[] tail,
