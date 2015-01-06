@@ -12,7 +12,8 @@ android_library(
   name = 'crypto-lib',
   srcs = glob(['src/**/*.java']),
   deps = [
-    '//:crypto',
+    '//:conceal_android',
+    '//:libconceal',
     '//third-party/guava:guava',
     '//third-party/spongycastle:sc-light-jdk15on',
     '//third-party/spongycastle:scprov-jdk15on',

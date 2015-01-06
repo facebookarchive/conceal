@@ -2,6 +2,6 @@ prebuilt_jar(
   name = 'robolectric2',
   binary_jar = 'robolectric-2.2-jar-with-dependencies.jar',
   visibility = [
-    '//javatests/com/facebook/crypto:',
+    '//:android_tests',
   ],
 )
