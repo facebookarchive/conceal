@@ -17,7 +17,7 @@ useful functionality.
 
 * **Build using buck**
 ```bash
-buck build :crypto
+buck build :conceal_android
 ```
 
 * **Use prebuilt binaries**: http://facebook.github.io/conceal/documentation/.
