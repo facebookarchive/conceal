@@ -2,7 +2,7 @@ android_library(
   name = 'benchmarks',
   srcs = glob(['**/*.java'], excludes = glob(['app/**/*.java'])),
   deps = [
-    '//:crypto',
+    '//:libconceal',
     '//third-party/guava:guava',
     '//third-party/spongycastle:sc-light-jdk15on',
     '//third-party/spongycastle:scprov-jdk15on',
