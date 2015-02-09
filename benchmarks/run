@@ -22,7 +22,7 @@ java -jar $VOGAR_JAR \
 --benchmark \
 --sourcepath java \
 --java-home $JAVA_HOME \
---mode device \
+--mode device_dalvik \
 --classpath third-party/spongycastle/scprov-jdk15on-1.47.0.2.jar \
 --classpath third-party/spongycastle/sc-light-jdk15on-1.47.0.2.jar \
 $*
