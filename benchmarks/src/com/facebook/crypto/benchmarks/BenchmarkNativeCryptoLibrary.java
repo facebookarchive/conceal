@@ -23,7 +23,6 @@ public class BenchmarkNativeCryptoLibrary implements NativeCryptoLibrary {
   // vogar is invoked. As a result, this path should always exist.
   private static final String PATH = "/data/data/com.facebook.crypto.benchmarks.app/lib/";
   private static final String LIB_FB = "libconceal.so";
-  private static final String LIB_CRYPTO = "libcryptox.so";
 
   private boolean mLoadedCalled;
 
@@ -37,7 +36,6 @@ public class BenchmarkNativeCryptoLibrary implements NativeCryptoLibrary {
 
   public boolean loadLibraries() {
     try {
-      System.load(PATH + LIB_CRYPTO);
       System.load(PATH + LIB_FB);
     } catch (UnsatisfiedLinkError ule) {
       return false;
