@@ -1,4 +1,4 @@
-We currently use openssl-1.0.1e
+We currently use openssl-1.0.2
 
 - Checkout openssl
 ```bash
