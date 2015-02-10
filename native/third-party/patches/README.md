@@ -19,7 +19,7 @@ git apply 0001-modifications-to-openssl-1.0.2.patch
 
 - Make an ndk toolchain
 ```bash
-/build/tools/make-standalone-toolchain.sh --platform=android-19 --install-dir=/tmp/toolchain --toolchain=arm-linux-androideabi-4.8
+./build/tools/make-standalone-toolchain.sh --platform=android-19 --install-dir=/tmp/toolchain --toolchain=arm-linux-androideabi-4.8
 ```
 
 - Add the toolchain to your path
