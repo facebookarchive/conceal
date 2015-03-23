@@ -87,8 +87,12 @@ public class SharedPrefsBackedKeyChain implements KeyChain {
   public synchronized void destroyKeys() {
     mSetCipherKey = false;
     mSetMacKey = false;
-    Arrays.fill(mCipherKey, (byte) 0);
-    Arrays.fill(mMacKey, (byte) 0);
+    if (mCipherKey != null) {
+      Arrays.fill(mCipherKey, (byte) 0);
+    }
+    if (mMacKey != null) {
+      Arrays.fill(mMacKey, (byte) 0);
+    }
     mCipherKey = null;
     mMacKey = null;
     SharedPreferences.Editor editor = mSharedPreferences.edit();
