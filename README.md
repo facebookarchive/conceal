@@ -22,7 +22,7 @@ buck build :conceal_android
 
 * **Use prebuilt binaries**: http://facebook.github.io/conceal/documentation/.
 
-* **Use Maven Central**: Available on maven central under **com.facebook.conceal:conceal:1.0.0@aar** as an AAR package.
+* **Use Maven Central**: Available on maven central under **com.facebook.conceal:conceal:1.0.1@aar** as an AAR package.
 
 ####Running Benchmarks####
 ```bash
