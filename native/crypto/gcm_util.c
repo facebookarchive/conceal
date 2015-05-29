@@ -25,7 +25,7 @@ static jfieldID fieldId = NULL;
 void Init_GCM_CTX_Ptr_Field(JNIEnv* env) {
   if (!fieldId) {
     jclass gcmClass = (*env)->FindClass(env, JAVA_GCM_CLASS);
-    fieldId = (*env)->GetFieldID(env, gcmClass, "mCtxPtr", "I");
+    fieldId = (*env)->GetFieldID(env, gcmClass, "mCtxPtr", "J");
   }
 }
 
@@ -107,7 +107,7 @@ EVP_CIPHER_CTX* Get_Cipher_CTX(JNIEnv* env, jobject obj) {
 }
 
 void Set_GCM_JNI_CTX(JNIEnv* env, jobject obj, GCM_JNI_CTX* ctx) {
-  Set_JNI_CTX(env, obj, fieldId, (jint) ctx);
+  Set_JNI_CTX(env, obj, fieldId, (jlong) ctx);
 }
 
 void Destroy_GCM_JNI_CTX(GCM_JNI_CTX* ctx) {

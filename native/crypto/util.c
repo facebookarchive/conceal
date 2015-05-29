@@ -29,11 +29,11 @@ JNIEXPORT int JNICALL Java_com_facebook_crypto_util_NativeUtils_failureJni(
   return CRYPTO_FAILURE;
 }
 
-jint Get_JNI_CTX(JNIEnv* env, jobject obj, jfieldID fieldId) {
-  jint ctx = (*env)->GetIntField(env, obj, fieldId);
+jlong Get_JNI_CTX(JNIEnv* env, jobject obj, jfieldID fieldId) {
+  jlong ctx = (*env)->GetLongField(env, obj, fieldId);
   return ctx;
 }
 
-void Set_JNI_CTX(JNIEnv* env, jobject obj, jfieldID fieldId, jint ctx) {
-  (*env)->SetIntField(env, obj, fieldId, (jint) ctx);
+void Set_JNI_CTX(JNIEnv* env, jobject obj, jfieldID fieldId, jlong ctx) {
+  (*env)->SetLongField(env, obj, fieldId, (jlong) ctx);
 }
