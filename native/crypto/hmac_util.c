@@ -19,7 +19,7 @@ static jfieldID fieldId = NULL;
 void Init_HMAC_CTX_Ptr_Field(JNIEnv* env) {
   if (!fieldId) {
     jclass hmacClass = (*env)->FindClass(env, JAVA_HMAC_CLASS);
-    fieldId = (*env)->GetFieldID(env, hmacClass, "mCtxPtr", "I");
+    fieldId = (*env)->GetFieldID(env, hmacClass, "mCtxPtr", "J");
   }
 }
 
@@ -69,7 +69,7 @@ HMAC_CTX* Get_HMAC_CTX(JNIEnv* env, jobject obj) {
 }
 
 void Set_HMAC_JNI_CTX(JNIEnv* env, jobject obj, HMAC_JNI_CTX* ctx) {
-  Set_JNI_CTX(env, obj, fieldId, (jint) ctx);
+  Set_JNI_CTX(env, obj, fieldId, (jlong) ctx);
 }
 
 void Destroy_HMAC_JNI_CTX(HMAC_JNI_CTX* ctx) {
