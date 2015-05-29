@@ -217,4 +217,34 @@ public class NativeGCMCipherInputStreamTest extends InstrumentationTestCase {
     inputStream.close();
     assertTrue(CryptoTestUtils.DECRYPTED_DATA_IS_DIFFERENT, Arrays.equals(mData, decryptedData));
   }
+
+  public void testSkipBytes() throws Exception {
+    InputStream inputStream = mCrypto.getCipherInputStream(
+        mCipherInputStream,
+        new Entity(CryptoTestUtils.ENTITY_NAME));
+
+    // Skip a bunch of bytes.
+    inputStream.skip(CryptoTestUtils.SKIP_BYTES);
+
+    ByteArrayOutputStream decryptedData = new ByteArrayOutputStream();
+    byte[] buffer = new byte[NativeGCMCipher.TAG_LENGTH / 6];
+    int read;
+    while ((read = inputStream.read(buffer)) != -1) {
+      assertTrue(read > 0);
+      decryptedData.write(buffer, 0, read);
+    }
+
+    inputStream.close();
+    assertTrue(
+        CryptoTestUtils.DECRYPTED_DATA_IS_DIFFERENT,
+        Arrays.equals(Arrays.copyOfRange(mData, CryptoTestUtils.SKIP_BYTES, mData.length), decryptedData.toByteArray()));
+  }
+
+  public void testSkipAllBytesWithoutThrowingException() throws Exception {
+    InputStream inputStream = mCrypto.getCipherInputStream(
+        mCipherInputStream,
+        new Entity(CryptoTestUtils.ENTITY_NAME));
+    inputStream.skip(CryptoTestUtils.NUM_DATA_BYTES);
+    inputStream.close();
+  }
 }
