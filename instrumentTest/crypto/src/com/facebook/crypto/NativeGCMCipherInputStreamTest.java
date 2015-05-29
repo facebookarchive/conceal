@@ -223,7 +223,6 @@ public class NativeGCMCipherInputStreamTest extends InstrumentationTestCase {
         mCipherInputStream,
         new Entity(CryptoTestUtils.ENTITY_NAME));
 
-    // Skip a bunch of bytes.
     inputStream.skip(CryptoTestUtils.SKIP_BYTES);
 
     ByteArrayOutputStream decryptedData = new ByteArrayOutputStream();
