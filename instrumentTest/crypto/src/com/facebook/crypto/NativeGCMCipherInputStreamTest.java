@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.Random;
 
 import com.facebook.crypto.cipher.NativeGCMCipher;
 import com.facebook.crypto.cipher.NativeGCMCipherException;
@@ -52,6 +53,9 @@ public class NativeGCMCipherInputStreamTest extends InstrumentationTestCase {
 
     // Encrypt some data before each test.
     mData = new byte[CryptoTestUtils.NUM_DATA_BYTES];
+    Random random = new Random();
+    random.nextBytes(mData);
+
     ByteArrayOutputStream cipherOutputStream = new ByteArrayOutputStream();
 
     OutputStream outputStream = mCrypto.getCipherOutputStream(
