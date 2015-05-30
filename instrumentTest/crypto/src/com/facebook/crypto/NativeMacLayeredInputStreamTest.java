@@ -149,4 +149,22 @@ public class NativeMacLayeredInputStreamTest extends InstrumentationTestCase {
         mEntity);
     ByteStreams.toByteArray(macStream);
   }
+
+  public void testSkipBytes() throws Exception {
+    InputStream macStream = mCrypto.getMacInputStream(
+        new ByteArrayInputStream(mDataWithMac),
+        mEntity);
+    macStream.skip(CryptoTestUtils.SKIP_BYTES);
+    byte[] output = ByteStreams.toByteArray(macStream);
+    macStream.close();
+    assertTrue(Arrays.equals(Arrays.copyOfRange(mData, CryptoTestUtils.SKIP_BYTES, mData.length), output));
+  }
+
+  public void testSkipAllBytesWithoutThrowingException() throws Exception {
+    InputStream macStream = mCrypto.getMacInputStream(
+        new ByteArrayInputStream(mDataWithMac),
+        mEntity);
+    macStream.skip(CryptoTestUtils.NUM_DATA_BYTES);
+    macStream.close();
+  }
 }

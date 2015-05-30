@@ -117,7 +117,7 @@ public class NativeMacLayeredInputStream extends InputStream {
 
   @Override
   public long skip(long byteCount) throws IOException {
-    throw new UnsupportedOperationException();
+    return super.skip(byteCount);
   }
 
   private boolean constantTimeEquals(byte[] a, byte[] b) {
