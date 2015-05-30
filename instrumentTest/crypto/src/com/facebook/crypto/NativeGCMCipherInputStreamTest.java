@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.Random;
 
 import com.facebook.crypto.cipher.NativeGCMCipher;
 import com.facebook.crypto.cipher.NativeGCMCipherException;
@@ -52,6 +53,9 @@ public class NativeGCMCipherInputStreamTest extends InstrumentationTestCase {
 
     // Encrypt some data before each test.
     mData = new byte[CryptoTestUtils.NUM_DATA_BYTES];
+    Random random = new Random();
+    random.nextBytes(mData);
+
     ByteArrayOutputStream cipherOutputStream = new ByteArrayOutputStream();
 
     OutputStream outputStream = mCrypto.getCipherOutputStream(
@@ -216,5 +220,34 @@ public class NativeGCMCipherInputStreamTest extends InstrumentationTestCase {
     byte[] decryptedData = ByteStreams.toByteArray(inputStream);
     inputStream.close();
     assertTrue(CryptoTestUtils.DECRYPTED_DATA_IS_DIFFERENT, Arrays.equals(mData, decryptedData));
+  }
+
+  public void testSkipBytes() throws Exception {
+    InputStream inputStream = mCrypto.getCipherInputStream(
+        mCipherInputStream,
+        new Entity(CryptoTestUtils.ENTITY_NAME));
+
+    inputStream.skip(CryptoTestUtils.SKIP_BYTES);
+
+    ByteArrayOutputStream decryptedData = new ByteArrayOutputStream();
+    byte[] buffer = new byte[NativeGCMCipher.TAG_LENGTH / 6];
+    int read;
+    while ((read = inputStream.read(buffer)) != -1) {
+      assertTrue(read > 0);
+      decryptedData.write(buffer, 0, read);
+    }
+
+    inputStream.close();
+    assertTrue(
+        CryptoTestUtils.DECRYPTED_DATA_IS_DIFFERENT,
+        Arrays.equals(Arrays.copyOfRange(mData, CryptoTestUtils.SKIP_BYTES, mData.length), decryptedData.toByteArray()));
+  }
+
+  public void testSkipAllBytesWithoutThrowingException() throws Exception {
+    InputStream inputStream = mCrypto.getCipherInputStream(
+        mCipherInputStream,
+        new Entity(CryptoTestUtils.ENTITY_NAME));
+    inputStream.skip(CryptoTestUtils.NUM_DATA_BYTES);
+    inputStream.close();
   }
 }

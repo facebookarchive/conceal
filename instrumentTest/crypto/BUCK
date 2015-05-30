@@ -1,7 +1,6 @@
 android_binary(
   name = 'crypto',
   manifest = 'AndroidManifest.xml',
-  target = 'Google Inc.:Google APIs:16',
   keystore = '//keystores:debug',
   deps = [
     ':crypto-lib',

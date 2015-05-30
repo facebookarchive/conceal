@@ -12,6 +12,7 @@ package com.facebook.crypto;
 
 public class CryptoTestUtils {
   public static final int NUM_DATA_BYTES = 2752;
+  public static final int SKIP_BYTES = 50;
   public static final int KEY_BYTES = 42;
   public static final int MAC_KEY_BYTES = 44;
   public static final int IV_BYTES = 43;
