@@ -29,6 +29,8 @@ public class NativeGCMCipherOutputStream extends OutputStream {
   private final byte[] mUpdateBuffer;
   private final byte[] mTag = new byte[NativeGCMCipher.TAG_LENGTH];
 
+  private boolean mTagAppened = false;
+
   /**
    * Creates a new output stream to write to.
    *
@@ -45,14 +47,22 @@ public class NativeGCMCipherOutputStream extends OutputStream {
   @Override
   public void close() throws IOException {
     try {
+      appendTag();
+    } finally {
+      mCipherDelegate.close();
+    }
+  }
+
+  private void appendTag() throws IOException {
+    if (mTagAppened) {
+      return;
+    }
+    mTagAppened = true;
+    try {
       mCipher.encryptFinal(mTag, mTag.length);
       mCipherDelegate.write(mTag);
     } finally {
-      try {
-        mCipher.destroy();
-      } finally {
-        mCipherDelegate.close();
-      }
+      mCipher.destroy();
     }
   }
 
