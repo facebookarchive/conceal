@@ -218,13 +218,7 @@ public class NativeGCMCipherInputStreamTest extends InstrumentationTestCase {
     assertTrue(CryptoTestUtils.DECRYPTED_DATA_IS_DIFFERENT, Arrays.equals(mData, decryptedData));
   }
 
-  /**
-   * Test invoking close multiple times does not throw exceptions.
-   * NativeGCMCipherInputStream extends java.io.InputStream. InputStream
-   * implements Closeable. Closeable requires that if the stream is already
-   * closed then invoking this method has no effect.
-   */
-  public void testCloseForMultipleTimes() throws Exception {
+  public void testCloseMultipleTimes() throws Exception {
     InputStream inputStream = mCrypto.getCipherInputStream(
         mCipherInputStream,
         new Entity(CryptoTestUtils.ENTITY_NAME));

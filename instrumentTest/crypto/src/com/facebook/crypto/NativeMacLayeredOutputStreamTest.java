@@ -170,13 +170,7 @@ public class NativeMacLayeredOutputStreamTest extends InstrumentationTestCase {
     }
   }
 
-  /**
-   * Test invoking close multiple times does not throw exceptions.
-   * NativeMacLayeredOutputStream extends java.io.OutputStream. OutputStream
-   * implements Closeable. Closeable requires that if the stream is already
-   * closed then invoking this method has no effect.
-   */
-  public void testCloseForMultipleTimes() throws Exception {
+  public void testCloseMultipleTimes() throws Exception {
     OutputStream outputStream = mCrypto.getCipherOutputStream(
         new ByteArrayOutputStream(),
         mEntity);

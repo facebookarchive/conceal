@@ -150,13 +150,7 @@ public class NativeMacLayeredInputStreamTest extends InstrumentationTestCase {
     ByteStreams.toByteArray(macStream);
   }
 
-  /**
-   * Test invoking close multiple times does not throw exceptions.
-   * NativeMacLayeredInputStream extends java.io.InputStream. InputStream
-   * implements Closeable. Closeable requires that if the stream is already
-   * closed then invoking this method has no effect.
-   */
-  public void testCloseForMultipleTimes() throws Exception {
+  public void testCloseMultipleTimes() throws Exception {
     InputStream inputStream = mCrypto.getMacInputStream(
         new ByteArrayInputStream(mDataWithMac),
         mEntity);

@@ -137,13 +137,7 @@ public class NativeGCMCipherOutputStreamTest extends InstrumentationTestCase {
       encryptedString);
   }
 
-  /**
-   * Test invoking close multiple times does not throw exceptions.
-   * NativeGCMCipherOutputStream extends java.io.OutputStream. OutputStream
-   * implements Closeable. Closeable requires that if the stream is already
-   * closed then invoking this method has no effect.
-   */
-  public void testCloseForMultipleTimes() throws Exception {
+  public void testCloseMultipleTimes() throws Exception {
     OutputStream outputStream = mCrypto.getCipherOutputStream(
         mCipherOutputStream,
         new Entity(CryptoTestUtils.ENTITY_NAME));
