@@ -169,4 +169,17 @@ public class NativeMacLayeredOutputStreamTest extends InstrumentationTestCase {
       }
     }
   }
+
+  public void testCloseMultipleTimes() throws Exception {
+    OutputStream outputStream = mCrypto.getCipherOutputStream(
+        new ByteArrayOutputStream(),
+        mEntity);
+    outputStream.close();
+    try {
+      outputStream.close();
+      outputStream.close();
+    } catch (Exception e) {
+      fail("Multiple closes exception!");
+    }
+  }
 }

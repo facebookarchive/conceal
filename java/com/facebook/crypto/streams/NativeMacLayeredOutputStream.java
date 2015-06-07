@@ -20,6 +20,8 @@ public class NativeMacLayeredOutputStream extends OutputStream {
   private final NativeMac mMac;
   private final OutputStream mOutputDelegate;
 
+  private boolean mMacAppended = false;
+
   /**
    * Creates a new output stream to write to.
    *
@@ -34,14 +36,22 @@ public class NativeMacLayeredOutputStream extends OutputStream {
   @Override
   public void close() throws IOException {
     try {
+      appendMac();
+    } finally {
+      mOutputDelegate.close();
+    }
+  }
+
+  private void appendMac() throws IOException {
+    if (mMacAppended) {
+      return;
+    }
+    mMacAppended = true;
+    try {
       byte[] mac = mMac.doFinal();
       mOutputDelegate.write(mac);
     } finally {
-      try {
-        mOutputDelegate.close();
-      } finally {
-        mMac.destroy();
-      }
+      mMac.destroy();
     }
   }
 

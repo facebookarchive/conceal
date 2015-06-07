@@ -136,4 +136,17 @@ public class NativeGCMCipherOutputStreamTest extends InstrumentationTestCase {
       expectedEncryptedString,
       encryptedString);
   }
+
+  public void testCloseMultipleTimes() throws Exception {
+    OutputStream outputStream = mCrypto.getCipherOutputStream(
+        mCipherOutputStream,
+        new Entity(CryptoTestUtils.ENTITY_NAME));
+    outputStream.close();
+    try {
+      outputStream.close();
+      outputStream.close();
+    } catch (Exception e) {
+      fail("Multiple closes exception!");
+    }
+  }
 }

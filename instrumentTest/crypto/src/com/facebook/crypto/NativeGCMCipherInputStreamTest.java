@@ -217,4 +217,18 @@ public class NativeGCMCipherInputStreamTest extends InstrumentationTestCase {
     inputStream.close();
     assertTrue(CryptoTestUtils.DECRYPTED_DATA_IS_DIFFERENT, Arrays.equals(mData, decryptedData));
   }
+
+  public void testCloseMultipleTimes() throws Exception {
+    InputStream inputStream = mCrypto.getCipherInputStream(
+        mCipherInputStream,
+        new Entity(CryptoTestUtils.ENTITY_NAME));
+    ByteStreams.toByteArray(inputStream);
+    inputStream.close();
+    try {
+      inputStream.close();
+      inputStream.close();
+    } catch (Exception e) {
+      fail("Multiple closes exception!");
+    }
+  }
 }

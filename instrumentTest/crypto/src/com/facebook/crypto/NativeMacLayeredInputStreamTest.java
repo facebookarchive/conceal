@@ -149,4 +149,18 @@ public class NativeMacLayeredInputStreamTest extends InstrumentationTestCase {
         mEntity);
     ByteStreams.toByteArray(macStream);
   }
+
+  public void testCloseMultipleTimes() throws Exception {
+    InputStream inputStream = mCrypto.getMacInputStream(
+        new ByteArrayInputStream(mDataWithMac),
+        mEntity);
+    ByteStreams.toByteArray(inputStream);
+    inputStream.close();
+    try {
+      inputStream.close();
+      inputStream.close();
+    } catch (Exception e) {
+      fail("Multiple closes exception!");
+    }
+  }
 }
