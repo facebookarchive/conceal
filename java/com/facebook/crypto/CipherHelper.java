@@ -30,7 +30,7 @@ import java.io.OutputStream;
   public OutputStream getCipherOutputStream(OutputStream cipherStream, Entity entity)
     throws KeyChainException, CryptoInitializationException, IOException {
 
-    cipherStream.write(VersionCodes.CIPHER_SERALIZATION_VERSION);
+    cipherStream.write(VersionCodes.CIPHER_SERIALIZATION_VERSION);
     cipherStream.write(VersionCodes.CIPHER_ID);
 
     byte[] iv = mKeyChain.getNewIV();
@@ -39,7 +39,7 @@ import java.io.OutputStream;
     cipherStream.write(iv);
 
     byte[] entityBytes = entity.getBytes();
-    computeCipherAad(gcmCipher, VersionCodes.CIPHER_SERALIZATION_VERSION, VersionCodes.CIPHER_ID, entityBytes);
+    computeCipherAad(gcmCipher, VersionCodes.CIPHER_SERIALIZATION_VERSION, VersionCodes.CIPHER_ID, entityBytes);
     return new NativeGCMCipherOutputStream(cipherStream, gcmCipher);
   }
 
@@ -49,7 +49,7 @@ import java.io.OutputStream;
   public InputStream getCipherInputStream(InputStream cipherStream, Entity entity, byte cryptoVersion, byte cipherID)
     throws IOException, KeyChainException, CryptoInitializationException {
 
-    Assertions.checkArgumentForIO(cryptoVersion == VersionCodes.CIPHER_SERALIZATION_VERSION,
+    Assertions.checkArgumentForIO(cryptoVersion == VersionCodes.CIPHER_SERIALIZATION_VERSION,
       "Unexpected crypto version " + cryptoVersion);
 
     Assertions.checkArgumentForIO(cipherID == VersionCodes.CIPHER_ID,

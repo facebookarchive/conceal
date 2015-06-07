@@ -156,7 +156,7 @@ public class Crypto {
     byte[] macKey = mKeyChain.getMacKey();
     nativeMac.init(macKey, macKey.length);
     byte[] entityBytes = entity.getBytes();
-    computeMacAad(nativeMac, VersionCodes.CIPHER_SERALIZATION_VERSION, VersionCodes.CIPHER_ID, entityBytes);
+    computeMacAad(nativeMac, VersionCodes.CIPHER_SERIALIZATION_VERSION, VersionCodes.CIPHER_ID, entityBytes);
     return new NativeMacLayeredOutputStream(nativeMac, stream);
   }
 

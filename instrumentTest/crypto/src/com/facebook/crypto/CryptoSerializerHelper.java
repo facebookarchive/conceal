@@ -35,7 +35,7 @@ public class CryptoSerializerHelper {
 
   public static byte[] createCipheredData(byte[] iv, byte[] cipherText, byte[] tag) throws IOException {
     ByteArrayOutputStream cipheredData = new ByteArrayOutputStream();
-    cipheredData.write(VersionCodes.CIPHER_SERALIZATION_VERSION);
+    cipheredData.write(VersionCodes.CIPHER_SERIALIZATION_VERSION);
     cipheredData.write(VersionCodes.CIPHER_ID);
     cipheredData.write(iv);
     cipheredData.write(cipherText);
