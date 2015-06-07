@@ -55,7 +55,7 @@ public class NativeGCMCipherOutputStreamTest extends InstrumentationTestCase {
     Entity entity = new Entity(CryptoTestUtils.ENTITY_NAME);
     byte[] aadData = CryptoSerializerHelper.computeBytesToAuthenticate(
         entity.getBytes(),
-        VersionCodes.CIPHER_SERALIZATION_VERSION,
+        VersionCodes.CIPHER_SERIALIZATION_VERSION,
         VersionCodes.CIPHER_ID);
     BouncyCastleHelper.Result result = BouncyCastleHelper.bouncyCastleEncrypt(mData,
         mKey,
