@@ -20,7 +20,7 @@ public class Assertions {
 
   public static void checkState(boolean expression, String errorMessage) {
     if (!expression) {
-      throw new IllegalStateException(String.valueOf(errorMessage));
+      throw new IllegalStateException(errorMessage);
     }
   }
 
