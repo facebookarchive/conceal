@@ -11,6 +11,9 @@
 #include <hmac_util.h>
 #include <util.h>
 
+#pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
+#pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
+
 static const char* JAVA_HMAC_CLASS = "com/facebook/crypto/mac/NativeMac";
 
 // Cache field id.

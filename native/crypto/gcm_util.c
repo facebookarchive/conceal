@@ -10,6 +10,9 @@
 #include <gcm_util.h>
 #include <util.h>
 
+#pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
+#pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
+
 // Used globally.
 const int GCM_ENCRYPT_MODE = 1;
 const int GCM_DECRYPT_MODE = 0;
