@@ -8,7 +8,7 @@
  *
  */
 
-package com.facebook.proguard.annotations;
+package com.facebook.crypto.proguard.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

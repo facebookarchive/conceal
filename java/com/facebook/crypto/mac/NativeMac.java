@@ -15,7 +15,7 @@ import java.io.IOException;
 import com.facebook.crypto.exception.CryptoInitializationException;
 import com.facebook.crypto.util.Assertions;
 import com.facebook.crypto.util.NativeCryptoLibrary;
-import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.crypto.proguard.annotations.DoNotStrip;
 
 @DoNotStrip
 public class NativeMac {

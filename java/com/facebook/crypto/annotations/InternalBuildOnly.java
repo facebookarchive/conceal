@@ -8,7 +8,7 @@
  *
  */
 
-package com.facebook.proguard.annotations;
+package com.facebook.crypto.proguard.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -17,11 +17,12 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.RetentionPolicy.CLASS;
 
 /**
- * Add this annotation to a class, method, or field to instruct Proguard to not strip it out.
- *
- * This is useful for methods called via reflection that could appear as unused to Proguard.
+ * Add this annotation to any method with a void return signature to allow proguard to strip
+ * it out for non-internal builds.  Proguard can usually strip out the code referenced within this
+ * method transitively allowing for a significant reduction in code volume for certain
+ * specialized cases.
  */
-@Target({ ElementType.TYPE, ElementType.FIELD, ElementType.METHOD, ElementType.CONSTRUCTOR })
+@Target({ ElementType.METHOD })
 @Retention(CLASS)
-public @interface DoNotStrip {
+public @interface InternalBuildOnly {
 }
