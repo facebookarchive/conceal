@@ -14,7 +14,7 @@ import java.util.Locale;
 import com.facebook.crypto.exception.CryptoInitializationException;
 import com.facebook.crypto.util.Assertions;
 import com.facebook.crypto.util.NativeCryptoLibrary;
-import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.crypto.proguard.annotations.DoNotStrip;
 
 /**
  * Various native functions to encrypt/decrypt data using GCM.
