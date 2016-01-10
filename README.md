@@ -43,7 +43,7 @@ You can also specify all the options caliper provides.
 
 ####Running unit tests####
 ```bash
-buck test javatests/com/facebook/crypto:crypto
+buck test
 ```
 
 ####Running integration tests####
