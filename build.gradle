@@ -4,15 +4,15 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.7.1+'
+        classpath 'com.android.tools.build:gradle:1.0.0+'
     }
 }
 
-apply plugin: 'android-library'
+apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion "19.0.0"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.1"
 
     defaultConfig {
       minSdkVersion 9
@@ -39,6 +39,10 @@ android {
     tasks.withType(JavaCompile) {
       compileTask -> compileTask.dependsOn ndkBuildRelease
     }
+
+    lintOptions {
+      abortOnError false
+    }
 }
 
 // Configure gradle.properties to do maven builds
@@ -53,7 +57,7 @@ if (!project.hasProperty('sonatypeRepo') ||
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-version = "1.0.0"
+version = "1.0.2"
 group = "com.facebook.conceal"
 
 configurations {
