@@ -144,7 +144,7 @@ public class NativeGCMCipher {
 
   // Used to store the GCM cipher context.
   @DoNotStrip
-  private int mCtxPtr;
+  private long mCtxPtr;
 
   // The integer value representing failure in JNI world.
   private static native int nativeFailure();
