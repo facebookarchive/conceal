@@ -1,6 +1,8 @@
 android_library(
   name = 'benchmarks',
   srcs = glob(['**/*.java'], excludes = glob(['app/**/*.java'])),
+  source = '1.6',
+  target = '1.6',
   deps = [
     '//:libconceal',
     '//third-party/guava:guava',
