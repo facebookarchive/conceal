@@ -1,0 +1,24 @@
+#!/bin/sh
+echo Installing BUCK dependencies
+
+sudo apt-get install default-jre
+sudo apt-get install openjdk-7-jdk
+sudo apt-get install ant
+
+echo Downloading BUCK
+
+git clone https://github.com/facebook/buck.git  
+
+echo Building BUCK
+cd buck  
+ant  
+
+echo Running BUCK for the first time
+./bin/buck --help
+cd ..
+
+echo Adding BUCK to the path
+PATH=`pwd`/buck/bin:$PATH
+export PATH
+
+echo BUCK installed on `which buck` 
