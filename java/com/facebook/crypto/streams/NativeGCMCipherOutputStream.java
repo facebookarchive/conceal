@@ -87,13 +87,13 @@ public class NativeGCMCipherOutputStream extends OutputStream {
     int remainder = count % UPDATE_BUFFER_SIZE;
 
     for (int i = 0; i < times; ++i) {
-      int written = mCipher.update(buffer, offset, UPDATE_BUFFER_SIZE, mUpdateBuffer);
+      int written = mCipher.update(buffer, offset, UPDATE_BUFFER_SIZE, mUpdateBuffer, 0);
       mCipherDelegate.write(mUpdateBuffer, 0, written);
       offset += UPDATE_BUFFER_SIZE;
     }
 
     if (remainder > 0) {
-      int written = mCipher.update(buffer, offset, remainder, mUpdateBuffer);
+      int written = mCipher.update(buffer, offset, remainder, mUpdateBuffer, 0);
       mCipherDelegate.write(mUpdateBuffer, 0, written);
     }
   }

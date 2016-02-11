@@ -10,10 +10,10 @@
 
 package com.facebook.crypto.streams;
 
+import com.facebook.crypto.cipher.NativeGCMCipher;
+
 import java.io.IOException;
 import java.io.InputStream;
-
-import com.facebook.crypto.cipher.NativeGCMCipher;
 
 /**
  * This class is used to encapsulate decryption using GCM. On reads, bytes are first read from the
@@ -92,26 +92,9 @@ public class NativeGCMCipherInputStream extends InputStream {
       return -1;
     }
 
-    int times = read / UPDATE_BUFFER_SIZE;
-    int remainder = read % UPDATE_BUFFER_SIZE;
+    read = mCipher.update(buffer, offset, read, buffer, offset);
 
-    int originalOffset = offset;
-    int currentReadOffset = offset;
-
-    for (int i = 0; i < times; ++i) {
-      int bytesDecrypted = mCipher.update(buffer, offset, UPDATE_BUFFER_SIZE, mUpdateBuffer);
-      System.arraycopy(mUpdateBuffer, 0, buffer, currentReadOffset, bytesDecrypted);
-      currentReadOffset += bytesDecrypted;
-      offset += UPDATE_BUFFER_SIZE;
-    }
-
-    if (remainder > 0) {
-      int bytesDecrypted = mCipher.update(buffer, offset, remainder, mUpdateBuffer);
-      System.arraycopy(mUpdateBuffer, 0, buffer, currentReadOffset, bytesDecrypted);
-      currentReadOffset += bytesDecrypted;
-    }
-
-    return currentReadOffset - originalOffset;
+    return read;
   }
 
   private void ensureTagValid() throws IOException {
