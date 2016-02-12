@@ -27,7 +27,7 @@ import java.io.OutputStream;
     mNativeCryptoLibrary = nativeCryptoLibrary;
   }
 
-  public OutputStream getCipherOutputStream(OutputStream cipherStream, Entity entity)
+  public OutputStream getCipherOutputStream(OutputStream cipherStream, Entity entity, byte[] encryptBuffer)
     throws KeyChainException, CryptoInitializationException, IOException {
 
     cipherStream.write(VersionCodes.CIPHER_SERALIZATION_VERSION);
@@ -40,7 +40,7 @@ import java.io.OutputStream;
 
     byte[] entityBytes = entity.getBytes();
     computeCipherAad(gcmCipher, VersionCodes.CIPHER_SERALIZATION_VERSION, VersionCodes.CIPHER_ID, entityBytes);
-    return new NativeGCMCipherOutputStream(cipherStream, gcmCipher);
+    return new NativeGCMCipherOutputStream(cipherStream, gcmCipher, encryptBuffer);
   }
 
   /**

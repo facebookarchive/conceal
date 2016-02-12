@@ -43,13 +43,13 @@ public class NativeGCMCipherHelper {
     return new NativeGCMCipherHelper(key, iv);
   }
 
-  public OutputStream getOutputStream(OutputStream cipherStream)
+  public OutputStream getOutputStream(OutputStream cipherStream, byte[] encryptBuffer)
       throws IOException, CryptoInitializationException {
     NativeGCMCipher gcmCipher = new NativeGCMCipher(mNativeCryptoLibrary);
     gcmCipher.encryptInit(mKey, mIv);
     cipherStream.write(mIv);
 
-    return new NativeGCMCipherOutputStream(cipherStream, gcmCipher);
+    return new NativeGCMCipherOutputStream(cipherStream, gcmCipher, encryptBuffer);
   }
 
   public InputStream getInputStream(InputStream cipherStream)
