@@ -26,6 +26,7 @@ public class NativeGCMCipherOutputStream extends OutputStream {
 
   private final OutputStream mCipherDelegate;
   private final NativeGCMCipher mCipher;
+  private final int mUpdateBufferChunkSize;
   private final byte[] mUpdateBuffer;
   private final byte[] mTag = new byte[NativeGCMCipher.TAG_LENGTH];
 
@@ -54,6 +55,8 @@ public class NativeGCMCipherOutputStream extends OutputStream {
         throw new IllegalArgumentException("encryptBuffer cannot be smaller than " + minSize + "B");
       }
     }
+    // if no encryptBuffer provided it will be DEFAULT_ENCRYPT_BUFFER_SIZE
+    mUpdateBufferChunkSize = encryptBuffer.length - cipherBlockSize;
     mUpdateBuffer = encryptBuffer;
   }
 
@@ -96,13 +99,13 @@ public class NativeGCMCipherOutputStream extends OutputStream {
       throw new ArrayIndexOutOfBoundsException(offset + count);
     }
 
-    int times = count / DEFAULT_ENCRYPT_BUFFER_SIZE;
-    int remainder = count % DEFAULT_ENCRYPT_BUFFER_SIZE;
+    int times = count / mUpdateBufferChunkSize;
+    int remainder = count % mUpdateBufferChunkSize;
 
     for (int i = 0; i < times; ++i) {
-      int written = mCipher.update(buffer, offset, DEFAULT_ENCRYPT_BUFFER_SIZE, mUpdateBuffer, 0);
+      int written = mCipher.update(buffer, offset, mUpdateBufferChunkSize, mUpdateBuffer, 0);
       mCipherDelegate.write(mUpdateBuffer, 0, written);
-      offset += DEFAULT_ENCRYPT_BUFFER_SIZE;
+      offset += mUpdateBufferChunkSize;
     }
 
     if (remainder > 0) {
