@@ -95,7 +95,8 @@ JNIEXPORT int JNICALL Java_com_facebook_crypto_cipher_NativeGCMCipher_nativeUpda
   jbyteArray data,
   jint offset,
   jint dataLength,
-  jbyteArray output) {
+  jbyteArray output,
+  jint outputOffset) {
 
   int bytesWritten = 0;
   EVP_CIPHER_CTX* ctx = Get_Cipher_CTX(env, obj);
@@ -114,7 +115,7 @@ JNIEXPORT int JNICALL Java_com_facebook_crypto_cipher_NativeGCMCipher_nativeUpda
     return CRYPTO_NO_BYTES_WRITTEN;
   }
 
-  if (!EVP_CipherUpdate(ctx, outputBytes, &bytesWritten, dataBytes + offset, dataLength)) {
+  if (!EVP_CipherUpdate(ctx, outputBytes + outputOffset, &bytesWritten, dataBytes + offset, dataLength)) {
     bytesWritten = CRYPTO_NO_BYTES_WRITTEN;
   }
 

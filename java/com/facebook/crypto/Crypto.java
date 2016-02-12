@@ -49,17 +49,27 @@ public class Crypto {
   }
 
   /**
+   * Invokes getCipherOutputStream(cipherStream, entity, null)
+   */
+  public OutputStream getCipherOutputStream(OutputStream cipherStream, Entity entity)
+          throws IOException, CryptoInitializationException, KeyChainException {
+    return getCipherOutputStream(cipherStream, entity, null);
+  }
+
+  /**
    * Gives you an output stream wrapper that encrypts the text written.
    *
    * @param cipherStream The stream that the encrypted data will be written to.
    * @param entity A unique object identifying what is being written.
+   * @param encryptBuffer an auxiliar buffer used to encrypt the content
+   *                      if null a new one will be created (size: 256+tagSize)
    *
    * @return A ciphered output stream to write to.
    * @throws IOException
    */
-  public OutputStream getCipherOutputStream(OutputStream cipherStream, Entity entity)
+  public OutputStream getCipherOutputStream(OutputStream cipherStream, Entity entity, byte[] encryptBuffer)
       throws IOException, CryptoInitializationException, KeyChainException {
-    return mCipherHelper.getCipherOutputStream(cipherStream, entity);
+    return mCipherHelper.getCipherOutputStream(cipherStream, entity, encryptBuffer);
   }
 
   /**
@@ -99,7 +109,7 @@ public class Crypto {
     throws KeyChainException, CryptoInitializationException, IOException {
     int cipheredBytesLength = plainTextBytes.length + mCipherHelper.getCipherMetaDataLength();
     FixedSizeByteArrayOutputStream outputStream = new FixedSizeByteArrayOutputStream(cipheredBytesLength);
-    OutputStream cipherStream = mCipherHelper.getCipherOutputStream(outputStream, entity);
+    OutputStream cipherStream = mCipherHelper.getCipherOutputStream(outputStream, entity, null);
     cipherStream.write(plainTextBytes);
     cipherStream.close();
     return outputStream.getBytes();
