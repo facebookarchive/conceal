@@ -88,7 +88,7 @@ public class CipherReadBenchmark extends SimpleBenchmark {
   private byte[] generateCipherText(NativeGCMCipherHelper gcmHelper)
       throws Exception {
     ByteArrayOutputStream cipherText = new ByteArrayOutputStream();
-    OutputStream out = gcmHelper.getOutputStream(cipherText);
+    OutputStream out = gcmHelper.getOutputStream(cipherText, new byte[1024]);
     out.write(mData);
     out.close();
     return cipherText.toByteArray();
