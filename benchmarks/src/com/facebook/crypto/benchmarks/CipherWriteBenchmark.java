@@ -72,8 +72,9 @@ public class CipherWriteBenchmark extends SimpleBenchmark {
   }
 
   public void timeNativeGCM(int reps) throws Exception {
+    byte[] buffer = new byte[1024];
     for (int i = 0; i < reps; ++i) {
-      OutputStream output = mNativeGCMCipherHelper.getOutputStream(mNullOutputStream);
+      OutputStream output = mNativeGCMCipherHelper.getOutputStream(mNullOutputStream, buffer);
       output.write(mData);
       output.close();
     }
