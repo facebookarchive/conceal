@@ -142,3 +142,16 @@ while((read = inputStream.read(buffer)) != -1) {
 inputStream.close();
 ```
 
+##Troubleshooting##
+
+####I'm getting NoSuchFieldError on runtime####
+
+If you hit an error on runtime and it says something similar to:
+
+````
+java.lang.NoSuchFieldError: no field with name='mCtxPtr' signature='J' in class Lcom/facebook/crypto/cipher/NativeGCMCipher;
+````
+
+This happens because native code needs to refer to Java fields/methods. For doing so it uses typical JNI functions which receive the name and signature. At the same time tools like proguard trim off or rename class members in order to get smaller executables. Normally this process is run on release versions. When native code request the member, it's not present anymore.
+
+To avoid this kind of problems exceptions can be defined. You will need to configure proguard with the rules defined in ``proguard_annotations.pro``. You can use the file as is, or you can include its content in your own proguard configuration file.
