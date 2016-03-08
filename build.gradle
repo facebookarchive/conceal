@@ -22,7 +22,8 @@ android {
     sourceSets {
       main {
         manifest.srcFile 'AndroidManifest.xml'
-        java.srcDirs = ['java'] 
+        java.srcDirs = ['java']
+        jniLibs.srcDir 'libs'
         jni.srcDirs = []
       }
     }
@@ -31,9 +32,7 @@ android {
       commandLine 'ndk-build', '-C', file('native/crypto/').absolutePath,
        'NDK_APPLICATION_MK=${PWD}/native/Application.mk',
        'NDK_MODULE_PATH=${PWD}/native/third-party/',
-       'APP_BUILD_SCRIPT=${PWD}/native/crypto/Android.mk',
-       'NDK_OUT=${PWD}/build/ndk/release/obj',
-       'NDK_LIBS_OUT=${PWD}/build/bundles/release/jni'
+       'APP_BUILD_SCRIPT=${PWD}/native/crypto/Android.mk'
     }
 
     tasks.withType(JavaCompile) {
