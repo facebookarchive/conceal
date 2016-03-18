@@ -21,12 +21,12 @@ import java.io.InputStream;
  */
 public class NativeGCMCipherInputStream extends InputStream {
 
-  private static final int UPDATE_BUFFER_SIZE = 256;
+  private static final int SKIP_BUFFER_SIZE = 256;
 
   private final TailInputStream mCipherDelegate;
   private final NativeGCMCipher mCipher;
 
-  private final byte[] mUpdateBuffer;
+  private byte[] mSkipBuffer;
 
   private boolean mTagChecked = false;
 
@@ -39,7 +39,6 @@ public class NativeGCMCipherInputStream extends InputStream {
   public NativeGCMCipherInputStream(InputStream cipherDelegate, NativeGCMCipher cipher) {
     mCipherDelegate = new TailInputStream(cipherDelegate, NativeGCMCipher.TAG_LENGTH);
     mCipher = cipher;
-    mUpdateBuffer = new byte[UPDATE_BUFFER_SIZE + mCipher.getCipherBlockSize()];
   }
 
   @Override
@@ -119,6 +118,25 @@ public class NativeGCMCipherInputStream extends InputStream {
 
   @Override
   public long skip(long byteCount) throws IOException {
-    throw new UnsupportedOperationException();
+    if (mSkipBuffer == null) {
+      mSkipBuffer = new byte[SKIP_BUFFER_SIZE];
+    }
+    // implements skip through reading
+    // decryption needs to process all the data anyway
+    // only marginal optimization would be avoiding jni to copy back plain bytes
+    // but that's only a problem for android that copies bytes instead of sharing
+    long skipped = 0;
+
+    while (byteCount > 0) {
+      int chunk = (int) Math.min(byteCount, SKIP_BUFFER_SIZE);
+      int read = read(mSkipBuffer, 0, chunk);
+      if (read < 0) {
+        break;
+      }
+      skipped += read;
+      byteCount -= read;
+    }
+    // if it didn't skip anything it's EOF
+    return skipped == 0 ? -1 : skipped;
   }
 }
