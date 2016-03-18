@@ -10,6 +10,7 @@ import com.facebook.crypto.streams.NativeGCMCipherOutputStream;
 import com.facebook.crypto.util.Assertions;
 import com.facebook.crypto.util.NativeCryptoLibrary;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -56,10 +57,8 @@ import java.io.OutputStream;
       "Unexpected cipher ID " + cipherID);
 
     byte[] iv = new byte[NativeGCMCipher.IV_LENGTH];
-    int read = cipherStream.read(iv);
-    if (read != iv.length) {
-      throw new IOException("Not enough bytes for iv: " + read);
-    }
+    // if iv is not fully read EOFException will be thrown
+    new DataInputStream(cipherStream).readFully(iv);
 
     NativeGCMCipher gcmCipher = new NativeGCMCipher(mNativeCryptoLibrary);
     gcmCipher.decryptInit(mKeyChain.getCipherKey(), iv);
