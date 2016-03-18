@@ -18,7 +18,7 @@ package com.facebook.crypto;
   /**
    * Identifier of the cipher serialization version.
    */
-  public static final byte CIPHER_SERALIZATION_VERSION = 1;
+  public static final byte CIPHER_SERIALIZATION_VERSION = 1;
 
   /**
    * Identifier for the cipher algorithm and the framing method used.

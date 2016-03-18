@@ -156,7 +156,7 @@ public class NativeGCMCipherInputStreamTest extends InstrumentationTestCase {
     InputStream inputStream = mCrypto.getCipherInputStream(
         mCipherInputStream,
         new Entity(CryptoTestUtils.ENTITY_NAME));
-    int partSize = CryptoTestUtils.NUM_DATA_BYTES / 4;  
+    int partSize = CryptoTestUtils.NUM_DATA_BYTES / 4;
     byte[] firstPart = new byte[partSize];
     ByteStreams.readFully(inputStream, firstPart);
     long skipped = inputStream.skip(partSize);
@@ -224,7 +224,7 @@ public class NativeGCMCipherInputStreamTest extends InstrumentationTestCase {
   public void testCompatibleWithBouncyCastle() throws Exception {
     Entity entity = new Entity(CryptoTestUtils.ENTITY_NAME);
     byte[] aadData = CryptoSerializerHelper.computeBytesToAuthenticate(entity.getBytes(),
-        VersionCodes.CIPHER_SERALIZATION_VERSION,
+        VersionCodes.CIPHER_SERIALIZATION_VERSION,
         VersionCodes.CIPHER_ID);
     BouncyCastleHelper.Result result = BouncyCastleHelper.bouncyCastleEncrypt(mData,
         mKey,
