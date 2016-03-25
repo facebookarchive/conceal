@@ -52,6 +52,7 @@ public class PasswordBasedKeyDerivation {
   public static final int DEFAULT_KEY_LENGTH = 16;
 
   private final NativeCryptoLibrary mNativeLibrary;
+  private final SecureRandom mSecureRandom;
 
   private int mIterations;
   private String mPassword;
@@ -59,7 +60,12 @@ public class PasswordBasedKeyDerivation {
   private int mKeyLengthInBytes;
   private byte[] mGeneratedKey;
 
-  public PasswordBasedKeyDerivation(NativeCryptoLibrary library) {
+  /**
+   * @param secureRandom this will be used to generate the salt.
+   *                     Use FixedSecureRandom for Android, never java.util.SecureRandom.
+   */
+  public PasswordBasedKeyDerivation(SecureRandom secureRandom, NativeCryptoLibrary library) {
+    mSecureRandom = secureRandom;
     mNativeLibrary = library;
     mIterations = DEFAULT_ITERATIONS;
     mKeyLengthInBytes = DEFAULT_KEY_LENGTH;
@@ -103,7 +109,7 @@ public class PasswordBasedKeyDerivation {
     }
     if (mSalt == null) {
       mSalt = new byte[DEFAULT_SALT_LENGTH];
-      new SecureRandom().nextBytes(mSalt);
+      mSecureRandom.nextBytes(mSalt);
     }
     mGeneratedKey = new byte[mKeyLengthInBytes];
     mNativeLibrary.ensureCryptoLoaded();
