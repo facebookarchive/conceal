@@ -38,13 +38,14 @@ int Init_GCM(JNIEnv* env, jobject obj, jbyteArray key, jbyteArray iv, jint mode)
     return CRYPTO_FAILURE;
   }
 
+  jsize ivLength = (*env)->GetArrayLength(env, iv);
   jbyte* ivBytes = (*env)->GetByteArrayElements(env, iv, NULL);
   if (!ivBytes) {
     (*env)->ReleaseByteArrayElements(env, key, keyBytes, JNI_ABORT);
     return CRYPTO_FAILURE;
   }
 
-  GCM_JNI_CTX* ctx = Create_GCM_JNI_CTX(keyBytes, ivBytes);
+  GCM_JNI_CTX* ctx = Create_GCM_JNI_CTX(keyBytes, ivBytes, ivLength);
   Set_GCM_JNI_CTX(env, obj, ctx);
 
   (*env)->ReleaseByteArrayElements(env, key, keyBytes, JNI_ABORT);
@@ -64,7 +65,7 @@ int Init_GCM(JNIEnv* env, jobject obj, jbyteArray key, jbyteArray iv, jint mode)
   return CRYPTO_SUCCESS;
 }
 
-GCM_JNI_CTX* Create_GCM_JNI_CTX(jbyte* keyBytes, jbyte* ivBytes) {
+GCM_JNI_CTX* Create_GCM_JNI_CTX(jbyte* keyBytes, jbyte* ivBytes, jsize ivLength) {
   GCM_JNI_CTX* ctx = (GCM_JNI_CTX*) malloc(sizeof(GCM_JNI_CTX));
   if (!ctx) {
     return NULL;
@@ -91,8 +92,17 @@ GCM_JNI_CTX* Create_GCM_JNI_CTX(jbyte* keyBytes, jbyte* ivBytes) {
     return NULL;
   }
 
+  if (ivLength > GCM_IV_LENGTH_IN_BYTES) {
+    ivLength = GCM_IV_LENGTH_IN_BYTES;
+  }
+
   memcpy(ctx->key, keyBytes, GCM_KEY_LENGTH_IN_BYTES);
-  memcpy(ctx->iv, ivBytes, GCM_IV_LENGTH_IN_BYTES);
+  memcpy(ctx->iv, ivBytes, ivLength);
+  if (ivLength < GCM_IV_LENGTH_IN_BYTES) {
+    // pad IV with zeros if provided IV is smaller
+    // this will remove undefined behavior (which worked because the bytes were already the same)
+    memset(ctx->iv + ivLength, 0, GCM_IV_LENGTH_IN_BYTES - ivLength);
+  }
   return ctx;
 }
 
