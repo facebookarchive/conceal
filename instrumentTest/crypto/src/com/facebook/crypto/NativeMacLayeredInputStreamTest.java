@@ -23,6 +23,7 @@ import java.util.Random;
 
 import android.test.InstrumentationTestCase;
 
+import com.facebook.android.crypto.keychain.AndroidConceal;
 import com.facebook.crypto.keychain.KeyChain;
 import com.facebook.crypto.util.NativeCryptoLibrary;
 import com.facebook.crypto.util.SystemNativeCryptoLibrary;
@@ -39,9 +40,8 @@ public class NativeMacLayeredInputStreamTest extends InstrumentationTestCase {
   private KeyChain mKeyChain;
 
   public void setUp() throws Exception {
-    mNativeCryptoLibrary = new SystemNativeCryptoLibrary();
     mKeyChain = new FakeKeyChain();
-    mCrypto = new Crypto(mKeyChain, mNativeCryptoLibrary);
+    mCrypto = AndroidConceal.get().createCrypto(mKeyChain);
 
     mData = new byte[CryptoTestUtils.NUM_DATA_BYTES];
     Random random = new Random();

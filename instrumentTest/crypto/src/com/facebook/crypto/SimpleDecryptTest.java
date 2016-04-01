@@ -3,6 +3,8 @@ package com.facebook.crypto;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.test.InstrumentationTestCase;
+
+import com.facebook.android.crypto.keychain.AndroidConceal;
 import com.facebook.crypto.cipher.NativeGCMCipher;
 import com.facebook.crypto.keychain.KeyChain;
 import com.facebook.crypto.util.NativeCryptoLibrary;
@@ -23,9 +25,8 @@ public class SimpleDecryptTest extends InstrumentationTestCase {
 
   protected void setUp() throws Exception {
     super.setUp();
-    mNativeCryptoLibrary = new SystemNativeCryptoLibrary();
     KeyChain keyChain = new FakeKeyChain();
-    mCrypto = new Crypto(keyChain, mNativeCryptoLibrary);
+    mCrypto = AndroidConceal.get().createCrypto(keyChain);
     mIV = keyChain.getNewIV();
     mKey = keyChain.getCipherKey();
 

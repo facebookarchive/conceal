@@ -24,6 +24,7 @@ import android.annotation.TargetApi;
 import android.os.Build;
 import android.test.InstrumentationTestCase;
 
+import com.facebook.android.crypto.keychain.AndroidConceal;
 import com.facebook.crypto.util.NativeCryptoLibrary;
 import com.facebook.crypto.util.SystemNativeCryptoLibrary;
 
@@ -39,10 +40,9 @@ public class NativeMacLayeredOutputStreamTest extends InstrumentationTestCase {
   private Entity mEntity;
 
   public void setUp() {
-    mNativeCryptoLibrary = new SystemNativeCryptoLibrary();
     FakeKeyChain keyChain = new FakeKeyChain();
     mKey = keyChain.getMacKey();
-    mCrypto = new Crypto(keyChain, mNativeCryptoLibrary);
+    mCrypto = AndroidConceal.get().createCrypto(keyChain);
 
     Random random = new Random();
     mData = new byte[CryptoTestUtils.NUM_DATA_BYTES];
