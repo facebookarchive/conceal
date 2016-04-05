@@ -32,7 +32,9 @@ public class Crypto {
   public Crypto(KeyChain keyChain, NativeCryptoLibrary nativeCryptoLibrary) {
     mKeyChain = keyChain;
     mNativeCryptoLibrary = nativeCryptoLibrary;
-    mCipherHelper = new CipherHelper(mKeyChain, mNativeCryptoLibrary);
+    mCipherHelper = new CipherHelper(
+            new CheckedKeyChain(mKeyChain, CryptoConfig.VERSION_1),
+            mNativeCryptoLibrary);
   }
 
   /**
