@@ -260,7 +260,7 @@ public class Crypto {
    * </p>
    * Ciphertext data size = Plaintext data + Cipher meta data.
    */
-  private int getCipherMetaDataLength() {
+  /* package protected */ int getCipherMetaDataLength() {
     return 2 + NativeGCMCipher.IV_LENGTH + NativeGCMCipher.TAG_LENGTH;
   }
 }
