@@ -10,31 +10,34 @@
 
 package com.facebook.crypto;
 
+import com.facebook.crypto.cipher.NativeGCMCipher;
+import com.facebook.crypto.cipher.NativeGCMCipherException;
+import com.facebook.crypto.exception.CryptoInitializationException;
+import com.facebook.crypto.exception.KeyChainException;
+import com.facebook.crypto.keychain.KeyChain;
+import com.facebook.crypto.mac.NativeMac;
+import com.facebook.crypto.streams.FixedSizeByteArrayOutputStream;
+import com.facebook.crypto.streams.NativeGCMCipherInputStream;
+import com.facebook.crypto.streams.NativeGCMCipherOutputStream;
+import com.facebook.crypto.streams.NativeMacLayeredInputStream;
+import com.facebook.crypto.streams.NativeMacLayeredOutputStream;
+import com.facebook.crypto.util.Assertions;
+import com.facebook.crypto.util.NativeCryptoLibrary;
+
 import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import com.facebook.crypto.exception.KeyChainException;
-import com.facebook.crypto.mac.NativeMac;
-import com.facebook.crypto.streams.*;
-import com.facebook.crypto.exception.CryptoInitializationException;
-import com.facebook.crypto.keychain.KeyChain;
-import com.facebook.crypto.util.Assertions;
-import com.facebook.crypto.util.NativeCryptoLibrary;
 
 public class Crypto {
 
   private final KeyChain mKeyChain;
   private final NativeCryptoLibrary mNativeCryptoLibrary;
-  private final CipherHelper mCipherHelper;
 
   public Crypto(KeyChain keyChain, NativeCryptoLibrary nativeCryptoLibrary) {
-    mKeyChain = keyChain;
+    mKeyChain = new CheckedKeyChain(keyChain, CryptoConfig.VERSION_1);
     mNativeCryptoLibrary = nativeCryptoLibrary;
-    mCipherHelper = new CipherHelper(
-            new CheckedKeyChain(mKeyChain, CryptoConfig.VERSION_1),
-            mNativeCryptoLibrary);
   }
 
   /**
@@ -71,7 +74,18 @@ public class Crypto {
    */
   public OutputStream getCipherOutputStream(OutputStream cipherStream, Entity entity, byte[] encryptBuffer)
       throws IOException, CryptoInitializationException, KeyChainException {
-    return mCipherHelper.getCipherOutputStream(cipherStream, entity, encryptBuffer);
+
+    cipherStream.write(VersionCodes.CIPHER_SERIALIZATION_VERSION);
+    cipherStream.write(VersionCodes.CIPHER_ID);
+
+    byte[] iv = mKeyChain.getNewIV();
+    NativeGCMCipher gcmCipher = new NativeGCMCipher(mNativeCryptoLibrary);
+    gcmCipher.encryptInit(mKeyChain.getCipherKey(), iv);
+    cipherStream.write(iv);
+
+    byte[] entityBytes = entity.getBytes();
+    computeCipherAad(gcmCipher, VersionCodes.CIPHER_SERIALIZATION_VERSION, VersionCodes.CIPHER_ID, entityBytes);
+    return new NativeGCMCipherOutputStream(cipherStream, gcmCipher, encryptBuffer);
   }
 
   /**
@@ -92,7 +106,34 @@ public class Crypto {
     byte cryptoVersion = (byte) cipherStream.read();
     byte cipherID = (byte) cipherStream.read();
 
-    return mCipherHelper.getCipherInputStream(cipherStream, entity, cryptoVersion, cipherID);
+    Assertions.checkArgumentForIO(cryptoVersion == VersionCodes.CIPHER_SERIALIZATION_VERSION,
+            "Unexpected crypto version " + cryptoVersion);
+
+    Assertions.checkArgumentForIO(cipherID == VersionCodes.CIPHER_ID,
+            "Unexpected cipher ID " + cipherID);
+
+    byte[] iv = new byte[NativeGCMCipher.IV_LENGTH];
+    // if iv is not fully read EOFException will be thrown
+    new DataInputStream(cipherStream).readFully(iv);
+
+    NativeGCMCipher gcmCipher = new NativeGCMCipher(mNativeCryptoLibrary);
+    gcmCipher.decryptInit(mKeyChain.getCipherKey(), iv);
+
+    byte[] entityBytes = entity.getBytes();
+    computeCipherAad(gcmCipher, cryptoVersion, cipherID, entityBytes);
+    return new NativeGCMCipherInputStream(cipherStream, gcmCipher);
+  }
+
+  /**
+   * Computes the Aad data for the cipher.
+   */
+  private void computeCipherAad(NativeGCMCipher gcmCipher, byte cryptoVersion, byte cipherID, byte[] entityBytes)
+          throws NativeGCMCipherException {
+    byte[] cryptoVersionBytes = { cryptoVersion };
+    byte[] cipherIDBytes = { cipherID };
+    gcmCipher.updateAad(cryptoVersionBytes, 1);
+    gcmCipher.updateAad(cipherIDBytes, 1);
+    gcmCipher.updateAad(entityBytes, entityBytes.length);
   }
 
   /**
@@ -109,9 +150,9 @@ public class Crypto {
    */
   public byte[] encrypt(byte[] plainTextBytes, Entity entity)
     throws KeyChainException, CryptoInitializationException, IOException {
-    int cipheredBytesLength = plainTextBytes.length + mCipherHelper.getCipherMetaDataLength();
+    int cipheredBytesLength = plainTextBytes.length + getCipherMetaDataLength();
     FixedSizeByteArrayOutputStream outputStream = new FixedSizeByteArrayOutputStream(cipheredBytesLength);
-    OutputStream cipherStream = mCipherHelper.getCipherOutputStream(outputStream, entity, null);
+    OutputStream cipherStream = getCipherOutputStream(outputStream, entity, null);
     cipherStream.write(plainTextBytes);
     cipherStream.close();
     return outputStream.getBytes();
@@ -129,14 +170,12 @@ public class Crypto {
    */
   public byte[] decrypt(byte[] cipherTextBytes, Entity entity)
     throws KeyChainException, CryptoInitializationException, IOException {
-    byte cryptoVersion = cipherTextBytes[0];
-    byte cipherID = cipherTextBytes[1];
 
     int cipherTextLength = cipherTextBytes.length;
-    ByteArrayInputStream cipheredStream = new ByteArrayInputStream(cipherTextBytes, 2, cipherTextLength);
-    InputStream plainTextStream = mCipherHelper.getCipherInputStream(cipheredStream, entity, cryptoVersion, cipherID);
+    ByteArrayInputStream cipheredStream = new ByteArrayInputStream(cipherTextBytes);
+    InputStream plainTextStream = getCipherInputStream(cipheredStream, entity);
 
-    int plainTextLength = cipherTextLength - mCipherHelper.getCipherMetaDataLength();
+    int plainTextLength = cipherTextLength - getCipherMetaDataLength();
     FixedSizeByteArrayOutputStream output = new FixedSizeByteArrayOutputStream(plainTextLength);
     byte[] buffer = new byte[1024];
     int read;
@@ -189,11 +228,11 @@ public class Crypto {
       throws IOException, KeyChainException, CryptoInitializationException {
     byte macVersion = (byte) stream.read();
     Assertions.checkArgumentForIO(macVersion == VersionCodes.MAC_SERIALIZATION_VERSION,
-        "Unexpected mac version " + macVersion);
+            "Unexpected mac version " + macVersion);
 
     byte macID = (byte) stream.read();
     Assertions.checkArgumentForIO(macID == VersionCodes.MAC_ID,
-        "Unexpected mac ID " + macID);
+            "Unexpected mac ID " + macID);
 
     NativeMac nativeMac = new NativeMac(mNativeCryptoLibrary);
     byte[] macKey = mKeyChain.getMacKey();
@@ -213,5 +252,15 @@ public class Crypto {
     mac.update(cryptoVersionBytes, 0, 1);
     mac.update(macIDBytes, 0, 1);
     mac.update(entityBytes, 0, entityBytes.length);
+  }
+
+  /**
+   * Gets the length of the meta data for the version of the API being decrypted.
+   * This should preserve the following invariant:
+   * </p>
+   * Ciphertext data size = Plaintext data + Cipher meta data.
+   */
+  private int getCipherMetaDataLength() {
+    return 2 + NativeGCMCipher.IV_LENGTH + NativeGCMCipher.TAG_LENGTH;
   }
 }
