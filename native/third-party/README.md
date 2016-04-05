@@ -1,33 +1,25 @@
-We currently use openssl-1.0.2e
+We currently use openssl-1.0.2g
 
-- Checkout openssl
-```bash
-git clone git://git.openssl.org/openssl.git
-cd openssl
-```
-- Checkout openssl tag OpenSSL_1_0_2e
-```bash
-git checkout OpenSSL_1_0_2e
-```
-- Setup your enviornment
-``bash
-export PATH=/tmp/toolchain:$PATH
-```
+### Sources
+Repo: **git://git.openssl.org/openssl.git**  
+Tag: **OpenSSL_1_0_2g**
 
-- Make an ndk toolchain
-```bash
-$ANDROID_NDK/build/tools/make-standalone-toolchain.sh --install-dir=/tmp/toolchain --arch=<arch>
-```
+### Builds For ARCHS:
+  * arm64-v8a
+  * armeabi
+  * armeabi-v7a
+  * x86
+  * x86_64
 
-for example for arm, arch is arm, and for arm64 it is arm64
-https://developer.android.com/ndk/guides/standalone_toolchain.html
+Read more about available ARCHS [here](https://developer.android.com/ndk/guides/standalone_toolchain.html)
 
-- Configure and compile openssl for for the arc, for example for arm and armv7
-```bash
-./Configure --cross-compile-prefix=arm-linux-androideabi- android && make depend && make -j20
-```
-```bash
-./Configure --cross-compile-prefix=arm-linux-androideabi- android-armv7 && make depend && make -j20
-```
+### Environment
+Requires `ANDROID_NDK` to be set  
+Example:  
+`export ANDROID_NDK=/opt/android-ndk-r11c`
 
-The libs will be located in libcrypto.a, copy that over to the native/third-party/openssl folder.
+### Usage
+`make`
+
+### Output
+`make` generates `libcrypto.a` for each ARCH and saves them to `openssl/$ARCH/libcrypto.a`
