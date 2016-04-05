@@ -26,7 +26,7 @@ define gen_arch_libcrypto
 	-rm -rf $(TMP_TOOLCHAIN)/$1
 	$(BASE_TOOLCHAIN)$2 --install-dir=$(TMP_TOOLCHAIN)/$1
 	cd $(SRC_OPENSSL) && \
-		./Configure --cross-compile-prefix=$(TMP_TOOLCHAIN)/$1/bin/$3- $4 && make depend && make -j20 && \
+		./Configure$5 --cross-compile-prefix=$(TMP_TOOLCHAIN)/$1/bin/$3- $4 && make depend && make -j20 && \
 		cp libcrypto.a ../$(OUT_OPENSSL)/$1/libcrypto.a
 	-$(MAKE) -C $(SRC_OPENSSL) clean
 endef
@@ -40,7 +40,7 @@ clone:
 
 .PHONY: arm64-v8a
 arm64-v8a:
-	$(call gen_arch_libcrypto,$@,arm64,aarch64-linux-android,android)
+	$(call gen_arch_libcrypto,$@,arm64,aarch64-linux-android,android, no-asm)
 
 .PHONY: armeabi
 armeabi:
@@ -56,7 +56,7 @@ x86:
 
 .PHONY: x86_64
 x86_64:
-	$(call gen_arch_libcrypto,$@,$@,x86_64-linux-android,linux-x86_64)
+	$(call gen_arch_libcrypto,$@,$@,x86_64-linux-android,linux-x86_64, no-asm)
 
 .PHONY: clean
 clean:
