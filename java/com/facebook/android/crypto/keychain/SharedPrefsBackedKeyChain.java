@@ -42,7 +42,7 @@ public class SharedPrefsBackedKeyChain implements KeyChain {
   /* package */ static final String MAC_KEY_PREF = "mac_key";
 
   private final SharedPreferences mSharedPreferences;
-  private final SecureRandom mSecureRandom;
+  private final FixedSecureRandom mSecureRandom;
 
   protected byte[] mCipherKey;
   protected boolean mSetCipherKey;
@@ -50,11 +50,9 @@ public class SharedPrefsBackedKeyChain implements KeyChain {
   protected byte[] mMacKey;
   protected boolean mSetMacKey;
 
-  private static final SecureRandomFix sSecureRandomFix = new SecureRandomFix();
-
   public SharedPrefsBackedKeyChain(Context context) {
     mSharedPreferences = context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
-    mSecureRandom = new SecureRandom();
+    mSecureRandom = new FixedSecureRandom();
   }
 
   @Override
@@ -77,7 +75,6 @@ public class SharedPrefsBackedKeyChain implements KeyChain {
 
   @Override
   public byte[] getNewIV() throws KeyChainException {
-    sSecureRandomFix.tryApplyFixes();
     byte[] iv = new byte[NativeGCMCipher.IV_LENGTH];
     mSecureRandom.nextBytes(iv);
     return iv;
@@ -115,7 +112,6 @@ public class SharedPrefsBackedKeyChain implements KeyChain {
   }
 
   private byte[] generateAndSaveKey(String pref, int length) throws KeyChainException {
-    sSecureRandomFix.tryApplyFixes();
     byte[] key = new byte[length];
     mSecureRandom.nextBytes(key);
     // Store the session key.

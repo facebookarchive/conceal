@@ -45,7 +45,17 @@ public class SecureRandomFix {
     private static final int VERSION_CODE_JELLY_BEAN_MR2 = 18;
     private static final String DEV_URANDOM = "/dev/urandom";
 
-    private boolean mFixApplied;
+    private static boolean sFixApplied;
+
+    /**
+     * Thrown if tryApplyFixes() fails.
+     * Runtime so it can be thrown directly from FixedSecureRandom overridden methods.
+     */
+    public static class FixException extends RuntimeException {
+        public FixException(Throwable throwable) {
+            super("Error fixing the Android's SecureRandom", throwable);
+        }
+    }
 
     /**
      * Applies the fixes to make the random numbers cryptographically secure for
@@ -53,9 +63,12 @@ public class SecureRandomFix {
      * <p>
      * This function will only have effect once and subsequent calls to this function
      * will return.
+     * @throws com.facebook.android.crypto.keychain.SecureRandomFix.FixException
+     *         if anything fails when running the fix.
+     *         In practice we could just continue but it would be wrong to use insecure values.
      */
-    public synchronized void tryApplyFixes() throws KeyChainException {
-        if (mFixApplied) {
+    public static synchronized void tryApplyFixes() throws FixException {
+        if (sFixApplied) {
             return;
         }
         try {
@@ -66,13 +79,13 @@ public class SecureRandomFix {
             // However we can't do much in this case if it does.
             // We would rather abort than using an insecure random number
             // generator.
-            throw new KeyChainException("Random number generated", t);
+            throw new FixException(t);
         }
 
-        mFixApplied = true;
+        sFixApplied = true;
     }
 
-    private void tryApplyOpenSSLFix() {
+    private static void tryApplyOpenSSLFix() {
         if ((Build.VERSION.SDK_INT < VERSION_CODE_JELLY_BEAN)
                 || (Build.VERSION.SDK_INT > VERSION_CODE_JELLY_BEAN_MR2)) {
             // No need to apply the fix
@@ -347,5 +360,4 @@ public class SecureRandomFix {
             }
         }
     }
-
 }
