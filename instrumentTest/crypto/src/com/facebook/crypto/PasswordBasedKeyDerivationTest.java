@@ -10,6 +10,7 @@
 
 package com.facebook.crypto;
 
+import com.facebook.android.crypto.keychain.AndroidConceal;
 import com.facebook.android.crypto.keychain.FixedSecureRandom;
 import com.facebook.crypto.keygen.PasswordBasedKeyDerivation;
 import com.facebook.crypto.util.SystemNativeCryptoLibrary;
@@ -38,10 +39,8 @@ public class PasswordBasedKeyDerivationTest extends InstrumentationTestCase {
   }
 
   private void testOneCase(String password, String saltString, int iterations, int keyLength, String hexResult) throws Exception {
-    FixedSecureRandom secureRandom = new FixedSecureRandom();
-    SystemNativeCryptoLibrary library = new SystemNativeCryptoLibrary();
     byte[] salt = saltString.getBytes("ASCII");
-    byte[] key = new PasswordBasedKeyDerivation(secureRandom, library)
+    byte[] key = AndroidConceal.get().createPasswordBasedKeyDerivation()
         .setPassword(password) // it converts to c-char* using UTF8 which is equal to ASCII for 0-127
         .setSalt(salt)
         .setIterations(iterations)
