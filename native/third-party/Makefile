@@ -23,7 +23,7 @@ ARCHS := arm64-v8a armeabi armeabi-v7a x86 x86_64
 # Generates libcrypto.a for given ARCH
 #
 define gen_arch_libcrypto
-  -rm -rf $(TMP_TOOLCHAIN)/$1
+	-rm -rf $(TMP_TOOLCHAIN)/$1
 	$(BASE_TOOLCHAIN)$2 --install-dir=$(TMP_TOOLCHAIN)/$1
 	cd $(SRC_OPENSSL) && \
 		./Configure --cross-compile-prefix=$(TMP_TOOLCHAIN)/$1/bin/$3- $4 && make depend && make -j20 && \
