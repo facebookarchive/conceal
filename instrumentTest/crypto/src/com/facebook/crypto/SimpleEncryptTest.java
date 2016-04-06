@@ -40,7 +40,7 @@ public class SimpleEncryptTest extends InstrumentationTestCase {
     byte[] aadData = CryptoSerializerHelper.computeBytesToAuthenticate(
         entity.getBytes(),
         VersionCodes.CIPHER_SERIALIZATION_VERSION,
-        VersionCodes.CIPHER_ID);
+        CryptoConfig.KEY_128.cipherId);
     BouncyCastleHelper.Result result = BouncyCastleHelper.bouncyCastleEncrypt(mData,
         mKey,
         mIV,

@@ -20,4 +20,5 @@ public interface CryptoAlgo {
             throws IOException, CryptoInitializationException, KeyChainException;
     InputStream wrap(InputStream is, Entity entity)
             throws IOException, CryptoInitializationException, KeyChainException;
+    int getCipherMetaDataLength();
 }

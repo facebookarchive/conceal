@@ -11,6 +11,7 @@ package com.facebook.crypto.cipher;
 
 import java.util.Locale;
 
+import com.facebook.crypto.CryptoConfig;
 import com.facebook.crypto.exception.CryptoInitializationException;
 import com.facebook.crypto.util.Assertions;
 import com.facebook.crypto.util.NativeCryptoLibrary;
@@ -27,10 +28,6 @@ public class NativeGCMCipher {
   private static final String CIPHER_ALREADY_INIT = "Cipher has already been initialized";
   private static final String CIPHER_NOT_INIT = "Cipher has not been initialized";
   private static final String CIPHER_NOT_FINALIZED = "Cipher has not been finalized";
-
-  public static final int TAG_LENGTH = 16;
-  public static final int KEY_LENGTH = 16;
-  public static final int IV_LENGTH = 12;
 
   private STATE mCurrentState = STATE.UNINITIALIZED;
 
