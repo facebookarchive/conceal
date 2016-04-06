@@ -82,5 +82,4 @@ public class CryptoAlgoV1 implements CryptoAlgo {
         gcmCipher.updateAad(cipherIDBytes, 1);
         gcmCipher.updateAad(entityBytes, entityBytes.length);
     }
-
 }
