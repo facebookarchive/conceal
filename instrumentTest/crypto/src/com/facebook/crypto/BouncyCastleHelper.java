@@ -16,8 +16,6 @@ import java.util.Arrays;
 import android.annotation.TargetApi;
 import android.os.Build;
 
-import com.facebook.crypto.cipher.NativeGCMCipher;
-
 import org.spongycastle.crypto.InvalidCipherTextException;
 import org.spongycastle.crypto.engines.AESEngine;
 import org.spongycastle.crypto.modes.GCMBlockCipher;
@@ -30,13 +28,13 @@ public class BouncyCastleHelper {
   public static Result bouncyCastleEncrypt(byte[] data, byte[] key, byte[] iv, byte[] aadData)
       throws UnsupportedEncodingException, InvalidCipherTextException {
     GCMBlockCipher gcm = new GCMBlockCipher(new AESEngine());
-    byte[] gcmOut = new byte[CryptoTestUtils.NUM_DATA_BYTES + NativeGCMCipher.TAG_LENGTH];
+    byte[] gcmOut = new byte[CryptoTestUtils.NUM_DATA_BYTES + CryptoConfig.KEY_128.tagLength];
     KeyParameter keyParameter = new KeyParameter(key);
 
     // Add aad data.
     AEADParameters params = new AEADParameters(
           keyParameter,
-          NativeGCMCipher.TAG_LENGTH * 8,
+          CryptoConfig.KEY_128.tagLength * 8,
           iv,
           aadData);
 

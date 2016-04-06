@@ -12,6 +12,7 @@ package com.facebook.crypto;
 
 import com.facebook.crypto.exception.KeyChainException;
 import com.facebook.crypto.keychain.KeyChain;
+import com.facebook.crypto.mac.NativeMac;
 
 /**
  * Wrapper implementation of KeyChain.
@@ -42,7 +43,7 @@ class CheckedKeyChain implements KeyChain {
   @Override
   public byte[] getMacKey() throws KeyChainException {
     byte[] result = mDelegate.getMacKey();
-    checkLength(result, mConfig.macLength, "Mac");
+    checkLength(result, NativeMac.KEY_LENGTH, "Mac");
     return result;
   }
 

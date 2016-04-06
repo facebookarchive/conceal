@@ -28,7 +28,7 @@ public class NativeGCMCipherOutputStream extends OutputStream {
   private final NativeGCMCipher mCipher;
   private final int mUpdateBufferChunkSize;
   private final byte[] mUpdateBuffer;
-  private final byte[] mTag = new byte[NativeGCMCipher.TAG_LENGTH];
+  private final byte[] mTag;
 
   private boolean mTagAppended = false;
 
@@ -41,9 +41,11 @@ public class NativeGCMCipherOutputStream extends OutputStream {
   public NativeGCMCipherOutputStream(
           OutputStream cipherDelegate,
           NativeGCMCipher cipher,
-          byte[] encryptBuffer) {
+          byte[] encryptBuffer,
+          int tagLength) {
     mCipherDelegate = cipherDelegate;
     mCipher = cipher;
+    mTag = new byte[tagLength];
 
     // use encryptBuffer or create a new one
     int cipherBlockSize = mCipher.getCipherBlockSize();

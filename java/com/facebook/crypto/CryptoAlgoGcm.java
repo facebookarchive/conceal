@@ -24,17 +24,19 @@ public class CryptoAlgoGcm implements CryptoAlgo {
 
     private final NativeCryptoLibrary mNativeLibrary;
     private final KeyChain mKeyChain;
+    private final CryptoConfig mConfig;
 
     public CryptoAlgoGcm(NativeCryptoLibrary mNativeLibrary, KeyChain mKeyChain) {
         this.mNativeLibrary = mNativeLibrary;
         this.mKeyChain = mKeyChain;
+        this.mConfig = CryptoConfig.KEY_128;
     }
 
     @Override
     public OutputStream wrap(OutputStream cipherStream, Entity entity, byte[] buffer)
             throws IOException, CryptoInitializationException, KeyChainException {
         cipherStream.write(VersionCodes.CIPHER_SERIALIZATION_VERSION);
-        cipherStream.write(VersionCodes.CIPHER_ID);
+        cipherStream.write(mConfig.cipherId);
 
         byte[] iv = mKeyChain.getNewIV();
         NativeGCMCipher gcmCipher = new NativeGCMCipher(mNativeLibrary);
@@ -42,8 +44,8 @@ public class CryptoAlgoGcm implements CryptoAlgo {
         cipherStream.write(iv);
 
         byte[] entityBytes = entity.getBytes();
-        computeCipherAad(gcmCipher, VersionCodes.CIPHER_SERIALIZATION_VERSION, VersionCodes.CIPHER_ID, entityBytes);
-        return new NativeGCMCipherOutputStream(cipherStream, gcmCipher, buffer);
+        computeCipherAad(gcmCipher, VersionCodes.CIPHER_SERIALIZATION_VERSION, mConfig.cipherId, entityBytes);
+        return new NativeGCMCipherOutputStream(cipherStream, gcmCipher, buffer, mConfig.tagLength);
     }
 
     @Override
@@ -55,10 +57,10 @@ public class CryptoAlgoGcm implements CryptoAlgo {
         Assertions.checkArgumentForIO(cryptoVersion == VersionCodes.CIPHER_SERIALIZATION_VERSION,
                 "Unexpected crypto version " + cryptoVersion);
 
-        Assertions.checkArgumentForIO(cipherID == VersionCodes.CIPHER_ID,
+        Assertions.checkArgumentForIO(cipherID == mConfig.cipherId,
                 "Unexpected cipher ID " + cipherID);
 
-        byte[] iv = new byte[NativeGCMCipher.IV_LENGTH];
+        byte[] iv = new byte[mConfig.ivLength];
         // if iv is not fully read EOFException will be thrown
         new DataInputStream(is).readFully(iv);
 
@@ -67,7 +69,7 @@ public class CryptoAlgoGcm implements CryptoAlgo {
 
         byte[] entityBytes = entity.getBytes();
         computeCipherAad(gcmCipher, cryptoVersion, cipherID, entityBytes);
-        return new NativeGCMCipherInputStream(is, gcmCipher);
+        return new NativeGCMCipherInputStream(is, gcmCipher, mConfig.tagLength);
     }
 
     /**
@@ -80,5 +82,10 @@ public class CryptoAlgoGcm implements CryptoAlgo {
         gcmCipher.updateAad(cryptoVersionBytes, 1);
         gcmCipher.updateAad(cipherIDBytes, 1);
         gcmCipher.updateAad(entityBytes, entityBytes.length);
+    }
+
+    @Override
+    public int getCipherMetaDataLength() {
+        return 2 + mConfig.ivLength + mConfig.tagLength;
     }
 }

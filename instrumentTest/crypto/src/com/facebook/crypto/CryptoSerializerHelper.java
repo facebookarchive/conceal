@@ -10,8 +10,6 @@
 
 package com.facebook.crypto;
 
-import com.facebook.crypto.cipher.NativeGCMCipher;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
@@ -23,20 +21,20 @@ public class CryptoSerializerHelper {
 
   public static byte[] cipherText(byte[] cipheredData) {
     return Arrays.copyOfRange(cipheredData,
-        NativeGCMCipher.IV_LENGTH + 2,
-        cipheredData.length - NativeGCMCipher.TAG_LENGTH);
+        CryptoConfig.KEY_128.ivLength + 2,
+        cipheredData.length - CryptoConfig.KEY_128.tagLength);
   }
 
   public static byte[] tag(byte[] cipheredData) {
     return Arrays.copyOfRange(cipheredData,
-        cipheredData.length - NativeGCMCipher.TAG_LENGTH,
+        cipheredData.length - CryptoConfig.KEY_128.tagLength,
         cipheredData.length);
   }
 
   public static byte[] createCipheredData(byte[] iv, byte[] cipherText, byte[] tag) throws IOException {
     ByteArrayOutputStream cipheredData = new ByteArrayOutputStream();
     cipheredData.write(VersionCodes.CIPHER_SERIALIZATION_VERSION);
-    cipheredData.write(VersionCodes.CIPHER_ID);
+    cipheredData.write(CryptoConfig.KEY_128.cipherId);
     cipheredData.write(iv);
     cipheredData.write(cipherText);
     cipheredData.write(tag);
