@@ -1,4 +1,4 @@
-##What is Conceal?##
+##What is Conceal? [![Build Status](https://travis-ci.org/facebook/conceal.svg?branch=master)](https://travis-ci.org/facebook/conceal)
 Conceal provides a set of Java APIs to perform cryptography on Android. 
 It was designed to be able to encrypt large files on disk in a fast and 
 memory efficient manner. 
