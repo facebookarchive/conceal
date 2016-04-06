@@ -21,11 +21,6 @@ package com.facebook.crypto;
   public static final byte CIPHER_SERIALIZATION_VERSION = 1;
 
   /**
-   * Identifier for the cipher algorithm and the framing method used.
-   */
-  public static final byte CIPHER_ID = 1;
-
-  /**
    * Identifier for the mac serialization version.
    */
   public static final byte MAC_SERIALIZATION_VERSION = 1;

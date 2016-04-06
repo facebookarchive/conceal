@@ -16,15 +16,17 @@ package com.facebook.crypto;
  */
 public enum CryptoConfig {
 
-    VERSION_1(16, 12, 64); // used in Conceal v1
+    KEY_128((byte) 1, 16, 12, 16); // used in Conceal v1
 
+    public final byte cipherId;
     public final int keyLength;
     public final int ivLength;
-    public final int macLength;
+    public final int tagLength;
 
-    CryptoConfig(int keyLength, int ivLength, int macLength) {
+    CryptoConfig(byte chiperId, int keyLength, int ivLength, int tagLength) {
+        this.cipherId = chiperId;
         this.keyLength = keyLength;
         this.ivLength = ivLength;
-        this.macLength = macLength;
+        this.tagLength = tagLength;
     };
 }

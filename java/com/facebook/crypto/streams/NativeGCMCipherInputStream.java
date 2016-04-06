@@ -36,8 +36,8 @@ public class NativeGCMCipherInputStream extends InputStream {
    * @param cipherDelegate The stream to read encrypted bytes from.
    * @param cipher The cipher used to decrypt the bytes.
    */
-  public NativeGCMCipherInputStream(InputStream cipherDelegate, NativeGCMCipher cipher) {
-    mCipherDelegate = new TailInputStream(cipherDelegate, NativeGCMCipher.TAG_LENGTH);
+  public NativeGCMCipherInputStream(InputStream cipherDelegate, NativeGCMCipher cipher, int tagLength) {
+    mCipherDelegate = new TailInputStream(cipherDelegate, tagLength);
     mCipher = cipher;
   }
 
@@ -105,7 +105,8 @@ public class NativeGCMCipherInputStream extends InputStream {
     // state and destroy it, so we should not execute this again.
     mTagChecked = true;
     try {
-      mCipher.decryptFinal(mCipherDelegate.getTail(), NativeGCMCipher.TAG_LENGTH);
+      byte[] tail = mCipherDelegate.getTail();
+      mCipher.decryptFinal(tail, tail.length);
     } finally {
       mCipher.destroy();
     }

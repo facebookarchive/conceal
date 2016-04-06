@@ -5,12 +5,12 @@ import android.os.Build;
 import android.test.InstrumentationTestCase;
 
 import com.facebook.android.crypto.keychain.AndroidConceal;
-import com.facebook.crypto.cipher.NativeGCMCipher;
 import com.facebook.crypto.keychain.KeyChain;
 import com.facebook.crypto.util.NativeCryptoLibrary;
-import com.facebook.crypto.util.SystemNativeCryptoLibrary;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Arrays;
 
 @TargetApi(Build.VERSION_CODES.GINGERBREAD)
@@ -53,15 +53,15 @@ public class SimpleDecryptTest extends InstrumentationTestCase {
   }
 
   public void testDecryptionFailsOnIncorrectTag() throws Exception {
-    byte[] fakeTag = new byte[NativeGCMCipher.TAG_LENGTH];
+    byte[] fakeTag = new byte[CryptoConfig.KEY_128.tagLength];
     Arrays.fill(fakeTag, (byte) CryptoTestUtils.KEY_BYTES);
 
     // Overwrite the tag bytes.
     System.arraycopy(fakeTag,
         0,
         mCipheredData,
-        mCipheredData.length - NativeGCMCipher.TAG_LENGTH,
-        NativeGCMCipher.TAG_LENGTH);
+        mCipheredData.length - CryptoConfig.KEY_128.tagLength,
+            CryptoConfig.KEY_128.tagLength);
     try {
       mCrypto.decrypt(mCipheredData, new Entity(CryptoTestUtils.ENTITY_NAME));
     } catch (IOException e) {
@@ -95,7 +95,7 @@ public class SimpleDecryptTest extends InstrumentationTestCase {
     Entity entity = new Entity(CryptoTestUtils.ENTITY_NAME);
     byte[] aadData = CryptoSerializerHelper.computeBytesToAuthenticate(entity.getBytes(),
         VersionCodes.CIPHER_SERIALIZATION_VERSION,
-        VersionCodes.CIPHER_ID);
+        CryptoConfig.KEY_128.cipherId);
     BouncyCastleHelper.Result result = BouncyCastleHelper.bouncyCastleEncrypt(mData,
         mKey,
         mIV,

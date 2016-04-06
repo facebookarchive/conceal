@@ -18,7 +18,6 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Random;
 
-import com.facebook.crypto.cipher.NativeGCMCipher;
 import com.facebook.crypto.cipher.NativeGCMCipherException;
 import com.facebook.crypto.keychain.KeyChain;
 import com.facebook.crypto.util.NativeCryptoLibrary;
@@ -90,15 +89,15 @@ public class NativeGCMCipherInputStreamTest extends InstrumentationTestCase {
   }
 
   public void testDecryptionFailsOnIncorrectTag() throws Exception {
-    byte[] fakeTag = new byte[NativeGCMCipher.TAG_LENGTH];
+    byte[] fakeTag = new byte[CryptoConfig.KEY_128.tagLength];
     Arrays.fill(fakeTag, (byte) CryptoTestUtils.KEY_BYTES);
 
     // Overwrite the tag bytes.
     System.arraycopy(fakeTag,
         0,
         mCipheredData,
-        mCipheredData.length - NativeGCMCipher.TAG_LENGTH,
-        NativeGCMCipher.TAG_LENGTH);
+        mCipheredData.length - CryptoConfig.KEY_128.tagLength,
+            CryptoConfig.KEY_128.tagLength);
 
     InputStream inputStream = null;
     try {
@@ -177,7 +176,7 @@ public class NativeGCMCipherInputStreamTest extends InstrumentationTestCase {
         new Entity(CryptoTestUtils.ENTITY_NAME));
 
     ByteArrayOutputStream decryptedData = new ByteArrayOutputStream();
-    byte[] buffer = new byte[NativeGCMCipher.TAG_LENGTH / 6];
+    byte[] buffer = new byte[CryptoConfig.KEY_128.tagLength / 6];
     int read;
     while ((read = inputStream.read(buffer)) != -1) {
       assertTrue(read > 0);
@@ -225,7 +224,7 @@ public class NativeGCMCipherInputStreamTest extends InstrumentationTestCase {
     Entity entity = new Entity(CryptoTestUtils.ENTITY_NAME);
     byte[] aadData = CryptoSerializerHelper.computeBytesToAuthenticate(entity.getBytes(),
         VersionCodes.CIPHER_SERIALIZATION_VERSION,
-        VersionCodes.CIPHER_ID);
+            CryptoConfig.KEY_128.cipherId);
     BouncyCastleHelper.Result result = BouncyCastleHelper.bouncyCastleEncrypt(mData,
         mKey,
         mIV,

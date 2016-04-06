@@ -10,15 +10,15 @@
 
 package com.facebook.android.crypto.keychain;
 
-import java.security.SecureRandom;
 import java.util.Arrays;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Base64;
 
+import com.facebook.crypto.Crypto;
+import com.facebook.crypto.CryptoConfig;
 import com.facebook.crypto.keychain.KeyChain;
-import com.facebook.crypto.cipher.NativeGCMCipher;
 import com.facebook.crypto.exception.KeyChainException;
 import com.facebook.crypto.mac.NativeMac;
 
@@ -41,6 +41,8 @@ public class SharedPrefsBackedKeyChain implements KeyChain {
   /* package */ static final String CIPHER_KEY_PREF = "cipher_key";
   /* package */ static final String MAC_KEY_PREF = "mac_key";
 
+  private final CryptoConfig mCryptoConfig;
+
   private final SharedPreferences mSharedPreferences;
   private final FixedSecureRandom mSecureRandom;
 
@@ -53,12 +55,13 @@ public class SharedPrefsBackedKeyChain implements KeyChain {
   public SharedPrefsBackedKeyChain(Context context) {
     mSharedPreferences = context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
     mSecureRandom = new FixedSecureRandom();
+    mCryptoConfig = CryptoConfig.KEY_128;
   }
 
   @Override
   public synchronized byte[] getCipherKey() throws KeyChainException {
     if (!mSetCipherKey) {
-      mCipherKey = maybeGenerateKey(CIPHER_KEY_PREF, NativeGCMCipher.KEY_LENGTH);
+      mCipherKey = maybeGenerateKey(CIPHER_KEY_PREF, mCryptoConfig.keyLength);
     }
     mSetCipherKey = true;
     return mCipherKey;
@@ -75,7 +78,7 @@ public class SharedPrefsBackedKeyChain implements KeyChain {
 
   @Override
   public byte[] getNewIV() throws KeyChainException {
-    byte[] iv = new byte[NativeGCMCipher.IV_LENGTH];
+    byte[] iv = new byte[mCryptoConfig.ivLength];
     mSecureRandom.nextBytes(iv);
     return iv;
   }
