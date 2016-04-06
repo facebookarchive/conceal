@@ -64,6 +64,9 @@ public class SimpleEncryptTest extends InstrumentationTestCase {
     assertTrue(CryptoTestUtils.ENCRYPTED_DATA_OF_DIFFERENT_LENGTH,
         encryptedData.length == mData.length);
     assertFalse(CryptoTestUtils.DATA_IS_NOT_ENCRYPTED, Arrays.equals(mData, encryptedData));
+
+    int metadataLength = cipherText.length - mData.length;
+    assertEquals(CryptoTestUtils.WRONG_METADATA_LENGTH, metadataLength, mCrypto.getCipherMetaDataLength());
   }
 
   public void testMatchesWithStreamingAPI() throws KeyChainException, CryptoInitializationException, IOException {

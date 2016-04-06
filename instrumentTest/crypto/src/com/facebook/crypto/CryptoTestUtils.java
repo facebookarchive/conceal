@@ -35,4 +35,5 @@ public class CryptoTestUtils {
   public static final String KEY_NOT_FOUND = "Key not found";
   public static final String ENCRYPTED_DATA_DOES_NOT_MATCH = "Encrypted data does not match";
   public static final String TAG_DOES_NOT_MATCH = "Tag does not match";
+  public static final String WRONG_METADATA_LENGTH = "Crypto doesn't return right metadata length";
 }
