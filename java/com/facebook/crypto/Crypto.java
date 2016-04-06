@@ -33,9 +33,9 @@ public class Crypto {
   private final CryptoAlgo mCryptoAlgo;
 
   public Crypto(KeyChain keyChain, NativeCryptoLibrary nativeCryptoLibrary) {
-    mKeyChain = new CheckedKeyChain(keyChain, CryptoConfig.VERSION_1);
+    mKeyChain = new CheckedKeyChain(keyChain, CryptoConfig.KEY_128);
     mNativeCryptoLibrary = nativeCryptoLibrary;
-    mCryptoAlgo = new CryptoAlgoV1(mNativeCryptoLibrary, mKeyChain);
+    mCryptoAlgo = new CryptoAlgoGcm(mNativeCryptoLibrary, mKeyChain);
   }
 
   /**

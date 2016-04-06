@@ -16,17 +16,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * Implements version 1 of cipher.
- * Uses unpadded GCM (128-bits key + 96-bits IV).
- * It includes final AAD.
- * This is the default implementation up to Conceal 1.0.5 (Conceal.getCrypto(KeyChain)).
+ * Implements GCM cipher.
+ * Uses unpadded GCM (128-bits key + 96-bits IV). It includes final AAD.
+ * This is the default implementation up to Conceal 1.0.6 (Conceal.getCrypto(KeyChain)).
  */
-public class CryptoAlgoV1 implements CryptoAlgo {
+public class CryptoAlgoGcm implements CryptoAlgo {
 
     private final NativeCryptoLibrary mNativeLibrary;
     private final KeyChain mKeyChain;
 
-    public CryptoAlgoV1(NativeCryptoLibrary mNativeLibrary, KeyChain mKeyChain) {
+    public CryptoAlgoGcm(NativeCryptoLibrary mNativeLibrary, KeyChain mKeyChain) {
         this.mNativeLibrary = mNativeLibrary;
         this.mKeyChain = mKeyChain;
     }
