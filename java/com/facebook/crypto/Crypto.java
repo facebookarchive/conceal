@@ -31,10 +31,18 @@ public class Crypto {
   private final NativeCryptoLibrary mNativeCryptoLibrary;
   private final CryptoAlgo mCryptoAlgo;
 
+  /**
+   * @deprecated Use ConcealAndroid.get().createCrypto(...)
+   */
+  @Deprecated
   public Crypto(KeyChain keyChain, NativeCryptoLibrary nativeCryptoLibrary) {
-    mKeyChain = new CheckedKeyChain(keyChain, CryptoConfig.KEY_128);
+    this(keyChain, nativeCryptoLibrary, CryptoConfig.KEY_128);
+  }
+
+  public Crypto(KeyChain keyChain, NativeCryptoLibrary nativeCryptoLibrary, CryptoConfig config) {
+    mKeyChain = new CheckedKeyChain(keyChain, config);
     mNativeCryptoLibrary = nativeCryptoLibrary;
-    mCryptoAlgo = new CryptoAlgoGcm(mNativeCryptoLibrary, mKeyChain);
+    mCryptoAlgo = new CryptoAlgoGcm(mNativeCryptoLibrary, mKeyChain, config);
   }
 
   /**
