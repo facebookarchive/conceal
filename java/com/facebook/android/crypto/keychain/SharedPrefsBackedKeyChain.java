@@ -10,17 +10,16 @@
 
 package com.facebook.android.crypto.keychain;
 
-import java.util.Arrays;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Base64;
 
-import com.facebook.crypto.Crypto;
 import com.facebook.crypto.CryptoConfig;
-import com.facebook.crypto.keychain.KeyChain;
 import com.facebook.crypto.exception.KeyChainException;
+import com.facebook.crypto.keychain.KeyChain;
 import com.facebook.crypto.mac.NativeMac;
+
+import java.util.Arrays;
 
 /**
  * An implementation of a keychain that is backed by shared preferences.
@@ -62,9 +61,25 @@ public class SharedPrefsBackedKeyChain implements KeyChain {
   }
 
   public SharedPrefsBackedKeyChain(Context context, CryptoConfig config) {
-    mSharedPreferences = context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+    String prefName = prefNameForConfig(config);
+    mSharedPreferences = context.getSharedPreferences(prefName, Context.MODE_PRIVATE);
     mSecureRandom = new FixedSecureRandom();
     mCryptoConfig = config;
+  }
+
+  /**
+   * We should store different configuration keys separately, specially to support the
+   * case of migration: one KeyChain has the 128-bit to read old stored data, another KeyChain
+   * has the 256-bit value to rewrite all data.
+   * <p>
+   * So the preference name will depend on the config.
+   * For backward compatibility the name for 128-bits is kept as SHARED_PREF_NAME.
+   */
+  private static String prefNameForConfig(CryptoConfig config) {
+    return config == CryptoConfig.KEY_128
+            ? SHARED_PREF_NAME
+            : SHARED_PREF_NAME + "." + String.valueOf(config);
+
   }
 
   @Override
