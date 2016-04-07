@@ -16,7 +16,8 @@ package com.facebook.crypto;
  */
 public enum CryptoConfig {
 
-    KEY_128((byte) 1, 16, 12, 16); // used in Conceal v1
+    KEY_128((byte) 1, 16, 12, 16), // used in Conceal v1
+    KEY_256((byte) 2, 32, 12, 16);
 
     public final byte cipherId;
     public final int keyLength;

@@ -38,24 +38,34 @@ int Init_GCM(JNIEnv* env, jobject obj, jbyteArray key, jbyteArray iv, jint mode)
     return CRYPTO_FAILURE;
   }
 
+  jsize ivLength = (*env)->GetArrayLength(env, iv);
+  jsize keyLength = (*env)->GetArrayLength(env, key);
+
+  const EVP_CIPHER* cipher;
+  switch (keyLength) {
+    case 16: cipher = EVP_aes_128_gcm(); break;
+    case 32: cipher = EVP_aes_256_gcm(); break;
+    default: return CRYPTO_FAILURE;
+  }
+
   jbyte* ivBytes = (*env)->GetByteArrayElements(env, iv, NULL);
   if (!ivBytes) {
     (*env)->ReleaseByteArrayElements(env, key, keyBytes, JNI_ABORT);
     return CRYPTO_FAILURE;
   }
 
-  GCM_JNI_CTX* ctx = Create_GCM_JNI_CTX(keyBytes, ivBytes);
+  GCM_JNI_CTX* ctx = Create_GCM_JNI_CTX(keyBytes, keyLength, ivBytes, ivLength);
   Set_GCM_JNI_CTX(env, obj, ctx);
 
   (*env)->ReleaseByteArrayElements(env, key, keyBytes, JNI_ABORT);
   (*env)->ReleaseByteArrayElements(env, iv, ivBytes, JNI_ABORT);
 
   if (mode == GCM_ENCRYPT_MODE) {
-    if (!EVP_EncryptInit(ctx->cipherCtx, EVP_aes_128_gcm(), ctx->key, ctx->iv)) {
+    if (!EVP_EncryptInit(ctx->cipherCtx, cipher, ctx->key, ctx->iv)) {
       return CRYPTO_FAILURE;
     }
   } else if (mode == GCM_DECRYPT_MODE) {
-    if (!EVP_DecryptInit(ctx->cipherCtx, EVP_aes_128_gcm(), ctx->key, ctx->iv)) {
+    if (!EVP_DecryptInit(ctx->cipherCtx, cipher, ctx->key, ctx->iv)) {
       return CRYPTO_FAILURE;
     }
   } else {
@@ -64,19 +74,19 @@ int Init_GCM(JNIEnv* env, jobject obj, jbyteArray key, jbyteArray iv, jint mode)
   return CRYPTO_SUCCESS;
 }
 
-GCM_JNI_CTX* Create_GCM_JNI_CTX(jbyte* keyBytes, jbyte* ivBytes) {
+GCM_JNI_CTX* Create_GCM_JNI_CTX(jbyte* keyBytes, jsize keyLength, jbyte* ivBytes, jsize ivLength) {
   GCM_JNI_CTX* ctx = (GCM_JNI_CTX*) malloc(sizeof(GCM_JNI_CTX));
   if (!ctx) {
     return NULL;
   }
 
-  ctx->key = (jbyte*) malloc(sizeof(jbyte) * GCM_KEY_LENGTH_IN_BYTES);
+  ctx->key = (jbyte*) malloc(sizeof(jbyte) * keyLength);
   if (!ctx->key) {
     free(ctx);
     return NULL;
   }
 
-  ctx->iv = (jbyte*) malloc(sizeof(jbyte) * GCM_IV_LENGTH_IN_BYTES);
+  ctx->iv = (jbyte*) malloc(sizeof(jbyte) * ivLength);
   if (!ctx->iv) {
     free(ctx->key);
     free(ctx);
@@ -91,8 +101,8 @@ GCM_JNI_CTX* Create_GCM_JNI_CTX(jbyte* keyBytes, jbyte* ivBytes) {
     return NULL;
   }
 
-  memcpy(ctx->key, keyBytes, GCM_KEY_LENGTH_IN_BYTES);
-  memcpy(ctx->iv, ivBytes, GCM_IV_LENGTH_IN_BYTES);
+  memcpy(ctx->key, keyBytes, keyLength);
+  memcpy(ctx->iv, ivBytes, ivLength);
   return ctx;
 }
 
