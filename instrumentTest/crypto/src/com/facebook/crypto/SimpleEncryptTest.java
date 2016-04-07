@@ -3,6 +3,8 @@ package com.facebook.crypto;
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.test.InstrumentationTestCase;
+
+import com.facebook.android.crypto.keychain.AndroidConceal;
 import com.facebook.crypto.exception.CryptoInitializationException;
 import com.facebook.crypto.exception.KeyChainException;
 import com.facebook.crypto.keychain.KeyChain;
@@ -25,11 +27,10 @@ public class SimpleEncryptTest extends InstrumentationTestCase {
 
   protected void setUp() throws Exception {
     super.setUp();
-    mNativeCryptoLibrary = new SystemNativeCryptoLibrary();
     KeyChain keyChain = new FakeKeyChain();
     mKey = keyChain.getCipherKey();
     mIV = keyChain.getNewIV();
-    mCrypto = new Crypto(keyChain, mNativeCryptoLibrary);
+    mCrypto = AndroidConceal.get().createCrypto128Bits(keyChain);
     mData = new byte[CryptoTestUtils.NUM_DATA_BYTES];
   }
 

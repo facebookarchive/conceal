@@ -17,7 +17,7 @@ void Init_GCM_CTX_Ptr_Field(JNIEnv* env);
 
 int Init_GCM(JNIEnv* env, jobject obj, jbyteArray key, jbyteArray iv, jint mode);
 
-GCM_JNI_CTX* Create_GCM_JNI_CTX(jbyte* keyBytes, jbyte* ivBytes);
+GCM_JNI_CTX* Create_GCM_JNI_CTX(jbyte* keyBytes, jsize keyLength, jbyte* ivBytes, jsize ivLength);
 
 GCM_JNI_CTX* Get_GCM_JNI_CTX(JNIEnv* env, jobject obj);
 

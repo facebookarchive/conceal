@@ -52,10 +52,19 @@ public class SharedPrefsBackedKeyChain implements KeyChain {
   protected byte[] mMacKey;
   protected boolean mSetMacKey;
 
+  /**
+   * @deprecated This default constructor uses 128-bit keys for backward compatibility
+   *             but current standard is 256-bits. Use explicit constructor instead.
+   */
+  @Deprecated
   public SharedPrefsBackedKeyChain(Context context) {
+    this(context, CryptoConfig.KEY_128);
+  }
+
+  public SharedPrefsBackedKeyChain(Context context, CryptoConfig config) {
     mSharedPreferences = context.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
     mSecureRandom = new FixedSecureRandom();
-    mCryptoConfig = CryptoConfig.KEY_128;
+    mCryptoConfig = config;
   }
 
   @Override

@@ -10,6 +10,11 @@
 
 package com.facebook.crypto;
 
+import com.facebook.crypto.exception.KeyChainException;
+import com.facebook.crypto.keychain.KeyChain;
+
+import java.io.ByteArrayOutputStream;
+
 public class CryptoTestUtils {
   public static final int NUM_DATA_BYTES = 2752;
   public static final int KEY_BYTES = 42;
@@ -36,4 +41,56 @@ public class CryptoTestUtils {
   public static final String ENCRYPTED_DATA_DOES_NOT_MATCH = "Encrypted data does not match";
   public static final String TAG_DOES_NOT_MATCH = "Tag does not match";
   public static final String WRONG_METADATA_LENGTH = "Crypto doesn't return right metadata length";
+
+  public static KeyChain fixedKeyChain(final String key, final String iv) {
+    return new KeyChain() {
+
+      private final byte[] mKey = toBytes(key);
+      private final byte[] mIV = toBytes(iv);
+
+      @Override
+      public byte[] getCipherKey() throws KeyChainException {
+        return mKey;
+      }
+
+      @Override
+      public byte[] getMacKey() throws KeyChainException {
+        throw new UnsupportedOperationException();
+      }
+
+      @Override
+      public byte[] getNewIV() throws KeyChainException {
+        return mIV;
+      }
+
+      @Override
+      public void destroyKeys() {
+        // nothing
+      }
+    };
+  }
+
+  private static final String VALID = "0123456789abcdef0123456789ABCDEF";
+
+  public static byte[] toBytes(String hexa) {
+    boolean second = false;
+    int current = 0;
+    ByteArrayOutputStream baos = new ByteArrayOutputStream(hexa.length() / 2);
+    for (int i = 0; i < hexa.length(); i++) {
+      char c = hexa.charAt(i);
+      int value = VALID.indexOf(c) % 16;
+      if (value < 0) {
+        continue;
+      }
+      if (second) {
+        current += value;
+        second = false;
+        baos.write(current);
+      } else {
+        current = value * 16;
+        second = true;
+      }
+    }
+    return baos.toByteArray();
+  }
 }
