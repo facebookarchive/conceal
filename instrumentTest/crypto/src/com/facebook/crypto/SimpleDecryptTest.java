@@ -26,7 +26,7 @@ public class SimpleDecryptTest extends InstrumentationTestCase {
   protected void setUp() throws Exception {
     super.setUp();
     KeyChain keyChain = new FakeKeyChain();
-    mCrypto = AndroidConceal.get().createCrypto(keyChain);
+    mCrypto = AndroidConceal.get().createCrypto128Bits(keyChain);
     mIV = keyChain.getNewIV();
     mKey = keyChain.getCipherKey();
 

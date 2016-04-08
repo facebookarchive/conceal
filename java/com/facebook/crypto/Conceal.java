@@ -3,7 +3,6 @@ package com.facebook.crypto;
 import com.facebook.crypto.keychain.KeyChain;
 import com.facebook.crypto.keygen.PasswordBasedKeyDerivation;
 import com.facebook.crypto.util.NativeCryptoLibrary;
-import com.facebook.crypto.util.SystemNativeCryptoLibrary;
 
 import java.security.SecureRandom;
 
@@ -27,8 +26,24 @@ public abstract class Conceal {
         this.secureRandom = secureRandom;
     }
 
-    public Crypto createCrypto(KeyChain keyChain) {
-        return new Crypto(keyChain, this.nativeLibrary);
+    /**
+     * Creates a Crypto with the current default configuration for Conceal: 256-bit key.
+     * <b>Warning:</b> if you need to read previous versions of Conceal data (1.0.x)
+     * you will need to use the specific factory method and correct length key chain.
+     * createCrypto128Bits(...). Otherwise data won't be correctly decrypted.
+     * @see com.facebook.android.crypto.keychain.SharedPrefsBackedKeyChain#SharedPrefsBackedKeyChain(Context, CryptoConfig)
+     * @param keyChain a 256-bits KeyChain
+     */
+    public Crypto createDefaultCrypto(KeyChain keyChain) {
+        return createCrypto256Bits(keyChain);
+    }
+
+    public Crypto createCrypto128Bits(KeyChain keyChain128Bits) {
+        return new Crypto(keyChain128Bits, nativeLibrary, CryptoConfig.KEY_128);
+    }
+
+    public Crypto createCrypto256Bits(KeyChain keyChain256Bits) {
+        return new Crypto(keyChain256Bits, nativeLibrary, CryptoConfig.KEY_256);
     }
 
     public PasswordBasedKeyDerivation createPasswordBasedKeyDerivation() {

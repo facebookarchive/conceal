@@ -41,7 +41,7 @@ public class NativeMacLayeredInputStreamTest extends InstrumentationTestCase {
 
   public void setUp() throws Exception {
     mKeyChain = new FakeKeyChain();
-    mCrypto = AndroidConceal.get().createCrypto(mKeyChain);
+    mCrypto = AndroidConceal.get().createCrypto128Bits(mKeyChain);
 
     mData = new byte[CryptoTestUtils.NUM_DATA_BYTES];
     Random random = new Random();

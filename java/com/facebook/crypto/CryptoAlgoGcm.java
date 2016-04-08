@@ -26,10 +26,10 @@ public class CryptoAlgoGcm implements CryptoAlgo {
     private final KeyChain mKeyChain;
     private final CryptoConfig mConfig;
 
-    public CryptoAlgoGcm(NativeCryptoLibrary mNativeLibrary, KeyChain mKeyChain) {
+    public CryptoAlgoGcm(NativeCryptoLibrary mNativeLibrary, KeyChain mKeyChain, CryptoConfig config) {
         this.mNativeLibrary = mNativeLibrary;
         this.mKeyChain = mKeyChain;
-        this.mConfig = CryptoConfig.KEY_128;
+        this.mConfig = config;
     }
 
     @Override
