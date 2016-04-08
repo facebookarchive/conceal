@@ -145,13 +145,12 @@ inputStream.close();
 
 ### Upgrade notes
 
-Starting with v1.1 recommended encryption will use a 256 bit key (instead of 128 bit). This means stronger security.
-If you are storing new content, we encourage you to use this new default.
+Starting with v1.1 recommended encryption will use a 256-bit key (instead of 128-bit). This means stronger security.
+You should use this default.
 
-If you need to read from an existing file, you will need to use the 128-bit encryption as you did so far
-(although eventually re-encrypting with 256-bit keys would be ideal).
+If you need to read from an existing file, you still will need 128-bit encryption. You can use the old way of creating `Crypto` objects as it preserves its 128-bit behavior. Although ideally you should re-encrypt that content with a 256-bit key.
 
-Old way of creating `Crypto` objects is backward compatibles, while new factory methods go 256-bits.
+
 
 #### Existing code still with 128-bit keys (deprecated)
 
