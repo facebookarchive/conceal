@@ -145,29 +145,29 @@ inputStream.close();
 
 ### Upgrade notes
 
-Starting with v1.1 recommended encryption will use a 256 bit key (instead of 128 bit). This means a stronger security.
-If you are creating new storages, we encourage you to use the new default.
+Starting with v1.1 recommended encryption will use a 256 bit key (instead of 128 bit). This means stronger security.
+If you are storing new content, we encourage you to use this new default.
 
-If you need to read from existing storage, you will need to use the 128-bit encryption as you did so far
+If you need to read from an existing file, you will need to use the 128-bit encryption as you did so far
 (although eventually re-encrypting with 256-bit keys would be ideal).
 
-The code was changed to reflect this default but existing code will still work as intended:
+Old way of creating `Crypto` objects is backward compatibles, while new factory methods go 256-bits.
 
 #### Existing code still with 128-bit keys (deprecated)
 
 ```
-// this constructor creates a key chain producing 128-bit keys
+// this constructor creates a key chain that produces 128-bit keys
 KeyChain keyChain = new SharedPrefsBackedKeyChain(context);
-// this constructor creates a crypto expecting 128-bit keys
+// this constructor creates a crypto that uses  128-bit keys
 Crypto crypto = new Crypto(keyChain, library);
 ```
 
 #### New code using 256-keys
 
-Now we recommend the use of the factory class AndroidConceal.
+We recommend the use of the factory class `AndroidConceal`.
 
 ```
-// explicitely create 256-bit key
+// explicitely create 256-bit key chain
 KeyChain keyChain = new SharedPrefsBackedKeyChain(context, CryptoConfig.KEY_256);
 // create the default crypto (expects 256-bit key)
 AndroidConceal.get().createDefaultCrypto(keyChain);
