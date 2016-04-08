@@ -1,4 +1,5 @@
 ##What is Conceal? [![Build Status](https://travis-ci.org/facebook/conceal.svg?branch=master)](https://travis-ci.org/facebook/conceal)
+
 Conceal provides a set of Java APIs to perform cryptography on Android. 
 It was designed to be able to encrypt large files on disk in a fast and 
 memory efficient manner. 
@@ -10,6 +11,8 @@ Unlike other libraries, which provide a Smorgasbord of encryption algorithms
 and options, Conceal prefers to abstract this choice and use sane defaults. 
 Thus Conceal is not a general purpose crypto library, however it aims to provide 
 useful functionality.
+
+***Upgrading version?*** Check the [Upgrade notes](#upgrade-notes) for key compatibility!
 
 ##Quick start##
 
@@ -59,8 +62,8 @@ encryption process is using integration tests.
 ####Encryption###
 ```java
 // Creates a new Crypto object with default implementations of a key chain
-Crypto crypto = AndroidConceal.get().createCrypto(
-  new SharedPrefsBackedKeyChain(context));
+KeyChain keyChain = new SharedPrefsBackedKeyChain(context, CryptoConfig.KEY_256));
+Crypto crypto = AndroidConceal.get().createDefaultCrypto(keyChain);
 
 // Check for whether the crypto functionality is available
 // This might fail if Android does not load libaries correctly.
@@ -138,6 +141,38 @@ while((read = inputStream.read(buffer)) != -1) {
   out.write(buffer, 0, read);
 }
 inputStream.close();
+```
+
+### Upgrade notes
+
+Starting with v1.1 recommended encryption will use a 256 bit key (instead of 128 bit). This means a stronger security.
+If you are creating new storages, we encourage you to use the new default.
+
+If you need to read from existing storage, you will need to use the 128-bit encryption as you did so far
+(although eventually re-encrypting with 256-bit keys would be ideal).
+
+The code was changed to reflect this default but existing code will still work as intended:
+
+#### Existing code still with 128-bit keys (deprecated)
+
+```
+// this constructor creates a key chain producing 128-bit keys
+KeyChain keyChain = new SharedPrefsBackedKeyChain(context);
+// this constructor creates a crypto expecting 128-bit keys
+Crypto crypto = new Crypto(keyChain, library);
+```
+
+#### New code using 256-keys
+
+Now we recommend the use of the factory class AndroidConceal.
+
+```
+// explicitely create 256-bit key
+KeyChain keyChain = new SharedPrefsBackedKeyChain(context, CryptoConfig.KEY_256);
+// create the default crypto (expects 256-bit key)
+AndroidConceal.get().createDefaultCrypto(keyChain);
+
+// factory class also has explicit methods: createCrypto128Bits and ceateCrypto256Bits if desired.
 ```
 
 ##Troubleshooting##
