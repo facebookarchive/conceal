@@ -9,6 +9,7 @@ LATEST_OPENSSL := OpenSSL_1_0_2g
 SRC_OPENSSL := src_openssl
 OUT_OPENSSL := openssl
 TMP_TOOLCHAIN := /tmp/toolchain
+CONFIG_OPTIONS := -fPIC
 
 #
 # Requires ANDROID_NDK to be set
@@ -26,8 +27,8 @@ define gen_arch_libcrypto
 	-rm -rf $(TMP_TOOLCHAIN)/$1
 	$(BASE_TOOLCHAIN)$2 --install-dir=$(TMP_TOOLCHAIN)/$1
 	cd $(SRC_OPENSSL) && \
-                mkdir ../$(OUT_OPENSSL)/$1 && \
-		./Configure$5 --cross-compile-prefix=$(TMP_TOOLCHAIN)/$1/bin/$3- $4 && make depend && make -j20 && \
+                mkdir -p ../$(OUT_OPENSSL)/$1 && \
+		./Configure$5 $(CONFIG_OPTIONS) --cross-compile-prefix=$(TMP_TOOLCHAIN)/$1/bin/$3- $4 && make depend && make -j20 && \
 		cp libcrypto.a ../$(OUT_OPENSSL)/$1/libcrypto.a
 	-$(MAKE) -C $(SRC_OPENSSL) clean
 endef
