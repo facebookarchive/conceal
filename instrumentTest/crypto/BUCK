@@ -7,6 +7,20 @@ android_binary(
   ],
 )
 
+# instrumentation test on Android 6
+android_binary(
+  name = 'crypto-6',
+  manifest = 'AndroidManifest.xml',
+  keystore = '//keystores:debug',
+  deps = [
+    ':crypto-lib',
+  ],
+  manifest_entries = {
+    'min_sdk_version': 16,
+    'target_sdk_version': 23,
+  },
+)
+
 android_library(
   name = 'crypto-lib',
   srcs = glob(['src/**/*.java']),
