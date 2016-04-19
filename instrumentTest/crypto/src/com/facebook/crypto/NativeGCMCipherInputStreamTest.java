@@ -151,6 +151,16 @@ public class NativeGCMCipherInputStreamTest extends InstrumentationTestCase {
     assertTrue(CryptoTestUtils.DECRYPTED_DATA_IS_DIFFERENT, Arrays.equals(mData, decryptedData));
   }
 
+  public void testDecryptValidDataWithEntityFactory() throws Exception {
+      // create Entity with factory method for 1.0.x entity
+      InputStream inputStream = mCrypto.getCipherInputStream(
+              mCipherInputStream,
+              Entity.utf16(CryptoTestUtils.ENTITY_NAME));
+      byte[] decryptedData = ByteStreams.toByteArray(inputStream);
+      inputStream.close();
+      assertTrue(CryptoTestUtils.DECRYPTED_DATA_IS_DIFFERENT, Arrays.equals(mData, decryptedData));
+  }
+
   public void testDecryptAndSkipValidData() throws Exception {
     InputStream inputStream = mCrypto.getCipherInputStream(
         mCipherInputStream,
