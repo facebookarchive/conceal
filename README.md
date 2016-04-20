@@ -78,7 +78,7 @@ OutputStream fileStream = new BufferedOutputStream(
 // it is written to it and writes it out to the file.
 OutputStream outputStream = crypto.getCipherOutputStream(
   fileStream,
-  entity);
+  Entity.create("entity_id"));
 
 // Write plaintext to it.
 outputStream.write(plainText);
@@ -94,7 +94,7 @@ FileInputStream fileStream = new FileInputStream(file);
 // it is read from it.
 InputStream inputStream = crypto.getCipherInputStream(
   fileStream,
-  entity);
+  Entity.create("entity_id"));
 
 // Read into a byte array.
 int read;
@@ -150,18 +150,19 @@ You should use this default.
 
 If you need to read from an existing file, you still will need 128-bit encryption. You can use the old way of creating `Crypto` objects as it preserves its 128-bit behavior. Although ideally you should re-encrypt that content with a 256-bit key.
 
+Also there's an improved way of creating Entity object which is platform independent. It's strongly recommended for new encrypted items although you need to stick to the old way for already encrypted content.
 
-
-#### Existing code still with 128-bit keys (deprecated)
+#### Existing code still with 128-bit keys and old Entity (deprecated)
 
 ```
 // this constructor creates a key chain that produces 128-bit keys
 KeyChain keyChain = new SharedPrefsBackedKeyChain(context);
 // this constructor creates a crypto that uses  128-bit keys
 Crypto crypto = new Crypto(keyChain, library);
+Entity entity = new Entity(someStringId);
 ```
 
-#### New code using 256-keys
+#### New code using 256-keys and Entity.create
 
 We recommend the use of the factory class `AndroidConceal`.
 
@@ -170,8 +171,8 @@ We recommend the use of the factory class `AndroidConceal`.
 KeyChain keyChain = new SharedPrefsBackedKeyChain(context, CryptoConfig.KEY_256);
 // create the default crypto (expects 256-bit key)
 AndroidConceal.get().createDefaultCrypto(keyChain);
-
 // factory class also has explicit methods: createCrypto128Bits and ceateCrypto256Bits if desired.
+Entity entity = Entity.create(someStringId);
 ```
 
 ##Troubleshooting##
