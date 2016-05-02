@@ -154,7 +154,7 @@ Also there's an improved way of creating Entity object which is platform indepen
 
 #### Existing code still with 128-bit keys and old Entity (deprecated)
 
-```
+```java
 // this constructor creates a key chain that produces 128-bit keys
 KeyChain keyChain = new SharedPrefsBackedKeyChain(context);
 // this constructor creates a crypto that uses  128-bit keys
@@ -166,7 +166,7 @@ Entity entity = new Entity(someStringId);
 
 We recommend the use of the factory class `AndroidConceal`.
 
-```
+```java
 // explicitely create 256-bit key chain
 KeyChain keyChain = new SharedPrefsBackedKeyChain(context, CryptoConfig.KEY_256);
 // create the default crypto (expects 256-bit key)
