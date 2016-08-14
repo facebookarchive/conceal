@@ -62,7 +62,7 @@ encryption process is using integration tests.
 ####Encryption###
 ```java
 // Creates a new Crypto object with default implementations of a key chain
-KeyChain keyChain = new SharedPrefsBackedKeyChain(context, CryptoConfig.KEY_256));
+KeyChain keyChain = new SharedPrefsBackedKeyChain(context, CryptoConfig.KEY_256);
 Crypto crypto = AndroidConceal.get().createDefaultCrypto(keyChain);
 
 // Check for whether the crypto functionality is available
