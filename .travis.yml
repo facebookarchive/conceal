@@ -25,6 +25,9 @@ android:
     - sys-img-x86-android-17
     # TODO: Configure travis to run in more than one emulator
 
+jdk:
+    - oraclejdk8
+
 before_install:
   - . .travis/install-ndk
   - . .travis/install-buck
