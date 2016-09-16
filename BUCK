@@ -35,9 +35,6 @@ robolectric_test(
     '//third-party/guava:guava',
     '//third-party/robolectric2:robolectric2',
   ],
-  source_under_test = [
-    ':conceal_android',
-  ],
 )
 
 java_test(
@@ -49,9 +46,6 @@ java_test(
     '//third-party/junit:junit',
     '//third-party/junit:hamcrest',
     '//third-party/guava:guava',
-  ],
-  source_under_test = [
-    ':libconceal',
   ],
 )
 
