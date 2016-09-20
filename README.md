@@ -14,6 +14,8 @@ useful functionality.
 
 ***Upgrading version?*** Check the [Upgrade notes](#upgrade-notes) for key compatibility!
 
+***Using 1.1.x?*** It's strongly advised to upgrade to ```1.1.3``` as the library size is significatively smaller.
+
 ##Quick start##
 
 ####Setup options####
@@ -25,7 +27,7 @@ buck build :conceal_android
 
 * **Use prebuilt binaries**: http://facebook.github.io/conceal/documentation/.
 
-* **Use Maven Central**: Available on maven central under **com.facebook.conceal:conceal:1.1.2@aar** as an AAR package.
+* **Use Maven Central**: Available on maven central under **com.facebook.conceal:conceal:1.1.3@aar** as an AAR package.
 
 ####Running Benchmarks####
 ```bash
