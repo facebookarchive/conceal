@@ -9,7 +9,7 @@ LATEST_OPENSSL := OpenSSL_1_0_2g
 SRC_OPENSSL := src_openssl
 OUT_OPENSSL := openssl
 TMP_TOOLCHAIN := /tmp/toolchain
-CONFIG_OPTIONS := -fPIC
+CONFIG_OPTIONS := -fPIC -ffunction-sections -fdata-sections
 
 #
 # Requires ANDROID_NDK to be set
