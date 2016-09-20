@@ -14,7 +14,7 @@ useful functionality.
 
 ***Upgrading version?*** Check the [Upgrade notes](#upgrade-notes) for key compatibility!
 
-***Using 1.1.x?*** It's strongly advised to upgrade to ```1.1.3``` as the library size is significatively smaller.
+***Already using 1.1.x?*** It's strongly advised to upgrade to ```1.1.3``` as the library size is significatively smaller.
 
 ##Quick start##
 
