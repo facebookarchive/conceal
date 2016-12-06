@@ -11,7 +11,6 @@
 package com.facebook.crypto;
 
 import com.facebook.android.crypto.keychain.AndroidConceal;
-import com.facebook.android.crypto.keychain.FixedSecureRandom;
 import com.facebook.crypto.keygen.PasswordBasedKeyDerivation;
 import com.facebook.crypto.util.SystemNativeCryptoLibrary;
 
