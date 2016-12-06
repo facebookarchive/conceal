@@ -19,6 +19,7 @@ import com.facebook.crypto.exception.KeyChainException;
 import com.facebook.crypto.keychain.KeyChain;
 import com.facebook.crypto.mac.NativeMac;
 
+import java.security.SecureRandom;
 import java.util.Arrays;
 
 /**
@@ -43,7 +44,7 @@ public class SharedPrefsBackedKeyChain implements KeyChain {
   private final CryptoConfig mCryptoConfig;
 
   private final SharedPreferences mSharedPreferences;
-  private final FixedSecureRandom mSecureRandom;
+  private final SecureRandom mSecureRandom;
 
   protected byte[] mCipherKey;
   protected boolean mSetCipherKey;
@@ -63,7 +64,7 @@ public class SharedPrefsBackedKeyChain implements KeyChain {
   public SharedPrefsBackedKeyChain(Context context, CryptoConfig config) {
     String prefName = prefNameForConfig(config);
     mSharedPreferences = context.getSharedPreferences(prefName, Context.MODE_PRIVATE);
-    mSecureRandom = new FixedSecureRandom();
+    mSecureRandom = SecureRandomFix.createLocalSecureRandom();
     mCryptoConfig = config;
   }
 
