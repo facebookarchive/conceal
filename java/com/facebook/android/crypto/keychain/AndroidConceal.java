@@ -19,6 +19,6 @@ public class AndroidConceal extends Conceal {
     }
 
     private AndroidConceal() {
-        super(new SystemNativeCryptoLibrary(), new FixedSecureRandom());
+        super(new SystemNativeCryptoLibrary(), SecureRandomFix.createLocalSecureRandom());
     }
 }
