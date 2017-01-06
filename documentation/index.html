@@ -1,0 +1,74 @@
+---
+title: Documentation
+---
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Conceal: Documentation</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{ site.baseurl}}/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{ site.baseurl}}/css/jumbotron-narrow.css" rel="stylesheet">
+    
+    <!-- For syntax highlighting -->
+    <link href="{{ site.baseurl}}/css/syntax.css" rel="stylesheet">
+    
+    <link href="{{ site.baseurl}}/css/custom.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+    <script src="{{ site.baseurl}}/js/Chart.js"></script>
+    <script src="{{ site.baseurl}}/js/benchmark_charts.js"></script>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="header">
+        <ul class="nav nav-pills pull-right">
+          <li><a href="{{ site.baseurl }}">Home</a></li>
+          <li><a href="{{ site.baseurl }}/faq">FAQ</a></li>
+          <li class="active"><a href="{{ site.baseurl }}/documentation">Documentation</a></li>
+          <li><a href="https://github.com/facebook/conceal">Github</a></li>
+        </ul>
+        <h3 class="text-muted">Conceal</h3>
+      </div>
+      <h3>Quick start</h3>
+      If you're using
+      <a target="_blank" href="http://facebook.github.io/buck/setup/quick_start.html">BUCK</a>,
+      you can grab the repo from
+      <a target="_blank" href="https://github.com/facebook/conceal">Github</a>
+      and build it.
+      </p>
+      {% include buck_build.html %} 
+      The resulting binaries will be in buck-out/
+      </p>
+      If you're not using BUCK, you can just grab the binaries from
+      </p>
+      <ul class="list-group">
+        <li class="success list-group-item"><a href="https://raw.github.com/facebook/conceal/gh-pages/downloads/libconceal.jar">Conceal jar</a></li>
+        <li class="success list-group-item"><a href="https://raw.github.com/facebook/conceal/gh-pages/downloads/conceal_android.jar">Android jar</a></li>
+        <li class="success list-group-item"><a href="https://raw.github.com/facebook/conceal/gh-pages/downloads/libs.zip">Native Binaries</a></li>
+      </ul>
+      Add a dependency to libconceal.jar as well as conceal_android.jar from java code using your favorite dependency management system, 
+      and drop the .so files in libs.zip into your jniLibs/ folder located at src/main/jniLibs
+    
+      <h3>Encrypting content</h3>
+      {% include encrypt_example.html %} 
+      <h3>Decrypting content</h3>
+      {% include decrypt_example.html %}
+      <h3>Creating a new keychain</h3>
+      The default KeyChain stores it's data into shared preferences. You might want to implement
+      your own KeyChain to persist key material somewhere else.
+      {% include custom_keychain.html %}
+    </div>
+  </body>
+</html>

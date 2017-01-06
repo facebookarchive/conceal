@@ -1,0 +1,130 @@
+---
+title: FAQ
+---
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Conceal</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{ site.baseurl}}/css/bootstrap.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{ site.baseurl}}/css/jumbotron-narrow.css" rel="stylesheet">
+    
+    <!-- For syntax highlighting -->
+    <link href="{{ site.baseurl}}/css/syntax.css" rel="stylesheet">
+    
+    <link href="{{ site.baseurl}}/css/custom.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <ul class="nav nav-pills pull-right">
+          <li><a href="{{ site.baseurl }}">Home</a></li>
+          <li class="active"><a href="{{ site.baseurl }}/faq">FAQ</a></li>
+          <li><a href="{{ site.baseurl }}/documentation">Documentation</a></li>
+          <li><a href="https://github.com/facebook/conceal">Github</a></li>
+        </ul>
+        <h3 class="text-muted">Conceal</h3>
+      </div>
+      <ul>
+        <li>
+          <p>Why should I use care about this?</p>
+          <p>
+            As the Android platform gains popularity, it will become an
+            attractive target for malware developers. Malware and Spyware put user's
+            data at risk. We believe that safeguarding user's data against
+            spyware and malware is very important for user trust.
+            </p>
+            At Facebook, we've been using Conceal for a while now to encrypt data on SD cards. 
+            We think that other developers also believe in this goal, however are deterred by
+            the impact of encryption on old phones. We've released this library so that every
+            app can protect user data in an efficient manner. We also want to get the
+            community involved to further improve the security and efficiency this library.
+          </p>
+        </li>
+        <li>
+          <p>How can I contribute?</p>
+          <p>
+            We're actively looking for contributions to the project on        
+            <a href="http://facebook.github.io/conceal/">Github</a>.
+            Feel free to submit an issue or pull request.
+          </p>
+        </li>
+        <li>
+          <p>How can I reproduce these benchmark results?</p>
+          <p>
+            The benchmarks we've shown compare the Android system 
+            provided libraries (AES-CTR-HMAC-SHA1, since it doesn't provide GCM), 
+            Bouncycastle (AES-GCM) and Conceal (AES-GCM) run on a Galaxy Y.
+            Our benchmarks are written using the
+            <a href="https://code.google.com/p/caliper/">Caliper</a> framework
+            and can be reproduced on real devices with the help of
+            <a href="https://code.google.com/p/vogar/">Vogar</a>.
+            <br>
+            To run the benchmarks you must have BUCK installed as a pre-requisite.
+            Connect your device to your computer and then you can then invoke the
+            benchmarks from our repo.
+            <br/><br/>
+            For example, to invoke the read benchmark for a 100KB plaintext load,
+            you can use:
+            {% include benchmark_command.html %}
+            <h5>An aside on KitKat</h5>
+            Conceal predates Jellybean 4.3. On KitKat, Android changed the provider
+            for cryptographic algorithms to OpenSSL. The default Cipher stream however
+            still does not perform well. When replaced with our Cipher stream 
+            (see BetterCipherInputStream), the default implementation is competitive
+            against Conceal. On older phones, Conceal is faster than the system provided
+            libaries. 
+          </p>
+        </li>
+        <li>
+          <p>Why aren't you using the OpenSSL version provided by Android?</p>
+          <p>
+            Conceal makes use of AES-GCM mode which is not available
+            on the versions of OpenSSL that ship with old Android phones.
+            The major issue with the stock OpenSSL is just too large for
+            any app to even consider including it in an APK.
+            By shipping only certain encryption libraries of OpenSSL we 
+            reduce the size of the compiled binary and can also support
+            Android versions from Froyo.
+            The size of the armeabi-v7a version is 85KB.
+          </p>
+        </li>
+        <li>
+          <p>Can I build a version with only the encryption libraries of OpenSSL on my own?</p>
+          <p>
+            Here's build
+            <a href="https://github.com/facebook/conceal/tree/master/native/third-party/patches/">instructions</a>
+            to do it yourself.
+         </p>
+        </li>
+        <li>
+          <p>I think found a bug. How can I report it?</p>
+          <p>
+            We would really appreciate if you could either submit an issue or even better
+            submit a pull request on
+            <a href="http://facebook.github.io/conceal/">Github</a>.
+          </p>
+        </li>
+        <li>
+          <p>I think found a security vulnerability. How can I report it?</p>
+          <p>
+            We appreciate responsible disclosures of security vulnerabilities via our
+            <a href="https://www.facebook.com/whitehat">Whitehat</a> program.
+          </p>
+        </li>
+      </ul>
+  </body>
+</html>
