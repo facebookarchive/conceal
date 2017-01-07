@@ -29,6 +29,7 @@ import android.os.Build;
 import android.os.Process;
 
 import com.facebook.crypto.exception.KeyChainException;
+import com.facebook.crypto.proguard.annotations.DoNotStrip;
 
 /**
  * SecureRandom is not really random in android and are biased:
@@ -182,6 +183,14 @@ public class SecureRandomFix {
    * ({@code /dev/urandom}).
    */
   public static class LinuxPRNGSecureRandom extends SecureRandomSpi {
+
+        /**
+         * Explicit constructor to workaround issue #157
+         */
+        @DoNotStrip
+        public LinuxPRNGSecureRandom() {
+          super();
+        }
 
         /*
          * IMPLEMENTATION NOTE: Requests to generate bytes and to mix in a seed
