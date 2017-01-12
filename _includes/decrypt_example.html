@@ -6,7 +6,7 @@ FileInputStream fileStream = new FileInputStream(file);
 // it is read from it.
 InputStream inputStream = crypto.getCipherInputStream(
   fileStream,
-  entity);
+  Entity.create("entity_id"));
 
 // Read into a byte array.
 int read;
@@ -15,7 +15,9 @@ byte[] buffer = new byte[1024];
 // You must read the entire stream to completion.
 // The verification is done at the end of the stream.
 // Thus not reading till the end of the stream will cause
-// a security bug. 
+// a security bug. For safety, you should not
+// use any of the data until it's been fully read or throw
+// away the data if an exception occurs.
 while ((read = inputStream.read(buffer)) != -1) {
   out.write(buffer, 0, read);
 }
