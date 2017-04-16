@@ -1,4 +1,4 @@
-##What is Conceal? [![Build Status](https://travis-ci.org/facebook/conceal.svg?branch=master)](https://travis-ci.org/facebook/conceal)
+## What is Conceal? [![Build Status](https://travis-ci.org/facebook/conceal.svg?branch=master)](https://travis-ci.org/facebook/conceal)
 
 Conceal provides a set of Java APIs to perform cryptography on Android. 
 It was designed to be able to encrypt large files on disk in a fast and 
@@ -16,9 +16,9 @@ useful functionality.
 
 ***Already using 1.1.x?*** It's strongly advised to upgrade to ```1.1.3``` as the library size is significatively smaller.
 
-##Quick start##
+## Quick start ##
 
-####Setup options####
+#### Setup options ####
 
 * **Build using buck**
 ```bash
@@ -29,7 +29,7 @@ buck build :conceal_android
 
 * **Use Maven Central**: Available on maven central under **com.facebook.conceal:conceal:1.1.3@aar** as an AAR package.
 
-####Running Benchmarks####
+#### Running Benchmarks ####
 ```bash
 ./benchmarks/run \
   benchmarks/src/com/facebook/crypto/benchmarks/CipherReadBenchmark.java \
@@ -39,19 +39,19 @@ buck build :conceal_android
 This script runs vogar with caliper benchmarks.
 You can also specify all the options caliper provides.
 
-######An aside on KitKat######
+###### An aside on KitKat ######
 > Conceal predates Jellybean 4.3. On KitKat, Android changed the provider for 
 > cryptographic algorithms to OpenSSL. The default Cipher stream however still 
 > does not perform well. When replaced with our Cipher stream 
 > (see BetterCipherInputStream), the default implementation is competitive against 
 > Conceal. On older phones, Conceal is faster than the system provided libraries.
 
-####Running unit tests####
+#### Running unit tests ####
 ```bash
 buck test
 ```
 
-####Running integration tests####
+#### Running integration tests ####
 ```bash
 ./instrumentTest/crypto/run
 ```
@@ -59,9 +59,9 @@ buck test
 Since Conceal uses native libraries, the only way to run a test on the entire
 encryption process is using integration tests.
 
-##Usage##
+## Usage ##
 
-####Encryption###
+#### Encryption ###
 ```java
 // Creates a new Crypto object with default implementations of a key chain
 KeyChain keyChain = new SharedPrefsBackedKeyChain(context, CryptoConfig.KEY_256);
@@ -87,7 +87,7 @@ outputStream.write(plainText);
 outputStream.close();
 ```
 
-####Decryption####
+#### Decryption ####
 ```java
 // Get the file to which ciphertext has been written.
 FileInputStream fileStream = new FileInputStream(file);
@@ -124,7 +124,7 @@ byte[] cipherText = crypto.encrypt(plainText);
 byte[] plainText = crypto.decrypt(cipherText);
 ```
 
-####Integrity####
+#### Integrity ####
 ```java
 OutputStream outputStream = crypto.getMacOutputStream(fileStream, entity);
 outputStream.write(plainTextBytes);
@@ -177,9 +177,9 @@ AndroidConceal.get().createDefaultCrypto(keyChain);
 Entity entity = Entity.create(someStringId);
 ```
 
-##Troubleshooting##
+## Troubleshooting ##
 
-####I'm getting NoSuchFieldError on runtime####
+#### I'm getting NoSuchFieldError on runtime ####
 
 If you hit an error on runtime and it says something similar to:
 
