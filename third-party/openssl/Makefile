@@ -1,12 +1,6 @@
-.NOTPARALLEL:
-
-#
-# For all the available TAGS see:
-# http://git.openssl.org/?p=openssl.git;a=tags
-#
 LATEST_OPENSSL := OpenSSL_1_0_2g
 
-SRC_OPENSSL := src
+SRC_OPENSSL := openssl-1.0.2
 OUT_OPENSSL := .
 TMP_TOOLCHAIN := /tmp/toolchain
 CONFIG_OPTIONS := -fPIC -ffunction-sections -fdata-sections
