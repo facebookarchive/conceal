@@ -10,7 +10,6 @@
 
 package com.facebook.crypto;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
 /**
@@ -28,7 +27,7 @@ public class Entity {
   private static final Charset UTF_16 = Charset.forName("UTF-16");
   private static final Charset UTF_8 = Charset.forName("UTF-8");
 
-  private byte[] mBytes;
+  private final byte[] mBytes;
 
   /**
    * Creates an Entity object.

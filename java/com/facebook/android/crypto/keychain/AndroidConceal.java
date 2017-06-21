@@ -1,3 +1,5 @@
+// Copyright 2004-present Facebook. All Rights Reserved.
+
 package com.facebook.android.crypto.keychain;
 
 import com.facebook.crypto.Conceal;
@@ -19,6 +21,6 @@ public class AndroidConceal extends Conceal {
     }
 
     private AndroidConceal() {
-        super(new SystemNativeCryptoLibrary(), SecureRandomFix.createLocalSecureRandom());
+        super(new AndroidCryptoLibrary(), SecureRandomFix.createLocalSecureRandom());
     }
 }

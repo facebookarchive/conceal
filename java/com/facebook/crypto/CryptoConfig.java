@@ -24,6 +24,22 @@ public enum CryptoConfig {
     public final int ivLength;
     public final int tagLength;
 
+    /**
+     * Returns the size of the header added when encrypting.
+     * It contains 2 bytes for format+cipherId, then the header.
+     */
+    public int getHeaderLength() {
+      return 2 + ivLength;
+    }
+
+    /**
+     * Returns the size of the tail added when encrypting.
+     * It's only the authentication tag.
+     */
+    public int getTailLength() {
+      return tagLength;
+    }
+
     CryptoConfig(byte chiperId, int keyLength, int ivLength, int tagLength) {
         this.cipherId = chiperId;
         this.keyLength = keyLength;

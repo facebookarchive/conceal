@@ -1,0 +1,21 @@
+# Ignore configure lib files
+openssl-*/**/lib
+
+*.mode1v3
+*.pbxuser
+xcuserdata
+xcuserdata/*
+*.xcworkspace/*
+*.xcworkspace
+openssl.xcodeproj/project.pbxproj
+
+build/bin/*
+build/ssl/man/*
+build/ssl/misc/*
+build/Release-*/*
+build/Debug-*/*
+/build/openssl.build/
+/build/iPhoneSimulator*.sdk/
+/build/iPhoneOS*.sdk/
+/build/Release/
+*.bak

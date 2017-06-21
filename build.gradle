@@ -4,15 +4,23 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.0.0+'
+        classpath 'com.android.tools.build:gradle:2.3.0'
     }
 }
 
 apply plugin: 'com.android.library'
 
 android {
+    repositories {
+      mavenCentral()
+    }
+
+    dependencies {
+        compile 'com.google.code.findbugs:jsr305:3.0.2'
+    }
+
     compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    buildToolsVersion "25.0.0"
 
     defaultConfig {
       minSdkVersion 9
@@ -20,19 +28,25 @@ android {
     }
 
     sourceSets {
+
       main {
         manifest.srcFile 'AndroidManifest.xml'
-        java.srcDirs = ['java']
+        java.srcDirs = [
+            'first-party/fbjni/java',
+            'first-party/proguard/annotations',
+            'first-party/soloader',
+            'java']
         jniLibs.srcDir 'libs'
         jni.srcDirs = []
       }
     }
 
     task ndkBuildRelease(type: Exec) {
-      commandLine 'ndk-build', '-C', file('native/crypto/').absolutePath,
+      commandLine '/opt/android_ndk/android-ndk-r13b/ndk-build',
+        '-C', file('.').absolutePath,
        'NDK_APPLICATION_MK=${PWD}/native/Application.mk',
-       'NDK_MODULE_PATH=${PWD}/native/third-party/',
-       'APP_BUILD_SCRIPT=${PWD}/native/crypto/Android.mk'
+       'NDK_MODULE_PATH=${PWD}/native:${PWD}/first-party/fbjni/native:${PWD}/third-party',
+       'APP_BUILD_SCRIPT=${PWD}/native/jni/Android.mk'
     }
 
     tasks.withType(JavaCompile) {
@@ -56,7 +70,7 @@ if (!project.hasProperty('sonatypeRepo') ||
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-version = "1.1.3"
+version = "1.1.2"
 group = "com.facebook.conceal"
 
 configurations {
