@@ -1,0 +1,13 @@
+android_library(
+    name = "jni",
+    srcs = glob(["**/*.java"]),
+    proguard_config = "fbjni.pro",
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        "//first-party/proguard/annotations:annotations",
+        "//first-party/soloader:soloader",
+        "//third-party/jsr-305:jsr-305",
+    ],
+)

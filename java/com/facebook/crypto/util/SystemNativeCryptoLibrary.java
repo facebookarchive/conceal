@@ -20,9 +20,7 @@ import com.facebook.crypto.exception.CryptoInitializationException;
  */
 public class SystemNativeCryptoLibrary implements NativeCryptoLibrary {
 
-  private static final ArrayList<String> LIBS = new ArrayList<String>() {{
-    add("conceal");
-  }};
+  private static final String[] LIBS = new String[] {"concealcpp", "concealjni"};
 
   private boolean mLoadLibraries;
   private boolean mLibrariesLoaded;

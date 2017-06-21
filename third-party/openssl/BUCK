@@ -1,0 +1,20 @@
+# ndk_library(
+#   name = 'openssl',
+#   flags = [
+#     'NDK_APPLICATION_MK=${PWD}/native/Application.mk',
+#   ],
+#   visibility = [
+#     'PUBLIC',
+#   ]
+# )
+
+prebuilt_cxx_library(
+    name = 'openssl',
+    include_dirs = ['./include'],
+    lib_dir = './x86_64',
+    lib_name = 'crypto',
+    # commented for the clang-ld, it's used at least in buck test
+#    exported_linker_flags = ['-Wl,--gc-sections'],
+    preferred_linkage = 'static',
+    visibility = ['PUBLIC'],
+)

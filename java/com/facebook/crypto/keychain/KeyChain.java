@@ -11,6 +11,7 @@
 package com.facebook.crypto.keychain;
 
 import com.facebook.crypto.exception.KeyChainException;
+import com.facebook.crypto.proguard.annotations.DoNotStrip;
 
 public interface KeyChain {
 
@@ -18,18 +19,21 @@ public interface KeyChain {
    * Returns the key to use for encipherment.
    * @throws KeyChainException
    */
+  @DoNotStrip
   public byte[] getCipherKey() throws KeyChainException;
 
   /**
    * Returns the key to use for integrity operations.
    * @throws KeyChainException
    */
+  @DoNotStrip
   public byte[] getMacKey() throws KeyChainException;
 
   /**
    * Gets a new IV to use for encipherment operations.
    * @throws KeyChainException
    */
+  @DoNotStrip
   public byte[] getNewIV() throws KeyChainException;
 
   /**

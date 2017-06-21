@@ -10,26 +10,29 @@
 
 package com.facebook.crypto;
 
+import com.facebook.cipher.Cipher;
+import com.facebook.cipher.Mac;
 import com.facebook.crypto.exception.CryptoInitializationException;
 import com.facebook.crypto.exception.KeyChainException;
 import com.facebook.crypto.keychain.KeyChain;
-import com.facebook.crypto.mac.NativeMac;
-import com.facebook.crypto.streams.FixedSizeByteArrayOutputStream;
-import com.facebook.crypto.streams.NativeMacLayeredInputStream;
-import com.facebook.crypto.streams.NativeMacLayeredOutputStream;
-import com.facebook.crypto.util.Assertions;
 import com.facebook.crypto.util.NativeCryptoLibrary;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+/**
+ * This is still the one-stop place to get encryption and mac for streams and byte[].
+ * The new code that was implementing encryption based on new Conceal++ is now moved
+ * to @link {com.facebook.cipher.Cipher} and we delegate from here.
+ * We will offer a different but analogous object to Cipher, for MAC purposes, so we don't
+ * have a one-object-for-everything as this class is now.
+ */
 public class Crypto {
 
-  private final KeyChain mKeyChain;
+  private final Cipher mCipher;
+  private final Mac mMac;
   private final NativeCryptoLibrary mNativeCryptoLibrary;
-  private final CryptoAlgo mCryptoAlgo;
 
   /**
    * @deprecated Use ConcealAndroid.get().createCrypto(...)
@@ -40,9 +43,9 @@ public class Crypto {
   }
 
   public Crypto(KeyChain keyChain, NativeCryptoLibrary nativeCryptoLibrary, CryptoConfig config) {
-    mKeyChain = new CheckedKeyChain(keyChain, config);
+    mCipher = new Cipher(nativeCryptoLibrary, config, keyChain);
+    mMac = new Mac(nativeCryptoLibrary, keyChain);
     mNativeCryptoLibrary = nativeCryptoLibrary;
-    mCryptoAlgo = new CryptoAlgoGcm(mNativeCryptoLibrary, mKeyChain, config);
   }
 
   /**
@@ -60,10 +63,12 @@ public class Crypto {
 
   /**
    * Invokes getCipherOutputStream(cipherStream, entity, null)
+   * @deprecated Use @link{#decryptFrom} instead.
    */
+  @Deprecated
   public OutputStream getCipherOutputStream(OutputStream cipherStream, Entity entity)
           throws IOException, CryptoInitializationException, KeyChainException {
-    return getCipherOutputStream(cipherStream, entity, null);
+    return mCipher.encryptTo(cipherStream, entity, null);
   }
 
   /**
@@ -76,10 +81,14 @@ public class Crypto {
    *
    * @return A ciphered output stream to write to.
    * @throws IOException
+   * @deprecated Use @link{#encryptTo} instead.
    */
-  public OutputStream getCipherOutputStream(OutputStream cipherStream, Entity entity, byte[] encryptBuffer)
-      throws IOException, CryptoInitializationException, KeyChainException {
-    return mCryptoAlgo.wrap(cipherStream, entity, encryptBuffer);
+  @Deprecated
+  public OutputStream getCipherOutputStream(
+      OutputStream cipherStream,
+      Entity entity,
+      byte[] encryptBuffer) throws IOException, CryptoInitializationException, KeyChainException {
+    return mCipher.encryptTo(cipherStream, entity, encryptBuffer);
   }
 
   /**
@@ -97,7 +106,7 @@ public class Crypto {
    */
   public InputStream getCipherInputStream(InputStream cipherStream, Entity entity)
       throws IOException, CryptoInitializationException, KeyChainException {
-    return mCryptoAlgo.wrap(cipherStream, entity);
+    return mCipher.decryptFrom(cipherStream, entity);
   }
 
   /**
@@ -113,13 +122,8 @@ public class Crypto {
    * @throws KeyChainException Thrown if there is trouble managing keys.
    */
   public byte[] encrypt(byte[] plainTextBytes, Entity entity)
-    throws KeyChainException, CryptoInitializationException, IOException {
-    int cipheredBytesLength = plainTextBytes.length + getCipherMetaDataLength();
-    FixedSizeByteArrayOutputStream outputStream = new FixedSizeByteArrayOutputStream(cipheredBytesLength);
-    OutputStream cipherStream = getCipherOutputStream(outputStream, entity, null);
-    cipherStream.write(plainTextBytes);
-    cipherStream.close();
-    return outputStream.getBytes();
+      throws KeyChainException, CryptoInitializationException, IOException {
+    return mCipher.encrypt(plainTextBytes, entity);
   }
 
   /**
@@ -133,21 +137,8 @@ public class Crypto {
    * @throws KeyChainException Thrown if there is trouble managing keys.
    */
   public byte[] decrypt(byte[] cipherTextBytes, Entity entity)
-    throws KeyChainException, CryptoInitializationException, IOException {
-
-    int cipherTextLength = cipherTextBytes.length;
-    ByteArrayInputStream cipheredStream = new ByteArrayInputStream(cipherTextBytes);
-    InputStream plainTextStream = getCipherInputStream(cipheredStream, entity);
-
-    int plainTextLength = cipherTextLength - getCipherMetaDataLength();
-    FixedSizeByteArrayOutputStream output = new FixedSizeByteArrayOutputStream(plainTextLength);
-    byte[] buffer = new byte[1024];
-    int read;
-    while ((read = plainTextStream.read(buffer)) != -1) {
-      output.write(buffer, 0, read);
-    }
-    plainTextStream.close();
-    return output.getBytes();
+      throws KeyChainException, CryptoInitializationException, IOException {
+    return mCipher.decrypt(cipherTextBytes, entity);
   }
 
   /**
@@ -164,15 +155,7 @@ public class Crypto {
    */
   public OutputStream getMacOutputStream(OutputStream stream, Entity entity)
       throws IOException, KeyChainException, CryptoInitializationException {
-    stream.write(VersionCodes.MAC_SERIALIZATION_VERSION);
-    stream.write(VersionCodes.MAC_ID);
-
-    NativeMac nativeMac = new NativeMac(mNativeCryptoLibrary);
-    byte[] macKey = mKeyChain.getMacKey();
-    nativeMac.init(macKey, macKey.length);
-    byte[] entityBytes = entity.getBytes();
-    computeMacAad(nativeMac, VersionCodes.MAC_SERIALIZATION_VERSION, VersionCodes.MAC_ID, entityBytes);
-    return new NativeMacLayeredOutputStream(nativeMac, stream);
+    return mMac.macTo(stream, entity);
   }
 
   /**
@@ -190,41 +173,6 @@ public class Crypto {
    */
   public InputStream getMacInputStream(InputStream stream, Entity entity)
       throws IOException, KeyChainException, CryptoInitializationException {
-    byte macVersion = (byte) stream.read();
-    Assertions.checkArgumentForIO(macVersion == VersionCodes.MAC_SERIALIZATION_VERSION,
-            "Unexpected mac version " + macVersion);
-
-    byte macID = (byte) stream.read();
-    Assertions.checkArgumentForIO(macID == VersionCodes.MAC_ID,
-            "Unexpected mac ID " + macID);
-
-    NativeMac nativeMac = new NativeMac(mNativeCryptoLibrary);
-    byte[] macKey = mKeyChain.getMacKey();
-    nativeMac.init(macKey, macKey.length);
-
-    byte[] entityBytes = entity.getBytes();
-    computeMacAad(nativeMac, macVersion, VersionCodes.MAC_ID, entityBytes);
-    return new NativeMacLayeredInputStream(nativeMac, stream);
-  }
-
-  /**
-   * Computes the authenticated data for the mac.
-   */
-  private static void computeMacAad(NativeMac mac, byte macVersion, byte macID, byte[] entityBytes) throws IOException {
-    byte[] cryptoVersionBytes = { macVersion };
-    byte[] macIDBytes = { macID };
-    mac.update(cryptoVersionBytes, 0, 1);
-    mac.update(macIDBytes, 0, 1);
-    mac.update(entityBytes, 0, entityBytes.length);
-  }
-
-  /**
-   * Gets the length of the meta data for the version of the API being decrypted.
-   * This should preserve the following invariant:
-   * </p>
-   * Ciphertext data size = Plaintext data + Cipher meta data.
-   */
-  /* package protected */ int getCipherMetaDataLength() {
-    return mCryptoAlgo.getCipherMetaDataLength();
+    return mMac.demacFrom(stream, entity);
   }
 }

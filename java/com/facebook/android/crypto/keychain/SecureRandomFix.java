@@ -10,8 +10,6 @@
 
 package com.facebook.android.crypto.keychain;
 
-import android.os.Process;
-
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -25,23 +23,24 @@ import java.security.Provider;
 import java.security.SecureRandom;
 import java.security.SecureRandomSpi;
 
+import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Process;
 
-import com.facebook.crypto.exception.KeyChainException;
-import com.facebook.crypto.proguard.annotations.DoNotStrip;
-
 /**
- * SecureRandom is not really random in android and are biased:
+ * SecureRandom is not really random in Android and is biased because the android developers
+ * in their infinite wisdom forgot to seed their random number generator in JellyBean, and
+ * their random number generator implementation before JellyBean was not secure at all:
  * http://android-developers.blogspot.com/2013/08/some-securerandom-thoughts.html.
- * The following code is copied from the above source with some modifications.
  * <p>
  * We rely on SecureRandom to generate cryptographically secure random numbers for
- * various applications. This applies the fix suggested in the blog post which is
- * seeding random number generators for jellybean, and using /dev/urandom for pre
+ * various applications. This diff applies the fix suggested in the blog post which is
+ * seeding random number generators for JellyBean, and using /dev/urandom for pre
  * jellybean systems.
+ * <p>
+ * Note: SHA1PRNG is cryptographically weak and was deprecated in Android N:
+ * https://developer.android.com/preview/behavior-changes.html#other
  */
-
 public class SecureRandomFix {
   private static final int VERSION_CODE_JELLY_BEAN = 17;
   private static final int VERSION_CODE_JELLY_BEAN_MR2 = 18;
@@ -78,12 +77,16 @@ public class SecureRandomFix {
    * This should be the only SecureRandom used around (if version <= JBMR2).
    */
   public static class LocalSecureRandom extends SecureRandom {
-    private LocalSecureRandom() {
+    public LocalSecureRandom() {
       super(new LinuxPRNGSecureRandom(), sProvider);
     }
   }
 
   private static void tryApplyOpenSSLFix() {
+    if ("robolectric".equals(Build.FINGERPRINT)) {
+      // if we are in robolectric we avoid this fix: the referenced classes don't exist
+      return;
+    }
     try {
       // Mix in the device- and invocation-specific seed.
       Class.forName("org.apache.harmony.xnet.provider.jsse.NativeCrypto")
@@ -109,6 +112,7 @@ public class SecureRandomFix {
    * Generates a device- and invocation-specific seed to be mixed into the
    * Linux PRNG.
    */
+  @SuppressLint("BadMethodUse-java.lang.System.currentTimeMillis")
   private static byte[] generateSeed() {
     try {
       ByteArrayOutputStream seedBuffer = new ByteArrayOutputStream();
@@ -184,14 +188,6 @@ public class SecureRandomFix {
    */
   public static class LinuxPRNGSecureRandom extends SecureRandomSpi {
 
-        /**
-         * Explicit constructor to workaround issue #157
-         */
-        @DoNotStrip
-        public LinuxPRNGSecureRandom() {
-          super();
-        }
-
         /*
          * IMPLEMENTATION NOTE: Requests to generate bytes and to mix in a seed
          * are passed through to the Linux PRNG (/dev/urandom). Instances of
@@ -211,16 +207,12 @@ public class SecureRandomFix {
     /**
      * Input stream for reading from Linux PRNG or {@code null} if not yet
      * opened.
-     *
-     * @GuardedBy("sLock")
      */
     private static DataInputStream sUrandomIn;
 
     /**
      * Output stream for writing to Linux PRNG or {@code null} if not yet
      * opened.
-     *
-     * @GuardedBy("sLock")
      */
     private static OutputStream sUrandomOut;
 
@@ -277,7 +269,7 @@ public class SecureRandomFix {
       return seed;
     }
 
-    private DataInputStream getUrandomInputStream() {
+    private static DataInputStream getUrandomInputStream() {
       synchronized (sLock) {
         if (sUrandomIn == null) {
           // NOTE: Consider inserting a BufferedInputStream between
@@ -296,7 +288,7 @@ public class SecureRandomFix {
       }
     }
 
-    private OutputStream getUrandomOutputStream() {
+    private static OutputStream getUrandomOutputStream() {
       synchronized (sLock) {
         if (sUrandomOut == null) {
           try {
