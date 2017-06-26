@@ -42,7 +42,7 @@ android {
     }
 
     task ndkBuildRelease(type: Exec) {
-      commandLine '/opt/android_ndk/android-ndk-r13b/ndk-build',
+      commandLine "$System.env.ANDROID_NDK/ndk-build",
         '-C', file('.').absolutePath,
        'NDK_APPLICATION_MK=${PWD}/native/Application.mk',
        'NDK_MODULE_PATH=${PWD}/native:${PWD}/first-party/fbjni/native:${PWD}/third-party',
