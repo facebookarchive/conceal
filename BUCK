@@ -11,6 +11,14 @@ android_aar(
     ],
 )
 
+# To use (for now) in instrumentation tests
+# which needs the full library, but it's ran with BUCK
+android_prebuilt_aar(
+    name = "prebuilt_aar",
+    aar = "build/outputs/aar/conceal-debug.aar",
+    visibility = ['PUBLIC'],
+)
+
 android_library(
     name = "conceal",
     srcs = glob(

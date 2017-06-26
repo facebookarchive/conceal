@@ -11,8 +11,9 @@
 package com.facebook.crypto;
 
 import com.facebook.android.crypto.keychain.AndroidConceal;
+import com.facebook.android.crypto.keychain.AndroidCryptoLibrary;
 import com.facebook.crypto.keygen.PasswordBasedKeyDerivation;
-import com.facebook.crypto.util.SystemNativeCryptoLibrary;
+import com.facebook.soloader.SoLoader;
 
 import java.util.Arrays;
 
@@ -28,6 +29,10 @@ import android.test.InstrumentationTestCase;
 
 @TargetApi(Build.VERSION_CODES.GINGERBREAD)
 public class PasswordBasedKeyDerivationTest extends InstrumentationTestCase {
+
+  protected void setUp() throws Exception {
+    SoLoader.init(this.getInstrumentation().getContext(), false);
+  }
 
   public void testCases() throws Exception {
     testOneCase("password", "salt", 1, 32, "12 0f b6 cf fc f8 b3 2c 43 e7 22 52 56 c4 f8 37 a8 65 48 c9 2c cc 35 48 08 05 98 7c b7 0b e1 7b");

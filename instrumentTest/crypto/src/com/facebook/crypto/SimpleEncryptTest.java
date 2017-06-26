@@ -5,11 +5,12 @@ import android.os.Build;
 import android.test.InstrumentationTestCase;
 
 import com.facebook.android.crypto.keychain.AndroidConceal;
+import com.facebook.android.crypto.keychain.AndroidCryptoLibrary;
 import com.facebook.crypto.exception.CryptoInitializationException;
 import com.facebook.crypto.exception.KeyChainException;
 import com.facebook.crypto.keychain.KeyChain;
 import com.facebook.crypto.util.NativeCryptoLibrary;
-import com.facebook.crypto.util.SystemNativeCryptoLibrary;
+import com.facebook.soloader.SoLoader;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -19,6 +20,7 @@ import java.util.Arrays;
 @TargetApi(Build.VERSION_CODES.GINGERBREAD)
 public class SimpleEncryptTest extends InstrumentationTestCase {
 
+  private CryptoConfig mConfig;
   private Crypto mCrypto;
   private NativeCryptoLibrary mNativeCryptoLibrary;
   private byte[] mData;
@@ -27,9 +29,13 @@ public class SimpleEncryptTest extends InstrumentationTestCase {
 
   protected void setUp() throws Exception {
     super.setUp();
+
+    SoLoader.init(this.getInstrumentation().getContext(), false);
+
     KeyChain keyChain = new FakeKeyChain();
     mKey = keyChain.getCipherKey();
     mIV = keyChain.getNewIV();
+    mConfig = CryptoConfig.KEY_128;
     mCrypto = AndroidConceal.get().createCrypto128Bits(keyChain);
     mData = new byte[CryptoTestUtils.NUM_DATA_BYTES];
   }
@@ -67,7 +73,8 @@ public class SimpleEncryptTest extends InstrumentationTestCase {
     assertFalse(CryptoTestUtils.DATA_IS_NOT_ENCRYPTED, Arrays.equals(mData, encryptedData));
 
     int metadataLength = cipherText.length - mData.length;
-    assertEquals(CryptoTestUtils.WRONG_METADATA_LENGTH, metadataLength, mCrypto.getCipherMetaDataLength());
+    int expectedMetadataLength = mConfig.getHeaderLength() + mConfig.getTailLength();
+    assertEquals(CryptoTestUtils.WRONG_METADATA_LENGTH, metadataLength, expectedMetadataLength);
   }
 
   public void testMatchesWithStreamingAPI() throws KeyChainException, CryptoInitializationException, IOException {
