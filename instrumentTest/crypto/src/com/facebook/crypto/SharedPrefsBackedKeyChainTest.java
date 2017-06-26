@@ -18,12 +18,12 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Random;
 
+import com.facebook.android.crypto.keychain.AndroidCryptoLibrary;
 import com.facebook.android.crypto.keychain.SharedPrefsBackedKeyChain;
 import com.facebook.crypto.CryptoConfig;
-import com.facebook.crypto.cipher.NativeGCMCipherException;
 import com.facebook.crypto.keychain.KeyChain;
 import com.facebook.crypto.util.NativeCryptoLibrary;
-import com.facebook.crypto.util.SystemNativeCryptoLibrary;
+import com.facebook.soloader.SoLoader;
 
 import android.annotation.TargetApi;
 import android.os.Build;
@@ -35,6 +35,9 @@ import com.google.common.io.Closeables;
 @TargetApi(Build.VERSION_CODES.GINGERBREAD)
 public class SharedPrefsBackedKeyChainTest extends InstrumentationTestCase {
 
+  protected void setUp() throws Exception {
+    SoLoader.init(this.getInstrumentation().getContext(), false);
+  }
 
     public void testLegacy128Bits() throws Exception {
         KeyChain keyChain = new SharedPrefsBackedKeyChain(this.getInstrumentation().getContext());
