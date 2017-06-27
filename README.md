@@ -14,20 +14,82 @@ useful functionality.
 
 ***Upgrading version?*** Check the [Upgrade notes](#upgrade-notes) for key compatibility!
 
-***Already using 1.1.x?*** It's strongly advised to upgrade to ```1.1.3``` as the library size is significatively smaller.
+#### IMPORTANT: Initializing the library loader
+
+Since v2.0.0 (2017-06-27) you will need to initialize the native library loader.
+This step is needed because the library loader uses the context.
+The highly suggested way to do it is in the application class onCreate method like this:
+
+```java
+import com.facebook.soloader.SoLoader;
+public class MyApplication extends Application {
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        SoLoader.init(this, false);
+    }
+}
+```
 
 ## Quick start
 
 #### Setup options
 
-* **Build using buck**
+1. **Use Maven Central**: Available on maven central under **com.facebook.conceal:conceal:2.0.0@aar** as an AAR package.
+
+2. **Build using gradle**
+
 ```bash
-buck build :conceal_android
+./gradlew build
 ```
 
-* **Use prebuilt binaries**: http://facebook.github.io/conceal/documentation/.
+It uses gradlew so it takes care of downloading Gradle and all the dependencies it needs.
+Output will be in `/build/outputs/aar/` directory.
 
-* **Use Maven Central**: Available on maven central under **com.facebook.conceal:conceal:1.1.3@aar** as an AAR package.
+3. **Use prebuilt binaries**: http://facebook.github.io/conceal/documentation/. (linked documentation needs update)
+
+###### An aside on KitKat
+> Conceal predates Jellybean 4.3. On KitKat, Android changed the provider for 
+> cryptographic algorithms to OpenSSL. The default Cipher stream however still 
+> does not perform well. When replaced with our Cipher stream 
+> (see BetterCipherInputStream), the default implementation is competitive against 
+> Conceal. On older phones, Conceal is faster than the system provided libraries.
+
+#### Re-build OpenSSL library
+
+You can run make from the openssl directory. It will download the code and copile the libraries for each architecture.
+
+```bash
+# go to /third-party/openssl
+make
+```
+
+#### Before running any test!
+
+Test uses BUCK build tool. BUCK uses the source code for OpenSSL. If you didn't already rebuilt OpenSSL form scrach (previous item) then
+run this:
+
+```bash
+# go to /third-party/openssl
+make clone
+```
+
+That will download the OpenSSL code to a subdirectory.
+
+#### Running unit tests
+```bash
+# C++ tests
+buck test :cpp
+```
+
+#### Running integration tests
+```bash
+# Emulator/device tests
+./instrumentTest/crypto/run
+```
+
+Since Conceal uses native libraries, the only way to run a test on the entire
+encryption process is using integration tests.
 
 #### Running Benchmarks
 ```bash
@@ -38,26 +100,6 @@ buck build :conceal_android
 
 This script runs vogar with caliper benchmarks.
 You can also specify all the options caliper provides.
-
-###### An aside on KitKat
-> Conceal predates Jellybean 4.3. On KitKat, Android changed the provider for 
-> cryptographic algorithms to OpenSSL. The default Cipher stream however still 
-> does not perform well. When replaced with our Cipher stream 
-> (see BetterCipherInputStream), the default implementation is competitive against 
-> Conceal. On older phones, Conceal is faster than the system provided libraries.
-
-#### Running unit tests
-```bash
-buck test
-```
-
-#### Running integration tests
-```bash
-./instrumentTest/crypto/run
-```
-
-Since Conceal uses native libraries, the only way to run a test on the entire
-encryption process is using integration tests.
 
 ## Usage
 
