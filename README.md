@@ -18,7 +18,9 @@ useful functionality.
 
 #### Setup options
 
-* **Build using gradle**
+1. **Use Maven Central**: Available on maven central under **com.facebook.conceal:conceal:2.0.0@aar** as an AAR package.
+
+2. **Build using gradle**
 
 ```bash
 ./gradlew build
@@ -26,9 +28,7 @@ useful functionality.
 
 It uses gradlew so it takes care of downloading Gradle and all the dependencies it needs.
 
-* **Use prebuilt binaries**: http://facebook.github.io/conceal/documentation/. (linked documentation needs update)
-
-* **Use Maven Central**: Available on maven central under **com.facebook.conceal:conceal:2.0.0@aar** as an AAR package.
+3. **Use prebuilt binaries**: http://facebook.github.io/conceal/documentation/. (linked documentation needs update)
 
 ###### An aside on KitKat
 > Conceal predates Jellybean 4.3. On KitKat, Android changed the provider for 
