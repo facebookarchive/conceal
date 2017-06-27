@@ -70,7 +70,7 @@ if (!project.hasProperty('sonatypeRepo') ||
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-version = "1.1.2"
+version = "2.0.0"
 group = "com.facebook.conceal"
 
 configurations {
