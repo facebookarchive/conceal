@@ -27,6 +27,7 @@ useful functionality.
 ```
 
 It uses gradlew so it takes care of downloading Gradle and all the dependencies it needs.
+Output will be in `/build/outputs/aar/` directory.
 
 3. **Use prebuilt binaries**: http://facebook.github.io/conceal/documentation/. (linked documentation needs update)
 
