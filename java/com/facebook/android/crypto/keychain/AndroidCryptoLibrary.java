@@ -23,11 +23,20 @@ import com.facebook.soloader.NativeLibrary;
 public class AndroidCryptoLibrary extends NativeLibrary implements NativeCryptoLibrary {
 
   public AndroidCryptoLibrary() {
-    super(Arrays.asList(/*"concealcpp",*/ "concealjni"));
+    super(Arrays.asList("fb", /* merged "concealcpp",*/ "concealjni"));
   }
 
   @Override
   public synchronized void ensureCryptoLoaded() throws CryptoInitializationException {
-    super.ensureLoaded();
+    try {
+        super.ensureLoaded();
+    } catch (RuntimeException re) {
+      if (re.getMessage() != null && re.getMessage().contains("SoLoader.init")) {
+        throw new RuntimeException(
+            "SoLoader not initialized. Check https://github.com/helios175/conceal/blob/master/README.md#important-initializing-the-library-loader",
+            re);
+      }
+      throw re;
+    }
   }
 }
