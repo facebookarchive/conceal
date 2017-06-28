@@ -35,7 +35,7 @@ public class MyApplication extends Application {
 
 #### Setup options
 
-1. **Use Maven Central**: Available on maven central under **com.facebook.conceal:conceal:2.0.0@aar** as an AAR package.
+1. **Use Maven Central**: Available on maven central under **com.facebook.conceal:conceal:2.0.1@aar** as an AAR package.
 
 2. **Build using gradle**
 
