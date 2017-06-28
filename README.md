@@ -14,6 +14,23 @@ useful functionality.
 
 ***Upgrading version?*** Check the [Upgrade notes](#upgrade-notes) for key compatibility!
 
+#### IMPORTANT: Initializing the library loader
+
+Since v2.0.0 (2017-06-27) you will need to initialize the native library loader.
+This step is needed because the library loader uses the context.
+The highly suggested way to do it is in the application class onCreate method like this:
+
+```java
+import com.facebook.soloader.SoLoader;
+public class MyApplication extends Application {
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        SoLoader.init(this, false);
+    }
+}
+```
+
 ## Quick start
 
 #### Setup options
