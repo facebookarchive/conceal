@@ -16,7 +16,7 @@ useful functionality.
 
 #### IMPORTANT: Initializing the library loader
 
-Since v2.0.0 (2017-06-27) you will need to initialize the native library loader.
+Since v2.0.+ (2017-06-27) you will need to initialize the native library loader.
 This step is needed because the library loader uses the context.
 The highly suggested way to do it is in the application class onCreate method like this:
 
