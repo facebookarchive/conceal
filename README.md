@@ -36,6 +36,7 @@ public class MyApplication extends Application {
 #### Setup options
 
 1. **Use Maven Central**: Available on maven central under **com.facebook.conceal:conceal:2.0.1@aar** as an AAR package.
+If you use Android Studio and select the library using the UI, **make sure** to change `build.gradle` **to include the `@aar` suffix**. Otherwise the library won't be included.
 
 2. **Build using gradle**
 
