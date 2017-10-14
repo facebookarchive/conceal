@@ -14,8 +14,9 @@ import android.annotation.TargetApi;
 import android.os.Build;
 import android.test.InstrumentationTestCase;
 
+import com.facebook.android.crypto.keychain.AndroidCryptoLibrary;
 import com.facebook.crypto.keychain.KeyChain;
-import com.facebook.crypto.util.SystemNativeCryptoLibrary;
+import com.facebook.soloader.SoLoader;
 
 import junit.framework.Assert;
 
@@ -33,6 +34,7 @@ public class EntityFactoryTest extends InstrumentationTestCase {
 
 
     protected void setUp() throws Exception {
+      SoLoader.init(this.getInstrumentation().getContext(), false);
     }
 
     public void testCases() throws Exception {
@@ -70,7 +72,7 @@ public class EntityFactoryTest extends InstrumentationTestCase {
         // Test Case 16 - Page 40
         KeyChain keyChain = fixedKeyChain(key, iv);
         CryptoConfig config = CryptoConfig.KEY_256;
-        Crypto crypto = new Crypto(keyChain, new SystemNativeCryptoLibrary(), config);
+        Crypto crypto = new Crypto(keyChain, new AndroidCryptoLibrary(), config);
         byte[] plainBytes = toBytes(plain);
         byte[] encrypted = crypto.encrypt(plainBytes, Entity.create(entityId));
         byte[] decrypted = crypto.decrypt(encrypted, Entity.create(entityId));

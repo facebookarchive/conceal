@@ -1,0 +1,2 @@
+Run `make` to download googletest-1.8.0 code.
+This is needed to run C++ test in //:cpp_test buck target. 

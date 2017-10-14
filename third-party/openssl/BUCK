@@ -1,0 +1,220 @@
+include_defs("//third-party/openssl/DEFS")
+
+OPENSSL_COMPILER_FLAGS = [
+    "-Wno-conversion",
+    "-Wno-unused",
+    "-Wno-parentheses",
+] + OPENSSL_CFLAGS
+
+ANDROID_COMPILER_FLAGS = [
+    "-Os",
+    "-ffunction-sections",
+    "-Wno-uninitialized",
+    "-Wno-tautological-pointer-compare",
+]
+
+OBJC_COMPILER_FLAGS = [
+    # armv7 does not support '-fomit-frame-pointer' argument
+    "-Wno-ignored-optimization-argument",
+    # t17160742, t17156415: Whitelist the places that crash when
+    #                       compiler optimizations are on
+    "-O0",
+] + IOS_OPENSSL_CFLAGS
+
+OPENSSL_PREPROCESSOR_FLAGS = [
+    "-UOPENSSL_BN_ASM_PART_WORDS",
+] + OPENSSL_CFLAGS
+
+HEADERS = subdir_glob([
+    (
+        OPENSSL_SOURCE + "/crypto/asn1",
+        "*.h",
+    ),
+    (
+        OPENSSL_SOURCE + "/crypto/evp",
+        "*.h",
+    ),
+    (
+        OPENSSL_SOURCE + "/crypto/modes",
+        "*.h",
+    ),
+    (
+        OPENSSL_SOURCE + "/crypto",
+        "**/*.h",
+    ),
+    (OPENSSL_SOURCE, "*.h"),
+    (
+        OPENSSL_SOURCE + "/crypto",
+        "LPdir_unix.c",
+    ),
+    (
+        OPENSSL_SOURCE + "/crypto/des",
+        "ncbc_enc.c",
+    ),
+    (
+        OPENSSL_SOURCE + "/crypto/ec",
+        "ecp_nistz256_table.c",
+    ),
+    (
+        OPENSSL_SOURCE + "/crypto/cast",
+        "c_enc.c",
+    ),
+])
+
+## crypto-headers rule is useful for IG on Android
+## - IG has its own prebuilt openssl/crypto library, and it will include these headers
+## - we need conceal to depend on that one (to avoid a library conflict)
+
+# prebuilt_cxx_library(
+#     name = "crypto-headers",
+#     exported_headers = dict(
+#         OPENSSL_HEADERS.items() + ANDROID_OPENSSL_HEADERS.items(),
+#     ),
+#     header_namespace = "",
+#     header_only = True,
+#     visibility = ["PUBLIC"],
+# )
+#
+cxx_library(
+    name = "crypto",
+    srcs = LIBCRYPTO_SRCS,
+    compiler_flags = OPENSSL_COMPILER_FLAGS + ANDROID_COMPILER_FLAGS,
+    exported_headers = dict(
+        OPENSSL_HEADERS.items() + ANDROID_OPENSSL_HEADERS.items(),
+    ),
+    exported_linker_flags = [
+        "-ldl",
+    ],
+    header_namespace = "",
+    headers = dict(
+        HEADERS.items() +
+        subdir_glob([
+            (
+                "config.android",
+                "**/*.h",
+            ),
+        ]).items(),
+    ),
+    # platforms = (CXX, ANDROID),
+    preprocessor_flags = OPENSSL_PREPROCESSOR_FLAGS,
+    soname = "libcryptox.$(ext)",
+    visibility = ["PUBLIC"],
+)
+
+# cxx_library(
+#     name = "crypto-static",
+#     srcs = LIBCRYPTO_SRCS,
+#     compiler_flags = OPENSSL_COMPILER_FLAGS + ANDROID_COMPILER_FLAGS,
+#     exported_headers = dict(
+#         OPENSSL_HEADERS.items() + ANDROID_OPENSSL_HEADERS.items(),
+#     ),
+#     exported_linker_flags = [
+#         "-ldl",
+#     ],
+#     force_static = True,
+#     header_namespace = "",
+#     headers = dict(
+#         HEADERS.items() +
+#         subdir_glob([
+#             (
+#                 OPENSSL_SOURCE + "/config.android",
+#                 "**/*.h",
+#             ),
+#         ]).items(),
+#     ),
+#     platforms = (CXX, ANDROID),
+#     preprocessor_flags = OPENSSL_PREPROCESSOR_FLAGS,
+#     visibility = ["PUBLIC"],
+# )
+#
+# cxx_library(
+#     name = "crypto",
+#     srcs = LIBCRYPTO_SRCS,
+#     apple_sdks = (IOS, MACOSX, APPLETVOS),
+#     compiler_flags = OPENSSL_COMPILER_FLAGS + OBJC_COMPILER_FLAGS,
+#     exported_headers = dict(
+#         OPENSSL_HEADERS.items() + IOS_OPENSSL_HEADERS.items(),
+#     ),
+#     exported_linker_flags = [
+#         "-ldl",
+#     ],
+#     header_namespace = "",
+#     headers = dict(
+#         HEADERS.items() +
+#         subdir_glob([
+#             (
+#                 OPENSSL_SOURCE + "/config.ios",
+#                 "**/*.h",
+#             ),
+#         ]).items(),
+#     ),
+#     platforms = (APPLE,),
+#     preprocessor_flags = OPENSSL_PREPROCESSOR_FLAGS,
+#     visibility = ["PUBLIC"],
+# )
+#
+# cxx_library(
+#     name = "ssl",
+#     srcs = LIBSSL_SRCS,
+#     compiler_flags = OPENSSL_COMPILER_FLAGS + ANDROID_COMPILER_FLAGS,
+#     exported_headers = dict(
+#         OPENSSL_HEADERS.items() + ANDROID_OPENSSL_HEADERS.items(),
+#     ),
+#     exported_linker_flags = [
+#         "-ldl",
+#     ],
+#     header_namespace = "",
+#     headers = dict(
+#         HEADERS.items() +
+#         subdir_glob([
+#             (
+#                 OPENSSL_SOURCE + "/config.android",
+#                 "**/*.h",
+#             ),
+#             (
+#                 OPENSSL_SOURCE + "/ssl",
+#                 "**/*.h",
+#             ),
+#         ]).items(),
+#     ),
+#     platforms = (CXX, ANDROID),
+#     preprocessor_flags = OPENSSL_PREPROCESSOR_FLAGS,
+#     soname = "libsslx.$(ext)",
+#     visibility = ["PUBLIC"],
+#     deps = [
+#         "xplat//third-party/openssl:crypto",
+#     ],
+# )
+#
+# cxx_library(
+#     name = "ssl",
+#     srcs = LIBSSL_SRCS,
+#     apple_sdks = (IOS, MACOSX, APPLETVOS),
+#     compiler_flags = OPENSSL_COMPILER_FLAGS + OBJC_COMPILER_FLAGS,
+#     exported_headers = dict(
+#         OPENSSL_HEADERS.items() + IOS_OPENSSL_HEADERS.items(),
+#     ),
+#     exported_linker_flags = [
+#         "-ldl",
+#     ],
+#     header_namespace = "",
+#     headers = dict(
+#         HEADERS.items() +
+#         subdir_glob([
+#             (
+#                 OPENSSL_SOURCE + "/config.ios",
+#                 "**/*.h",
+#             ),
+#             (
+#                 OPENSSL_SOURCE + "/ssl",
+#                 "**/*.h",
+#             ),
+#         ]).items(),
+#     ),
+#     platforms = (APPLE,),
+#     preprocessor_flags = OPENSSL_PREPROCESSOR_FLAGS,
+#     visibility = ["PUBLIC"],
+#     deps = [
+#         "xplat//third-party/openssl:crypto",
+#     ],
+# )

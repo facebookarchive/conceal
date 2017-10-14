@@ -1,4 +1,4 @@
-##What is Conceal? [![Build Status](https://travis-ci.org/facebook/conceal.svg?branch=master)](https://travis-ci.org/facebook/conceal)
+## What is Conceal? [![Build Status](https://travis-ci.org/facebook/conceal.svg?branch=master)](https://travis-ci.org/facebook/conceal)
 
 Conceal provides a set of Java APIs to perform cryptography on Android. 
 It was designed to be able to encrypt large files on disk in a fast and 
@@ -14,22 +14,85 @@ useful functionality.
 
 ***Upgrading version?*** Check the [Upgrade notes](#upgrade-notes) for key compatibility!
 
-***Already using 1.1.x?*** It's strongly advised to upgrade to ```1.1.3``` as the library size is significatively smaller.
+#### IMPORTANT: Initializing the library loader
 
-##Quick start##
+Since v2.0.+ (2017-06-27) you will need to initialize the native library loader.
+This step is needed because the library loader uses the context.
+The highly suggested way to do it is in the application class onCreate method like this:
 
-####Setup options####
-
-* **Build using buck**
-```bash
-buck build :conceal_android
+```java
+import com.facebook.soloader.SoLoader;
+public class MyApplication extends Application {
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        SoLoader.init(this, false);
+    }
+}
 ```
 
-* **Use prebuilt binaries**: http://facebook.github.io/conceal/documentation/.
+## Quick start
 
-* **Use Maven Central**: Available on maven central under **com.facebook.conceal:conceal:1.1.3@aar** as an AAR package.
+#### Setup options
 
-####Running Benchmarks####
+1. **Use Maven Central**: Available on maven central under **com.facebook.conceal:conceal:2.0.1@aar** as an AAR package.
+If you use Android Studio and select the library using the UI, **make sure** to change `build.gradle` **to include the `@aar` suffix**. Otherwise the library won't be included.
+
+2. **Build using gradle**
+
+```bash
+./gradlew build
+```
+
+It uses gradlew so it takes care of downloading Gradle and all the dependencies it needs.
+Output will be in `/build/outputs/aar/` directory.
+
+3. **Use prebuilt binaries**: http://facebook.github.io/conceal/documentation/. (linked documentation needs update)
+
+###### An aside on KitKat
+> Conceal predates Jellybean 4.3. On KitKat, Android changed the provider for 
+> cryptographic algorithms to OpenSSL. The default Cipher stream however still 
+> does not perform well. When replaced with our Cipher stream 
+> (see BetterCipherInputStream), the default implementation is competitive against 
+> Conceal. On older phones, Conceal is faster than the system provided libraries.
+
+#### Re-build OpenSSL library
+
+You can run make from the openssl directory. It will download the code and copile the libraries for each architecture.
+
+```bash
+# go to /third-party/openssl
+make
+```
+
+#### Before running any test!
+
+Test uses BUCK build tool. BUCK uses the source code for OpenSSL. If you didn't already rebuilt OpenSSL form scrach (previous item) then
+run this:
+
+```bash
+# go to /third-party/openssl
+make clone
+```
+
+That will download the OpenSSL code to a subdirectory.
+
+#### Running unit tests
+```bash
+# C++ tests
+buck test :cpp
+```
+
+#### Running integration tests
+```bash
+# Emulator/device tests
+./instrumentTest/crypto/run
+```
+
+Since Conceal uses native libraries, the only way to run a test on the entire
+encryption process is using integration tests.
+
+#### Running Benchmarks
 ```bash
 ./benchmarks/run \
   benchmarks/src/com/facebook/crypto/benchmarks/CipherReadBenchmark.java \
@@ -39,29 +102,15 @@ buck build :conceal_android
 This script runs vogar with caliper benchmarks.
 You can also specify all the options caliper provides.
 
-######An aside on KitKat######
-> Conceal predates Jellybean 4.3. On KitKat, Android changed the provider for 
-> cryptographic algorithms to OpenSSL. The default Cipher stream however still 
-> does not perform well. When replaced with our Cipher stream 
-> (see BetterCipherInputStream), the default implementation is competitive against 
-> Conceal. On older phones, Conceal is faster than the system provided libraries.
+## Usage
 
-####Running unit tests####
-```bash
-buck test
-```
+#### Entity and keys
 
-####Running integration tests####
-```bash
-./instrumentTest/crypto/run
-```
+**Entity:** this is a not-secret identifier of your data. It's used for integrity check purposes (to know that the content has not been tampered) and also to verify it was not swapped with another valid encrypted content/file.
 
-Since Conceal uses native libraries, the only way to run a test on the entire
-encryption process is using integration tests.
+**Key:** the key is provided by the KeyChain implementation passed to the Crypto object. So each time a new encryption is requested, the key is requested to the KeyChain. The key is generated randomly the first time on demand. You might change the implementation by we strongly suggest to generate a random value. If the encryption key needs for some reason to be based on a text password, you can try using the PasswordBasedKeyGenerator object.
 
-##Usage##
-
-####Encryption###
+#### Encryption
 ```java
 // Creates a new Crypto object with default implementations of a key chain
 KeyChain keyChain = new SharedPrefsBackedKeyChain(context, CryptoConfig.KEY_256);
@@ -87,7 +136,7 @@ outputStream.write(plainText);
 outputStream.close();
 ```
 
-####Decryption####
+#### Decryption
 ```java
 // Get the file to which ciphertext has been written.
 FileInputStream fileStream = new FileInputStream(file);
@@ -119,12 +168,12 @@ If you don't have a lot of data to encrypt, you could
 use the convenience functions:
 
 ```java
-byte[] cipherText = crypto.encrypt(plainText);
+byte[] cipherText = crypto.encrypt(plainText, Entity.create("mytext"));
 
-byte[] plainText = crypto.decrypt(cipherText);
+byte[] plainText = crypto.decrypt(cipherText, Entity.create("mytext"));
 ```
 
-####Integrity####
+#### Integrity
 ```java
 OutputStream outputStream = crypto.getMacOutputStream(fileStream, entity);
 outputStream.write(plainTextBytes);
@@ -177,9 +226,9 @@ AndroidConceal.get().createDefaultCrypto(keyChain);
 Entity entity = Entity.create(someStringId);
 ```
 
-##Troubleshooting##
+## Troubleshooting
 
-####I'm getting NoSuchFieldError on runtime####
+#### I'm getting NoSuchFieldError on runtime
 
 If you hit an error on runtime and it says something similar to:
 

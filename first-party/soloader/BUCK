@@ -1,0 +1,40 @@
+#include_defs("//oss_defs/SOLOADER_DEFS")
+
+android_prebuilt_aar(
+    name = "soloader",
+    aar = ":soloader-aar-file",
+    visibility = ["PUBLIC"],
+)
+
+remote_file(
+    name = "soloader-aar-file",
+    sha1 = "2f27b33862c38f8197536a189f7a8f0be0839561",
+    url = "mvn:com.facebook.soloader:soloader:aar:0.2.0",
+)
+
+android_library(
+    name = "soloadersrc",
+    srcs = glob(
+        ["*.java"],
+        excludes = ["MergedSoMapping.java"],
+    ),
+    proguard_config = "soloader.pro",
+    tests = [
+        "//javatests/com/facebook/soloader:soloader",
+    ],
+    visibility = [
+        "PUBLIC",
+    ],
+    deps = [
+        ":mapping-stub",
+        # Be very careful adding new dependencies here, because this code
+        # has to run very early in the app startup process.
+        # Definitely do *not* depend on guava.
+        "//third-party/jsr-305:jsr-305",
+    ],
+)
+
+java_library(
+    name = "mapping-stub",
+    srcs = ["MergedSoMapping.java"],
+)

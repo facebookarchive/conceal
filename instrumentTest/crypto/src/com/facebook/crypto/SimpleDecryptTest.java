@@ -7,6 +7,7 @@ import android.test.InstrumentationTestCase;
 import com.facebook.android.crypto.keychain.AndroidConceal;
 import com.facebook.crypto.keychain.KeyChain;
 import com.facebook.crypto.util.NativeCryptoLibrary;
+import com.facebook.soloader.SoLoader;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -25,6 +26,9 @@ public class SimpleDecryptTest extends InstrumentationTestCase {
 
   protected void setUp() throws Exception {
     super.setUp();
+
+    SoLoader.init(this.getInstrumentation().getContext(), false);
+
     KeyChain keyChain = new FakeKeyChain();
     mCrypto = AndroidConceal.get().createCrypto128Bits(keyChain);
     mIV = keyChain.getNewIV();

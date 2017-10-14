@@ -25,7 +25,7 @@ public class TailInputStream extends FilterInputStream {
   private int mCount;
   private boolean mEOF;
 
-  protected TailInputStream(InputStream in, int tailLength) {
+  public TailInputStream(InputStream in, int tailLength) {
     super(in);
     mTail = new byte[tailLength];
     mTailTength = tailLength;

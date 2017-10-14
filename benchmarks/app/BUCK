@@ -3,6 +3,6 @@ android_binary(
   manifest = 'AndroidManifest.xml',
   keystore = '//keystores:debug',
   deps = [
-    '//:conceal_android',
+    '//:prebuilt_aar',
   ],
 )

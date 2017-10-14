@@ -10,16 +10,16 @@
 
 package com.facebook.crypto;
 
+import com.facebook.crypto.MacConfig;
 import com.facebook.crypto.exception.KeyChainException;
 import com.facebook.crypto.keychain.KeyChain;
-import com.facebook.crypto.mac.NativeMac;
 
 /**
  * Wrapper implementation of KeyChain.
  * Checks that returned arrays match the length specified by the config.
  * If there's a mismatch an IllegalStateArgument exception is thrown.
  */
-class CheckedKeyChain implements KeyChain {
+public class CheckedKeyChain implements KeyChain {
 
   private final KeyChain mDelegate;
   private final CryptoConfig mConfig;
@@ -43,7 +43,7 @@ class CheckedKeyChain implements KeyChain {
   @Override
   public byte[] getMacKey() throws KeyChainException {
     byte[] result = mDelegate.getMacKey();
-    checkLength(result, NativeMac.KEY_LENGTH, "Mac");
+    checkLength(result, MacConfig.DEFAULT.keyLength, "Mac");
     return result;
   }
 

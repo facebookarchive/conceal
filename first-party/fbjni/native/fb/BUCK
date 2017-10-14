@@ -1,0 +1,25 @@
+cxx_library(
+    name = 'jni',
+    soname = 'libfb.$(ext)',
+    srcs = glob(['*.cpp', 'jni/*.cpp', 'lyra/*.cpp']),
+    header_namespace = '',
+    compiler_flags = [
+      '-fno-omit-frame-pointer',
+      '-fexceptions',
+      '-Wall',
+      '-Werror',
+      '-std=c++11',
+      '-DDISABLE_CPUCAP',
+      '-DDISABLE_XPLAT',
+    ],
+    #preferred_linkage = 'static',
+    exported_headers = subdir_glob([
+      ('include', 'fb/**/*.h'),
+      ('include', 'jni/*.h'),
+    ]),
+    linker_flags = ["-llog"],
+    deps = [
+#      'fbandroid//native/jni-hack:jni-hack',
+    ],
+    visibility = ['PUBLIC'],
+)

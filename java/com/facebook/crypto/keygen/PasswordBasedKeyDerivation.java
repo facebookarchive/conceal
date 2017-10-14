@@ -10,8 +10,10 @@
 
 package com.facebook.crypto.keygen;
 
+import java.nio.charset.Charset;
 import java.security.SecureRandom;
 
+import com.facebook.cipher.jni.PBKDF2Hybrid;
 import com.facebook.crypto.exception.CryptoInitializationException;
 import com.facebook.crypto.util.NativeCryptoLibrary;
 
@@ -50,6 +52,8 @@ public class PasswordBasedKeyDerivation {
 
   public static final int MINIMUM_KEY_LENGTH = 8;
   public static final int DEFAULT_KEY_LENGTH = 16;
+
+  private static final Charset UTF_8 = Charset.forName("UTF-8");
 
   private final NativeCryptoLibrary mNativeLibrary;
   private final SecureRandom mSecureRandom;
@@ -107,24 +111,21 @@ public class PasswordBasedKeyDerivation {
     if (mPassword == null) {
       throw new IllegalStateException("Password was not set");
     }
+    // for now the random salt generation happens in Java
     if (mSalt == null) {
       mSalt = new byte[DEFAULT_SALT_LENGTH];
       mSecureRandom.nextBytes(mSalt);
     }
-    mGeneratedKey = new byte[mKeyLengthInBytes];
     mNativeLibrary.ensureCryptoLoaded();
-    int result = nativePbkdf2(mPassword, mSalt, mIterations, mGeneratedKey);
-    if (result != 1) {
-      throw new RuntimeException("Native PBKDF2 failed...");
-    }
+    PBKDF2Hybrid pbkdf2 = new PBKDF2Hybrid();
+    pbkdf2.setIterations(mIterations);
+    byte[] password = mPassword.getBytes(UTF_8);
+    pbkdf2.setPassword(password, 0, password.length);
+    pbkdf2.setSalt(mSalt, 0, mSalt.length);
+    pbkdf2.setKeyLengthInBytes(mKeyLengthInBytes);
+    mGeneratedKey = pbkdf2.generate();
     return mGeneratedKey;
   }
-
-  private native int nativePbkdf2(
-      String password,
-      byte[] salt,
-      int iterations,
-      byte[] result);
 
   public int getIterations() {
     return mIterations;

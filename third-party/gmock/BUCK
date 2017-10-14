@@ -1,0 +1,47 @@
+cxx_library(
+    name = "gmock",
+    srcs = [
+        "googletest-1.8.0/googlemock/src/gmock-all.cc",
+    ],
+    compiler_flags = [
+        "-frtti",
+        "-fexceptions",
+    ],
+    exported_headers = subdir_glob([
+        ("googletest-1.8.0/googlemock/include", "**/*.h"),
+    ]),
+    header_namespace = "",
+    headers = subdir_glob([
+        ("googletest-1.8.0/googlemock", "src/**/*.cc"),
+    ]),
+    visibility = ["PUBLIC"],
+    deps = [
+        "//third-party/gmock:gtest",
+    ],
+)
+
+cxx_library(
+    name = "gtest",
+    srcs = [
+        "googletest-1.8.0/googletest/src/gtest-all.cc",
+        "googletest-1.8.0/googletest/src/gtest_main.cc",
+    ],
+    exported_headers = subdir_glob([
+        ("googletest-1.8.0/googletest/include", "**/*.h"),
+    ]),
+    exported_linker_flags = [
+        "-lpthread",
+        "-fexceptions",
+        "-fpermissive",
+        "-frtti",
+        "-fPIC",
+    ],
+    header_namespace = "",
+    headers = subdir_glob([
+        ("googletest-1.8.0/googletest", "src/**/*.cc"),
+        ("googletest-1.8.0/googletest", "src/**/*.h"),
+    ]),
+    visibility = [
+        "PUBLIC",
+    ],
+)

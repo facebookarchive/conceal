@@ -1,10 +1,11 @@
 #!/bin/sh
 # Get Android NDK
 echo Downloading NDK...
-wget http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin -O ndk.bin
-chmod a+x ndk.bin
+URL=https://dl.google.com/android/repository/android-ndk-r13b-linux-x86_64.zip
+wget $URL -O ndk.zip
 echo Installing NDK...
-./ndk.bin 1> /dev/null 2>&1
-ANDROID_NDK=`pwd`/android-ndk-r10e/
+unzip ndk.zip 1> /dev/null 2>&1
+#./ndk.bin 1> /dev/null 2>&1
+ANDROID_NDK=`pwd`/android-ndk-r13b
 export ANDROID_NDK
 echo NDK installed on $ANDROID_NDK

@@ -15,9 +15,9 @@ import android.content.SharedPreferences;
 import android.util.Base64;
 
 import com.facebook.crypto.CryptoConfig;
+import com.facebook.crypto.MacConfig;
 import com.facebook.crypto.exception.KeyChainException;
 import com.facebook.crypto.keychain.KeyChain;
-import com.facebook.crypto.mac.NativeMac;
 
 import java.security.SecureRandom;
 import java.util.Arrays;
@@ -80,7 +80,6 @@ public class SharedPrefsBackedKeyChain implements KeyChain {
     return config == CryptoConfig.KEY_128
             ? SHARED_PREF_NAME
             : SHARED_PREF_NAME + "." + String.valueOf(config);
-
   }
 
   @Override
@@ -95,7 +94,7 @@ public class SharedPrefsBackedKeyChain implements KeyChain {
   @Override
   public byte[] getMacKey() throws KeyChainException {
     if (!mSetMacKey) {
-      mMacKey = maybeGenerateKey(MAC_KEY_PREF, NativeMac.KEY_LENGTH);
+      mMacKey = maybeGenerateKey(MAC_KEY_PREF, MacConfig.DEFAULT.keyLength);
     }
     mSetMacKey = true;
     return mMacKey;
