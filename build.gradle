@@ -70,14 +70,8 @@ if (!project.hasProperty('sonatypeRepo') ||
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-version = "2.0.1"
+version = "2.0.2"
 group = "com.facebook.conceal"
-
-configurations {
-    archives {
-        extendsFrom configurations.default
-    }
-}
 
 signing {
     required { gradle.taskGraph.hasTask("uploadArchives") }
