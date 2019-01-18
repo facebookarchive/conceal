@@ -257,21 +257,26 @@ public class SoLoader {
     sSoFileLoader = new SoFileLoader() {
       @Override
       public void load(final String pathToSoFile, final int loadFlags) {
+        String error = null;
         if (hasNativeLoadMethod) {
           final boolean inZip = (loadFlags & SOLOADER_LOOK_IN_ZIP) == SOLOADER_LOOK_IN_ZIP;
           final String path = inZip ? localLdLibraryPath : localLdLibraryPathNoZips;
           try {
             synchronized (runtime) {
-              String error = (String)nativeLoadRuntimeMethod.invoke(
-                  runtime,
-                  pathToSoFile,
-                  SoLoader.class.getClassLoader(),
-                  path);
+              error =
+                      // the third argument of nativeLoad method was removed in Android P API
+                      Build.VERSION.SDK_INT <= 27
+                              ? (String)
+                              nativeLoadRuntimeMethod.invoke(
+                                      runtime, pathToSoFile, SoLoader.class.getClassLoader(), path)
+                              : (String)
+                              nativeLoadRuntimeMethod.invoke(
+                                      runtime, pathToSoFile, SoLoader.class.getClassLoader());
               if (error != null) {
                 throw new UnsatisfiedLinkError(error);
               }
             }
-          } catch (IllegalAccessException
+          }  catch (IllegalAccessException
               | IllegalArgumentException
               | InvocationTargetException e) {
             final String errMsg = "Error: Cannot load " + pathToSoFile;
@@ -292,9 +297,15 @@ public class SoLoader {
     }
 
     try {
-      final Method method =
-          Runtime.class
-              .getDeclaredMethod("nativeLoad", String.class, ClassLoader.class, String.class);
+      final Method method;
+      if (Build.VERSION.SDK_INT <= 27) {
+        method =
+                Runtime.class.getDeclaredMethod(
+                        "nativeLoad", String.class, ClassLoader.class, String.class);
+      } else {
+        method = Runtime.class.getDeclaredMethod("nativeLoad", String.class, ClassLoader.class);
+      }
+
       method.setAccessible(true);
       return method;
     } catch (final NoSuchMethodException | SecurityException e) {
