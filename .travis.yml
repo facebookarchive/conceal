@@ -23,7 +23,7 @@ android:
 
     # Specify at least one system image,
     # if you need to run emulator(s) during your tests
-    - sys-img-x86_64-android-19
+    - sys-img-x86-android-19
     # - sys-img-armeabi-v7a-android-19
     # - sys-img-x86-android-17
     # TODO: Configure travis to run in more than one emulator
