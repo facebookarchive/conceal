@@ -58,7 +58,7 @@ Output will be in `/build/outputs/aar/` directory.
 
 #### Re-build OpenSSL library
 
-You can run make from the openssl directory. It will download the code and copile the libraries for each architecture.
+You can run make from the openssl directory. It will download the code and compile the libraries for each architecture.
 
 ```bash
 # go to /third-party/openssl
